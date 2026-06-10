@@ -46,18 +46,18 @@ La maquette est composée d'une voiture RC modifiée et équipée de :
 
 ## Résultats
 
-#### Correcteur P
+### Correcteur P
 
 ![Courbes expérimentales P](/Pratique/acc_code/courbe_P.png "Courbes expérimentales P")
 
-#### Correcteur PI
+### Correcteur PI
 
 ![Courbes expérimentales PI](/Pratique/acc_code/courbe_PI.png "Courbes expérimentales PI")
 
-#### Correcteur PD
+### Correcteur PD
 
 ![Courbes expérimentales PD](/Pratique/acc_code/courbe_PD.png "Courbes expérimentales PD")
 
-#### Correcteur PID
+### Correcteur PID
 
 ![Courbes expérimentales PID](/Pratique/acc_code/courbe_PID.png "Courbes expérimentales PID")
