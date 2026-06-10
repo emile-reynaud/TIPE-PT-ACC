@@ -53,8 +53,11 @@ La maquette est composée d'une voiture RC modifiée et équipée de :
 #### Analyse
 
 |                       Positif                         |                                    Limites                                         |
+| ----------------------------------------------------- | ---------------------------------------------------------------------------------- |
 |               Kick-start efficace                     |      Erreur statique -0,23 m⋅s<sup>-1</sup> (33%) structurelle sans intégrale      |
+| ----------------------------------------------------- | ---------------------------------------------------------------------------------- |
 | Commande stable à 170-180 PWM en régime sans obstacle |             Commande saccadée en mode distance (bruit amplifié par Kp)             |
+| ----------------------------------------------------- | ---------------------------------------------------------------------------------- |
 |                                                       | t<sub>r<sub>5%</sub></sub> = N/A, la vitesse ne converge jamais vers V<sub>c</sub> |
 
 #### Bilan
