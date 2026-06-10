@@ -1,0 +1,2 @@
+#correcteur=PID,Kp=100.0,Ki=0.0,Kd=0.0
+t_s,vitesse_freq_ms,vitesse_periode_ms,consigne_vitesse_ms,distance_m,consigne_dist_m,erreur_m,commande_pwm

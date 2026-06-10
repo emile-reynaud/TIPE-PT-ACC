@@ -1,0 +1,2 @@
+#correcteur=PD,Kp=35.0,Ki=2.0,Kd=0.5,FF=190.8,Vc=0.40
+t_s,mode,vitesse_freq_ms,vitesse_periode_ms,consigne_vitesse_ms,distance_m,consigne_dist_m,erreur_m,commande_pwm

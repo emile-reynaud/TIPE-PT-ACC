@@ -1,0 +1,8285 @@
+%!PS-Adobe-3.0
+%%BoundingBox: 24 24 571 818
+%%Title: Enscript Output
+%%For: Emile Reynaud
+%%Creator: GNU Enscript 1.6.6
+%%CreationDate: Tue Jun  9 14:14:59 2026
+%%Orientation: Landscape
+%%Pages: (atend)
+%%DocumentMedia: A4 595 842 0 () ()
+%%DocumentNeededResources: (atend)
+%%EndComments
+%%BeginProlog
+%%BeginResource: procset Enscript-Prolog 1.6 6
+%
+% Procedures.
+%
+
+/_S {	% save current state
+  /_s save def
+} def
+/_R {	% restore from saved state
+  _s restore
+} def
+
+/S {	% showpage protecting gstate
+  gsave
+  showpage
+  grestore
+} bind def
+
+/MF {	% fontname newfontname -> -	make a new encoded font
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  % insert only valid encoding vectors
+  encoding_vector length 256 eq {
+    newfont /Encoding encoding_vector put
+  } if
+
+  newfontname newfont definefont pop
+} def
+
+/MF_PS { % fontname newfontname -> -	make a new font preserving its enc
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  newfontname newfont definefont pop
+} def
+
+/SF { % fontname width height -> -	set a new font
+  /height exch def
+  /width exch def
+
+  findfont
+  [width 0 0 height 0 0] makefont setfont
+} def
+
+/SUF { % fontname width height -> -	set a new user font
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF
+  /F-gs-user-font width height SF
+} def
+
+/SUF_PS { % fontname width height -> -	set a new user font preserving its enc
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF_PS
+  /F-gs-user-font width height SF
+} def
+
+/M {moveto} bind def
+/s {show} bind def
+
+/Box {	% x y w h -> -			define box path
+  /d_h exch def /d_w exch def /d_y exch def /d_x exch def
+  d_x d_y  moveto
+  d_w 0 rlineto
+  0 d_h rlineto
+  d_w neg 0 rlineto
+  closepath
+} def
+
+/bgs {	% x y height blskip gray str -> -	show string with bg color
+  /str exch def
+  /gray exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    gray setgray
+    fill
+  grestore
+  x y M str s
+} def
+
+/bgcs { % x y height blskip red green blue str -> -  show string with bg color
+  /str exch def
+  /blue exch def
+  /green exch def
+  /red exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    red green blue setrgbcolor
+    fill
+  grestore
+  x y M str s
+} def
+
+% Highlight bars.
+/highlight_bars {	% nlines lineheight output_y_margin gray -> -
+  gsave
+    setgray
+    /ymarg exch def
+    /lineheight exch def
+    /nlines exch def
+
+    % This 2 is just a magic number to sync highlight lines to text.
+    0 d_header_y ymarg sub 2 sub translate
+
+    /cw d_output_w cols div def
+    /nrows d_output_h ymarg 2 mul sub lineheight div cvi def
+
+    % for each column
+    0 1 cols 1 sub {
+      cw mul /xp exch def
+
+      % for each rows
+      0 1 nrows 1 sub {
+        /rn exch def
+        rn lineheight mul neg /yp exch def
+        rn nlines idiv 2 mod 0 eq {
+	  % Draw highlight bar.  4 is just a magic indentation.
+	  xp 4 add yp cw 8 sub lineheight neg Box fill
+	} if
+      } for
+    } for
+
+  grestore
+} def
+
+% Line highlight bar.
+/line_highlight {	% x y width height gray -> -
+  gsave
+    /gray exch def
+    Box gray setgray fill
+  grestore
+} def
+
+% Column separator lines.
+/column_lines {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h translate
+    /cw d_output_w cols div def
+    1 1 cols 1 sub {
+      cw mul 0 moveto
+      0 d_output_h rlineto stroke
+    } for
+  grestore
+} def
+
+% Column borders.
+/column_borders {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h moveto
+    0 d_output_h rlineto
+    d_output_w 0 rlineto
+    0 d_output_h neg rlineto
+    closepath stroke
+  grestore
+} def
+
+% Do the actual underlay drawing
+/draw_underlay {
+  ul_style 0 eq {
+    ul_str true charpath stroke
+  } {
+    ul_str show
+  } ifelse
+} def
+
+% Underlay
+/underlay {	% - -> -
+  gsave
+    0 d_page_h translate
+    d_page_h neg d_page_w atan rotate
+
+    ul_gray setgray
+    ul_font setfont
+    /dw d_page_h dup mul d_page_w dup mul add sqrt def
+    ul_str stringwidth pop dw exch sub 2 div ul_h_ptsize -2 div moveto
+    draw_underlay
+  grestore
+} def
+
+/user_underlay {	% - -> -
+  gsave
+    ul_x ul_y translate
+    ul_angle rotate
+    ul_gray setgray
+    ul_font setfont
+    0 0 ul_h_ptsize 2 div sub moveto
+    draw_underlay
+  grestore
+} def
+
+% Page prefeed
+/page_prefeed {		% bool -> -
+  statusdict /prefeed known {
+    statusdict exch /prefeed exch put
+  } {
+    pop
+  } ifelse
+} def
+
+% Wrapped line markers
+/wrapped_line_mark {	% x y charwith charheight type -> -
+  /type exch def
+  /h exch def
+  /w exch def
+  /y exch def
+  /x exch def
+
+  type 2 eq {
+    % Black boxes (like TeX does)
+    gsave
+      0 setlinewidth
+      x w 4 div add y M
+      0 h rlineto w 2 div 0 rlineto 0 h neg rlineto
+      closepath fill
+    grestore
+  } {
+    type 3 eq {
+      % Small arrows
+      gsave
+        .2 setlinewidth
+        x w 2 div add y h 2 div add M
+        w 4 div 0 rlineto
+        x w 4 div add y lineto stroke
+
+        x w 4 div add w 8 div add y h 4 div add M
+        x w 4 div add y lineto
+	w 4 div h 8 div rlineto stroke
+      grestore
+    } {
+      % do nothing
+    } ifelse
+  } ifelse
+} def
+
+% EPSF import.
+
+/BeginEPSF {
+  /b4_Inc_state save def    		% Save state for cleanup
+  /dict_count countdictstack def	% Count objects on dict stack
+  /op_count count 1 sub def		% Count objects on operand stack
+  userdict begin
+  /showpage { } def
+  0 setgray 0 setlinecap
+  1 setlinewidth 0 setlinejoin
+  10 setmiterlimit [ ] 0 setdash newpath
+  /languagelevel where {
+    pop languagelevel
+    1 ne {
+      false setstrokeadjust false setoverprint
+    } if
+  } if
+} bind def
+
+/EndEPSF {
+  count op_count sub { pos } repeat	% Clean up stacks
+  countdictstack dict_count sub { end } repeat
+  b4_Inc_state restore
+} bind def
+
+% Check PostScript language level.
+/languagelevel where {
+  pop /gs_languagelevel languagelevel def
+} {
+  /gs_languagelevel 1 def
+} ifelse
+%%EndResource
+%%BeginResource: procset Enscript-Encoding-88591 1.6 6
+/encoding_vector [
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclam       	/quotedbl     	/numbersign   	
+/dollar       	/percent      	/ampersand    	/quoteright   	
+/parenleft    	/parenright   	/asterisk     	/plus         	
+/comma        	/hyphen       	/period       	/slash        	
+/zero         	/one          	/two          	/three        	
+/four         	/five         	/six          	/seven        	
+/eight        	/nine         	/colon        	/semicolon    	
+/less         	/equal        	/greater      	/question     	
+/at           	/A            	/B            	/C            	
+/D            	/E            	/F            	/G            	
+/H            	/I            	/J            	/K            	
+/L            	/M            	/N            	/O            	
+/P            	/Q            	/R            	/S            	
+/T            	/U            	/V            	/W            	
+/X            	/Y            	/Z            	/bracketleft  	
+/backslash    	/bracketright 	/asciicircum  	/underscore   	
+/quoteleft    	/a            	/b            	/c            	
+/d            	/e            	/f            	/g            	
+/h            	/i            	/j            	/k            	
+/l            	/m            	/n            	/o            	
+/p            	/q            	/r            	/s            	
+/t            	/u            	/v            	/w            	
+/x            	/y            	/z            	/braceleft    	
+/bar          	/braceright   	/tilde        	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclamdown   	/cent         	/sterling     	
+/currency     	/yen          	/brokenbar    	/section      	
+/dieresis     	/copyright    	/ordfeminine  	/guillemotleft	
+/logicalnot   	/hyphen       	/registered   	/macron       	
+/degree       	/plusminus    	/twosuperior  	/threesuperior	
+/acute        	/mu           	/paragraph    	/bullet       	
+/cedilla      	/onesuperior  	/ordmasculine 	/guillemotright	
+/onequarter   	/onehalf      	/threequarters	/questiondown 	
+/Agrave       	/Aacute       	/Acircumflex  	/Atilde       	
+/Adieresis    	/Aring        	/AE           	/Ccedilla     	
+/Egrave       	/Eacute       	/Ecircumflex  	/Edieresis    	
+/Igrave       	/Iacute       	/Icircumflex  	/Idieresis    	
+/Eth          	/Ntilde       	/Ograve       	/Oacute       	
+/Ocircumflex  	/Otilde       	/Odieresis    	/multiply     	
+/Oslash       	/Ugrave       	/Uacute       	/Ucircumflex  	
+/Udieresis    	/Yacute       	/Thorn        	/germandbls   	
+/agrave       	/aacute       	/acircumflex  	/atilde       	
+/adieresis    	/aring        	/ae           	/ccedilla     	
+/egrave       	/eacute       	/ecircumflex  	/edieresis    	
+/igrave       	/iacute       	/icircumflex  	/idieresis    	
+/eth          	/ntilde       	/ograve       	/oacute       	
+/ocircumflex  	/otilde       	/odieresis    	/divide       	
+/oslash       	/ugrave       	/uacute       	/ucircumflex  	
+/udieresis    	/yacute       	/thorn        	/ydieresis    	
+] def
+%%EndResource
+%%EndProlog
+%%BeginSetup
+%%IncludeResource: font Courier-Bold
+%%IncludeResource: font Courier
+/HFpt_w 10 def
+/HFpt_h 10 def
+/Courier-Bold /HF-gs-font MF
+/HF /HF-gs-font findfont [HFpt_w 0 0 HFpt_h 0 0] makefont def
+/Courier /F-gs-font MF
+/F-gs-font 10 10 SF
+/#copies 1 def
+% Pagedevice definitions:
+gs_languagelevel 1 gt {
+  <<
+    /PageSize [595 842] 
+  >> setpagedevice
+} if
+%%BeginResource: procset Enscript-Header-enscript 1.6 6
+%%IncludeResource: font Times-Bold
+%%IncludeResource: font Times-Roman
+
+% Fonts.
+/Times-Bold /HeaderFont-Bold MF
+/HeaderDateF /HeaderFont-Bold findfont 12 scalefont def
+
+/Times-Roman /HeaderFont-Times MF
+/HeaderHDRF /HeaderFont-Times findfont 14 scalefont def
+
+/HeaderPageNumF /Helvetica-Bold findfont 28.8 scalefont def
+
+/do_header {	% print enscript header
+  gsave
+    d_header_x d_header_y translate
+
+    % light bar
+    0 0 d_header_w d_header_h 2 div Box
+    .95 setgray fill
+
+    % dark gray boxes
+    /dbw d_header_h 2 mul def	% dark box width
+    /dbc .7 def			% dark box color
+
+    % left dark box.
+    0 0 dbw d_header_h Box
+    dbc setgray fill
+
+    0 setgray 
+    HeaderDateF setfont
+    moddatestr dup stringwidth pop dbw exch sub 2 div 
+    d_header_h 2 div 2 add moveto show
+    modtimestr dup stringwidth pop dbw exch sub 2 div 
+    d_header_h 5 div moveto show
+
+    % right dark box
+    d_header_w dbw sub 0 dbw d_header_h Box
+    dbc setgray fill
+
+    HeaderPageNumF setfont
+    1 setgray
+    pagenumstr dup
+    stringwidth pop dbw exch sub 2 div d_header_w dbw sub add
+    d_header_h .2 mul moveto show
+
+    % filename
+    0 setgray 
+    HeaderHDRF setfont
+    d_header_w fname stringwidth pop sub 2 div d_header_h 8 div moveto
+    fname show
+
+    % user supplied header string.
+    user_header_p {
+      /h d_header_h 8 div 5 mul def
+
+      % Implement strict enscript compatibility.
+      user_header_center_str () eq user_header_right_str () eq and {
+        d_header_w user_header_left_str stringwidth pop sub 2 div 
+        h moveto user_header_left_str show
+      } {
+        dbw 5 add h moveto user_header_left_str show
+
+        d_header_w user_header_center_str stringwidth pop sub 2 div 
+        h moveto user_header_center_str show
+
+	d_header_w dbw sub 5 sub user_header_right_str stringwidth pop
+	sub h moveto user_header_right_str show
+      } ifelse
+    } if
+
+  grestore
+} def
+%%EndResource
+/d_page_w 794 def
+/d_page_h 547 def
+/d_header_x 0 def
+/d_header_y 511 def
+/d_header_w 794 def
+/d_header_h 36 def
+/d_footer_x 0 def
+/d_footer_y 0 def
+/d_footer_w 794 def
+/d_footer_h 0 def
+/d_output_w 794 def
+/d_output_h 511 def
+/cols 1 def
+%%EndSetup
+%%Page: (1) 1
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 1 def
+/fname (AAC_TIPE_v19.ino) def
+/fdir (.) def
+/ftail (AAC_TIPE_v19.ino) def
+% User defined strings:
+/pagenumstr (1) def
+/moddatestr (06/09/26) def
+/modtimestr (12:26:37) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+30 498 M (1:) s
+/Courier-Oblique 10 10 SUF
+48 498 M
+(/*) s
+/F-gs-font 10 10 SF
+30 487 M (2:) s
+/Courier-Oblique 10 10 SUF
+48 487 M
+( * R\303\\211GULATEUR DE VITESSE ADAPTATIF ET SA BOUCLE DE R\303\\211TROACTION PID) s
+/F-gs-font 10 10 SF
+30 476 M (3:) s
+/Courier-Oblique 10 10 SUF
+48 476 M
+( * TIPE Par Emile Reynaud) s
+/F-gs-font 10 10 SF
+30 465 M (4:) s
+/Courier-Oblique 10 10 SUF
+48 465 M
+( */) s
+/F-gs-font 10 10 SF
+30 454 M (5:) s
+30 443 M (6:) s
+/Courier-Oblique 10 10 SUF
+48 443 M
+(// D\303\251finition de 4 constantes num\303\251riques au lieu d'avoir des str) s
+/F-gs-font 10 10 SF
+30 432 M (7:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 432 M
+(#) s
+/Courier-Bold 10 10 SUF
+54 432 M
+(define) s
+/F-gs-font 10 10 SF
+90 432 M
+( ) s
+/Courier-Bold 10 10 SUF
+96 432 M
+(CORR_P) s
+/F-gs-font 10 10 SF
+132 432 M
+(   1   // correcteur proportionnel seul) s
+30 421 M (8:) s
+48 421 M
+(#) s
+/Courier-Bold 10 10 SUF
+54 421 M
+(define) s
+/F-gs-font 10 10 SF
+90 421 M
+( ) s
+/Courier-Bold 10 10 SUF
+96 421 M
+(CORR_PI) s
+/F-gs-font 10 10 SF
+138 421 M
+(  2   // correcteur proportionnel + int\303\251gral) s
+30 410 M (9:) s
+48 410 M
+(#) s
+/Courier-Bold 10 10 SUF
+54 410 M
+(define) s
+/F-gs-font 10 10 SF
+90 410 M
+( ) s
+/Courier-Bold 10 10 SUF
+96 410 M
+(CORR_PD) s
+/F-gs-font 10 10 SF
+138 410 M
+(  3   // correcteur proportionnel + d\303\251riv\303\251) s
+24 399 M (10:) s
+48 399 M
+(#) s
+/Courier-Bold 10 10 SUF
+54 399 M
+(define) s
+/F-gs-font 10 10 SF
+90 399 M
+( ) s
+/Courier-Bold 10 10 SUF
+96 399 M
+(CORR_PID) s
+/F-gs-font 10 10 SF
+144 399 M
+( 4   // correcteur proportionnel + int\303\251gral + d\303\251riv\303\251) s
+24 388 M (11:) s
+24 377 M (12:) s
+/Courier-Oblique 10 10 SUF
+48 377 M
+(// Choix du correcteur en d\303\251commentant une seule ligne) s
+/F-gs-font 10 10 SF
+24 366 M (13:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Oblique 10 10 SUF
+48 366 M
+(// #define CORRECTEUR CORR_P) s
+/F-gs-font 10 10 SF
+24 355 M (14:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Oblique 10 10 SUF
+48 355 M
+(// #define CORRECTEUR CORR_PI) s
+/F-gs-font 10 10 SF
+24 344 M (15:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Oblique 10 10 SUF
+48 344 M
+(// #define CORRECTEUR CORR_PD) s
+/F-gs-font 10 10 SF
+24 333 M (16:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 333 M
+(#) s
+/Courier-Bold 10 10 SUF
+54 333 M
+(define) s
+/F-gs-font 10 10 SF
+90 333 M
+( ) s
+/Courier-Bold 10 10 SUF
+96 333 M
+(CORRECTEUR) s
+/F-gs-font 10 10 SF
+156 333 M
+( CORR_PID) s
+24 322 M (17:) s
+24 311 M (18:) s
+/Courier-Oblique 10 10 SUF
+48 311 M
+(// D\303\251finition des bonnes constantes en fonction du correcteur) s
+/F-gs-font 10 10 SF
+24 300 M (19:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 300 M
+(#) s
+/Courier-Bold 10 10 SUF
+54 300 M
+(if) s
+/F-gs-font 10 10 SF
+66 300 M
+( ) s
+/Courier-Bold 10 10 SUF
+72 300 M
+(CORRECTEUR) s
+/F-gs-font 10 10 SF
+132 300 M
+( == ) s
+/Courier-Bold 10 10 SUF
+156 300 M
+(CORR_P) s
+/F-gs-font 10 10 SF
+192 300 M
+(           ) s
+24 289 M (20:) s
+48 289 M
+(  #define Kp_VAL   60.0f           ) s
+24 278 M (21:) s
+48 278 M
+(  #define Ki_VAL    0.0f           ) s
+24 267 M (22:) s
+48 267 M
+(  #define Kd_VAL    0.0f           ) s
+24 256 M (23:) s
+48 256 M
+(  #define USE_I    0               ) s
+/Courier-Oblique 10 10 SUF
+258 256 M
+(//   activation ou non de l'int\303\251grale) s
+/F-gs-font 10 10 SF
+24 245 M (24:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 245 M
+(  #define USE_D    0               ) s
+/Courier-Oblique 10 10 SUF
+258 245 M
+(//   idem pour la d\303\251riv\303\251e) s
+/F-gs-font 10 10 SF
+24 234 M (25:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 234 M
+(  #define MODE_STR ) s
+/Courier-Bold 10 10 SUF
+162 234 M
+("P") s
+/F-gs-font 10 10 SF
+180 234 M
+(             ) s
+/Courier-Oblique 10 10 SUF
+258 234 M
+(//   label pour logs) s
+/F-gs-font 10 10 SF
+24 223 M (26:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 223 M
+(  #define KICK_PWM_VAL       209   ) s
+/Courier-Oblique 10 10 SUF
+258 223 M
+(//   PWM du kick) s
+/F-gs-font 10 10 SF
+24 212 M (27:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 212 M
+(  #define KICK_DUREE_MS_VAL  250   ) s
+/Courier-Oblique 10 10 SUF
+258 212 M
+(//   dur\303\251e du kick) s
+/F-gs-font 10 10 SF
+24 201 M (28:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+24 190 M (29:) s
+48 190 M
+(#) s
+/Courier-Bold 10 10 SUF
+54 190 M
+(elif) s
+/F-gs-font 10 10 SF
+78 190 M
+( ) s
+/Courier-Bold 10 10 SUF
+84 190 M
+(CORRECTEUR) s
+/F-gs-font 10 10 SF
+144 190 M
+( == ) s
+/Courier-Bold 10 10 SUF
+168 190 M
+(CORR_PI) s
+/F-gs-font 10 10 SF
+210 190 M
+(        ) s
+24 179 M (30:) s
+48 179 M
+(  #define Kp_VAL   15.0f           ) s
+24 168 M (31:) s
+48 168 M
+(  #define Ki_VAL   60.0f           ) s
+24 157 M (32:) s
+48 157 M
+(  #define Kd_VAL    0.0f           ) s
+24 146 M (33:) s
+48 146 M
+(  #define USE_I    1               ) s
+24 135 M (34:) s
+48 135 M
+(  #define USE_D    0               ) s
+24 124 M (35:) s
+48 124 M
+(  #define MODE_STR ) s
+/Courier-Bold 10 10 SUF
+162 124 M
+("PI") s
+/F-gs-font 10 10 SF
+186 124 M
+(            ) s
+24 113 M (36:) s
+48 113 M
+(  #define KICK_PWM_VAL       209   ) s
+24 102 M (37:) s
+48 102 M
+(  #define KICK_DUREE_MS_VAL  250   ) s
+24 91 M (38:) s
+24 80 M (39:) s
+48 80 M
+(#) s
+/Courier-Bold 10 10 SUF
+54 80 M
+(elif) s
+/F-gs-font 10 10 SF
+78 80 M
+( ) s
+/Courier-Bold 10 10 SUF
+84 80 M
+(CORRECTEUR) s
+/F-gs-font 10 10 SF
+144 80 M
+( == ) s
+/Courier-Bold 10 10 SUF
+168 80 M
+(CORR_PD) s
+/F-gs-font 10 10 SF
+210 80 M
+(        ) s
+24 69 M (40:) s
+48 69 M
+(  #define Kp_VAL  350.0f           ) s
+24 58 M (41:) s
+48 58 M
+(  #define Ki_VAL    0.0f           ) s
+24 47 M (42:) s
+48 47 M
+(  #define Kd_VAL   10.0f           ) s
+24 36 M (43:) s
+48 36 M
+(  #define USE_I    0               ) s
+24 25 M (44:) s
+48 25 M
+(  #define USE_D    1               ) s
+24 14 M (45:) s
+48 14 M
+(  #define MODE_STR ) s
+/Courier-Bold 10 10 SUF
+162 14 M
+("PD") s
+/F-gs-font 10 10 SF
+186 14 M
+(            ) s
+24 3 M (46:) s
+48 3 M
+(  #define KICK_PWM_VAL       255   ) s
+_R
+S
+%%Page: (2) 2
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 2 def
+/fname (AAC_TIPE_v19.ino) def
+/fdir (.) def
+/ftail (AAC_TIPE_v19.ino) def
+% User defined strings:
+/pagenumstr (2) def
+/moddatestr (06/09/26) def
+/modtimestr (12:26:37) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+24 498 M (47:) s
+48 498 M
+(  #define KICK_DUREE_MS_VAL  800   ) s
+24 487 M (48:) s
+24 476 M (49:) s
+48 476 M
+(#) s
+/Courier-Bold 10 10 SUF
+54 476 M
+(elif) s
+/F-gs-font 10 10 SF
+78 476 M
+( ) s
+/Courier-Bold 10 10 SUF
+84 476 M
+(CORRECTEUR) s
+/F-gs-font 10 10 SF
+144 476 M
+( == ) s
+/Courier-Bold 10 10 SUF
+168 476 M
+(CORR_PID) s
+/F-gs-font 10 10 SF
+216 476 M
+(       ) s
+24 465 M (50:) s
+48 465 M
+(  #define Kp_VAL   80.0f           ) s
+24 454 M (51:) s
+48 454 M
+(  #define Ki_VAL   40.0f           ) s
+24 443 M (52:) s
+48 443 M
+(  #define Kd_VAL    8.0f           ) s
+24 432 M (53:) s
+48 432 M
+(  #define USE_I    1               ) s
+24 421 M (54:) s
+48 421 M
+(  #define USE_D    1               ) s
+24 410 M (55:) s
+48 410 M
+(  #define MODE_STR ) s
+/Courier-Bold 10 10 SUF
+162 410 M
+("PID") s
+/F-gs-font 10 10 SF
+192 410 M
+(           ) s
+24 399 M (56:) s
+48 399 M
+(  #define KICK_PWM_VAL       153   ) s
+24 388 M (57:) s
+48 388 M
+(  #define KICK_DUREE_MS_VAL  1000  ) s
+24 377 M (58:) s
+24 366 M (59:) s
+48 366 M
+(#) s
+/Courier-Bold 10 10 SUF
+54 366 M
+(else) s
+/F-gs-font 10 10 SF
+24 355 M (60:) s
+48 355 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 355 M
+(// Si pas de correcteur valide, renvoie une erreur) s
+/F-gs-font 10 10 SF
+24 344 M (61:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 344 M
+(  #error ) s
+/Courier-Bold 10 10 SUF
+102 344 M
+("Correcteur non d\303\251fini \342\\200\\224 d\303\251commenter une ligne CORRECTEUR ci-dessus") s
+/F-gs-font 10 10 SF
+24 333 M (62:) s
+48 333 M
+(#) s
+/Courier-Bold 10 10 SUF
+54 333 M
+(endif) s
+/F-gs-font 10 10 SF
+24 322 M (63:) s
+24 311 M (64:) s
+/Courier-Oblique 10 10 SUF
+48 311 M
+(// Identification moteur) s
+/F-gs-font 10 10 SF
+24 300 M (65:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 300 M
+(const) s
+/F-gs-font 10 10 SF
+78 300 M
+( ) s
+/Courier-Bold 10 10 SUF
+84 300 M
+(float) s
+/F-gs-font 10 10 SF
+114 300 M
+( K_MOTEUR        = 1.40f;   ) s
+/Courier-Oblique 10 10 SUF
+282 300 M
+(// gain statique du moteur) s
+/F-gs-font 10 10 SF
+24 289 M (66:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 289 M
+(const) s
+/F-gs-font 10 10 SF
+78 289 M
+( ) s
+/Courier-Bold 10 10 SUF
+84 289 M
+(float) s
+/F-gs-font 10 10 SF
+114 289 M
+( SEUIL_DEMARRAGE = 0.30f;   ) s
+/Courier-Oblique 10 10 SUF
+282 289 M
+(// commande minimale normalis\303\251e pour d\303\251marrer ) s
+/F-gs-font 10 10 SF
+24 278 M (67:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+24 267 M (68:) s
+/Courier-Oblique 10 10 SUF
+48 267 M
+(// D\303\251claration de la variable du feedforward) s
+/F-gs-font 10 10 SF
+24 256 M (69:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Oblique 10 10 SUF
+48 256 M
+(// Calcul de cette derni\303\250re dans setup\(\)) s
+/F-gs-font 10 10 SF
+24 245 M (70:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 245 M
+(float) s
+/F-gs-font 10 10 SF
+78 245 M
+( FEEDFORWARD_PWM = 0.0f;) s
+24 234 M (71:) s
+24 223 M (72:) s
+/Courier-Oblique 10 10 SUF
+48 223 M
+(// Gain de freinage pour le mode distance) s
+/F-gs-font 10 10 SF
+24 212 M (73:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 212 M
+(const) s
+/F-gs-font 10 10 SF
+78 212 M
+( ) s
+/Courier-Bold 10 10 SUF
+84 212 M
+(float) s
+/F-gs-font 10 10 SF
+114 212 M
+( KP_BRAKE_PWM = 600.0f;    ) s
+/Courier-Oblique 10 10 SUF
+276 212 M
+(// en PWM/m) s
+/F-gs-font 10 10 SF
+24 201 M (74:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+24 190 M (75:) s
+/Courier-Oblique 10 10 SUF
+48 190 M
+(// Pins Arduino) s
+/F-gs-font 10 10 SF
+24 179 M (76:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 179 M
+(#) s
+/Courier-Bold 10 10 SUF
+54 179 M
+(define) s
+/F-gs-font 10 10 SF
+90 179 M
+( ) s
+/Courier-Bold 10 10 SUF
+96 179 M
+(TRIG_PIN) s
+/F-gs-font 10 10 SF
+144 179 M
+(    7    // pin TRIG du capteur \303\240 ultrason) s
+24 168 M (77:) s
+48 168 M
+(#) s
+/Courier-Bold 10 10 SUF
+54 168 M
+(define) s
+/F-gs-font 10 10 SF
+90 168 M
+( ) s
+/Courier-Bold 10 10 SUF
+96 168 M
+(ECHO_PIN) s
+/F-gs-font 10 10 SF
+144 168 M
+(    6    // pin ECHO du capteur \303\240 ultrason) s
+24 157 M (78:) s
+48 157 M
+(#) s
+/Courier-Bold 10 10 SUF
+54 157 M
+(define) s
+/F-gs-font 10 10 SF
+90 157 M
+( ) s
+/Courier-Bold 10 10 SUF
+96 157 M
+(HALL_PIN) s
+/F-gs-font 10 10 SF
+144 157 M
+(    2    // pin SIG du capteur \303\240 effet Hall) s
+24 146 M (79:) s
+48 146 M
+(#) s
+/Courier-Bold 10 10 SUF
+54 146 M
+(define) s
+/F-gs-font 10 10 SF
+90 146 M
+( ) s
+/Courier-Bold 10 10 SUF
+96 146 M
+(ENB_PIN) s
+/F-gs-font 10 10 SF
+138 146 M
+(     9    // pin ENB du pont en H) s
+24 135 M (80:) s
+48 135 M
+(#) s
+/Courier-Bold 10 10 SUF
+54 135 M
+(define) s
+/F-gs-font 10 10 SF
+90 135 M
+( ) s
+/Courier-Bold 10 10 SUF
+96 135 M
+(IN3_PIN) s
+/F-gs-font 10 10 SF
+138 135 M
+(     A0   // pin IN3 du pont en H) s
+24 124 M (81:) s
+48 124 M
+(#) s
+/Courier-Bold 10 10 SUF
+54 124 M
+(define) s
+/F-gs-font 10 10 SF
+90 124 M
+( ) s
+/Courier-Bold 10 10 SUF
+96 124 M
+(IN4_PIN) s
+/F-gs-font 10 10 SF
+138 124 M
+(     5    // pin IN4 du pont en H) s
+24 113 M (82:) s
+48 113 M
+(#) s
+/Courier-Bold 10 10 SUF
+54 113 M
+(define) s
+/F-gs-font 10 10 SF
+90 113 M
+( ) s
+/Courier-Bold 10 10 SUF
+96 113 M
+(SD_CS_PIN) s
+/F-gs-font 10 10 SF
+150 113 M
+(   4    // pin SD_CS de la carte microSD) s
+24 102 M (83:) s
+48 102 M
+(#) s
+/Courier-Bold 10 10 SUF
+54 102 M
+(define) s
+/F-gs-font 10 10 SF
+90 102 M
+( ) s
+/Courier-Bold 10 10 SUF
+96 102 M
+(BUTTON_PIN) s
+/F-gs-font 10 10 SF
+156 102 M
+(  8    // bouton d\303\251marrage programme) s
+24 91 M (84:) s
+24 80 M (85:) s
+/Courier-Oblique 10 10 SUF
+48 80 M
+(// Roue) s
+/F-gs-font 10 10 SF
+24 69 M (86:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 69 M
+(const) s
+/F-gs-font 10 10 SF
+78 69 M
+( ) s
+/Courier-Bold 10 10 SUF
+84 69 M
+(int) s
+/F-gs-font 10 10 SF
+102 69 M
+( DIAMETRE_MM  = 83; ) s
+/Courier-Oblique 10 10 SUF
+222 69 M
+(// diam\303\250tre de la roue \(mm\)) s
+/F-gs-font 10 10 SF
+24 58 M (87:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 58 M
+(const) s
+/F-gs-font 10 10 SF
+78 58 M
+( ) s
+/Courier-Bold 10 10 SUF
+84 58 M
+(float) s
+/F-gs-font 10 10 SF
+114 58 M
+( PERIMETRE_M  = 3.14159f * \() s
+/Courier-Bold 10 10 SUF
+282 58 M
+(float) s
+/F-gs-font 10 10 SF
+312 58 M
+(\)DIAMETRE_MM / 1000.0f;  ) s
+/Courier-Oblique 10 10 SUF
+462 58 M
+(// P\303\251rim\303\250tre de la roue \(m\)) s
+/F-gs-font 10 10 SF
+24 47 M (88:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 47 M
+(const) s
+/F-gs-font 10 10 SF
+78 47 M
+( uint8_t NB_AIMANTS   = 3; ) s
+/Courier-Oblique 10 10 SUF
+240 47 M
+(// nombre d'aimants) s
+/F-gs-font 10 10 SF
+24 36 M (89:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+24 25 M (90:) s
+/Courier-Oblique 10 10 SUF
+48 25 M
+(// Constantes de consigne) s
+/F-gs-font 10 10 SF
+24 14 M (91:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 14 M
+(const) s
+/F-gs-font 10 10 SF
+78 14 M
+( ) s
+/Courier-Bold 10 10 SUF
+84 14 M
+(float) s
+/F-gs-font 10 10 SF
+114 14 M
+( DIST_CONSIGNE_M  = 0.30f; ) s
+/Courier-Oblique 10 10 SUF
+276 14 M
+(// distance de consigne \(m\)) s
+/F-gs-font 10 10 SF
+24 3 M (92:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 3 M
+(const) s
+/F-gs-font 10 10 SF
+78 3 M
+( ) s
+/Courier-Bold 10 10 SUF
+84 3 M
+(float) s
+/F-gs-font 10 10 SF
+114 3 M
+( VITESSE_CIBLE_MS = 0.70f; ) s
+/Courier-Oblique 10 10 SUF
+276 3 M
+(// vitesse de consigne \(m/s\)) s
+_R
+S
+%%Page: (3) 3
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 3 def
+/fname (AAC_TIPE_v19.ino) def
+/fdir (.) def
+/ftail (AAC_TIPE_v19.ino) def
+/Courier-Oblique 10 10 SUF
+% User defined strings:
+/pagenumstr (3) def
+/moddatestr (06/09/26) def
+/modtimestr (12:26:37) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+/F-gs-font 10 10 SF
+24 498 M (93:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+24 487 M (94:) s
+/Courier-Oblique 10 10 SUF
+48 487 M
+(// Constantes de s\303\251curit\303\251) s
+/F-gs-font 10 10 SF
+24 476 M (95:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 476 M
+(const) s
+/F-gs-font 10 10 SF
+78 476 M
+( ) s
+/Courier-Bold 10 10 SUF
+84 476 M
+(float) s
+/F-gs-font 10 10 SF
+114 476 M
+( DIST_URGENCE_M      = 0.06f; ) s
+/Courier-Oblique 10 10 SUF
+294 476 M
+(// distance freinage d'urgence) s
+/F-gs-font 10 10 SF
+24 465 M (96:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 465 M
+(const) s
+/F-gs-font 10 10 SF
+78 465 M
+( ) s
+/Courier-Bold 10 10 SUF
+84 465 M
+(float) s
+/F-gs-font 10 10 SF
+114 465 M
+( DIST_MAX_OBSTACLE_M = 1.20f; ) s
+/Courier-Oblique 10 10 SUF
+294 465 M
+(// distance max \303\240 laquelle un objet est d\303\251tect\303\251) s
+/F-gs-font 10 10 SF
+24 454 M (97:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+24 443 M (98:) s
+/Courier-Oblique 10 10 SUF
+48 443 M
+(// Limite de l'int\303\251grale) s
+/F-gs-font 10 10 SF
+24 432 M (99:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 432 M
+(const) s
+/F-gs-font 10 10 SF
+78 432 M
+( ) s
+/Courier-Bold 10 10 SUF
+84 432 M
+(float) s
+/F-gs-font 10 10 SF
+114 432 M
+( INTEGRALE_MAX = 100.0f; ) s
+/Courier-Oblique 10 10 SUF
+264 432 M
+(// valeur maximale de l'int\303\251gral \(en PWM\)) s
+/F-gs-font 10 10 SF
+18 421 M (100:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 410 M (101:) s
+/Courier-Oblique 10 10 SUF
+48 410 M
+(// Constantes temporelles) s
+/F-gs-font 10 10 SF
+18 399 M (102:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 399 M
+(const) s
+/F-gs-font 10 10 SF
+78 399 M
+( uint16_t CONTROL_PERIOD_MS = 50; ) s
+/Courier-Oblique 10 10 SUF
+282 399 M
+(// p\303\251riode de la boucle de contr\303\264le) s
+/F-gs-font 10 10 SF
+18 388 M (103:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 388 M
+(const) s
+/F-gs-font 10 10 SF
+78 388 M
+( uint16_t LOG_PERIOD_MS     = 100; ) s
+/Courier-Oblique 10 10 SUF
+288 388 M
+(// p\303\251riode d'\303\251criture sur la carte SD) s
+/F-gs-font 10 10 SF
+18 377 M (104:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 377 M
+(const) s
+/F-gs-font 10 10 SF
+78 377 M
+( uint16_t DEBOUNCE_MS       = 30; ) s
+/Courier-Oblique 10 10 SUF
+282 377 M
+(// dur\303\251e de l'anti-rebond du bouton) s
+/F-gs-font 10 10 SF
+18 366 M (105:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 366 M
+(const) s
+/F-gs-font 10 10 SF
+78 366 M
+( uint32_t ECHO_TIMEOUT_US   = 12000UL; ) s
+/Courier-Oblique 10 10 SUF
+312 366 M
+(// timeout capteur \303\240 ultrason) s
+/F-gs-font 10 10 SF
+18 355 M (106:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 355 M
+(const) s
+/F-gs-font 10 10 SF
+78 355 M
+( uint32_t HALL_TIMEOUT_US   = 400000UL; ) s
+/Courier-Oblique 10 10 SUF
+318 355 M
+(// timeout capteur \303\240 effet Hall) s
+/F-gs-font 10 10 SF
+18 344 M (107:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 333 M (108:) s
+/Courier-Oblique 10 10 SUF
+48 333 M
+(// Constantes pour le kick start) s
+/F-gs-font 10 10 SF
+18 322 M (109:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 322 M
+(const) s
+/F-gs-font 10 10 SF
+78 322 M
+( uint8_t  KICK_PWM_C = KICK_PWM_VAL; ) s
+/Courier-Oblique 10 10 SUF
+300 322 M
+(// puissance du kick ) s
+/F-gs-font 10 10 SF
+18 311 M (110:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 311 M
+(const) s
+/F-gs-font 10 10 SF
+78 311 M
+( uint16_t KICK_DUREE_MS_C = KICK_DUREE_MS_VAL; ) s
+/Courier-Oblique 10 10 SUF
+360 311 M
+(// dur\303\251e du kick \(ms\)) s
+/F-gs-font 10 10 SF
+18 300 M (111:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 300 M
+(const) s
+/F-gs-font 10 10 SF
+78 300 M
+( ) s
+/Courier-Bold 10 10 SUF
+84 300 M
+(float) s
+/F-gs-font 10 10 SF
+114 300 M
+( VITESSE_QUASI_NULLE_MS = 0.05f; ) s
+/Courier-Oblique 10 10 SUF
+312 300 M
+(// en dessous de cette vitesse, on consid\303\250re la roue arr\303\252t\303\251e) s
+/F-gs-font 10 10 SF
+18 289 M (112:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 289 M
+(const) s
+/F-gs-font 10 10 SF
+78 289 M
+( ) s
+/Courier-Bold 10 10 SUF
+84 289 M
+(float) s
+/F-gs-font 10 10 SF
+114 289 M
+( COMMANDE_MIN_DEMARRAGE = 3.0f; ) s
+/Courier-Oblique 10 10 SUF
+306 289 M
+(// commande minimale pour d\303\251clencher un kick \(PWM\)) s
+/F-gs-font 10 10 SF
+18 278 M (113:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 267 M (114:) s
+/Courier-Oblique 10 10 SUF
+48 267 M
+(// Zone morte) s
+/F-gs-font 10 10 SF
+18 256 M (115:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 256 M
+(const) s
+/F-gs-font 10 10 SF
+78 256 M
+( ) s
+/Courier-Bold 10 10 SUF
+84 256 M
+(float) s
+/F-gs-font 10 10 SF
+114 256 M
+( PWM_ZONE_MORTE = 76.0f;) s
+18 245 M (116:) s
+18 234 M (117:) s
+/Courier-Oblique 10 10 SUF
+48 234 M
+(// Rampe de commande \(lissage asym\303\251trique\)) s
+/F-gs-font 10 10 SF
+18 223 M (118:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 223 M
+(const) s
+/F-gs-font 10 10 SF
+78 223 M
+( ) s
+/Courier-Bold 10 10 SUF
+84 223 M
+(float) s
+/F-gs-font 10 10 SF
+114 223 M
+( RAMPE_MONTEE_PAR_S = 350.0f;   ) s
+/Courier-Oblique 10 10 SUF
+306 223 M
+(// PWM/s acc\303\251l\303\251ration) s
+/F-gs-font 10 10 SF
+18 212 M (119:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 212 M
+(const) s
+/F-gs-font 10 10 SF
+78 212 M
+( ) s
+/Courier-Bold 10 10 SUF
+84 212 M
+(float) s
+/F-gs-font 10 10 SF
+114 212 M
+( RAMPE_DESCENTE_PAR_S = 700.0f;   ) s
+/Courier-Oblique 10 10 SUF
+318 212 M
+(// PWM/s d\303\251c\303\251l\303\251ration) s
+/F-gs-font 10 10 SF
+18 201 M (120:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 190 M (121:) s
+/Courier-Oblique 10 10 SUF
+48 190 M
+(// Biblioth\303\250ques) s
+/F-gs-font 10 10 SF
+18 179 M (122:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 179 M
+(#) s
+/Courier-Bold 10 10 SUF
+54 179 M
+(include) s
+/F-gs-font 10 10 SF
+96 179 M
+( ) s
+/Courier-Bold 10 10 SUF
+102 179 M
+(<SPI.h>) s
+/F-gs-font 10 10 SF
+144 179 M
+(   // protocole SPI n\303\251cessaire pour la carte SD) s
+18 168 M (123:) s
+48 168 M
+(#) s
+/Courier-Bold 10 10 SUF
+54 168 M
+(include) s
+/F-gs-font 10 10 SF
+96 168 M
+( ) s
+/Courier-Bold 10 10 SUF
+102 168 M
+(<SD.h>) s
+/F-gs-font 10 10 SF
+138 168 M
+(    // permet de lire/\303\251crire sur la carte SD) s
+18 157 M (124:) s
+18 146 M (125:) s
+/Courier-Oblique 10 10 SUF
+48 146 M
+(// Variables volatiles \(pour \303\251viter que le programme les mettent en cache car elle sont constamment modifi\303\251es\)) s
+/F-gs-font 10 10 SF
+18 135 M (126:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 135 M
+(volatile) s
+/F-gs-font 10 10 SF
+96 135 M
+( uint32_t hallPulseCount = 0; ) s
+/Courier-Oblique 10 10 SUF
+276 135 M
+(// nombre d'impulsions Hall re\303\247ues) s
+/F-gs-font 10 10 SF
+18 124 M (127:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 124 M
+(volatile) s
+/F-gs-font 10 10 SF
+96 124 M
+( uint32_t hallLastPulseTime_us = 0; ) s
+/Courier-Oblique 10 10 SUF
+312 124 M
+(// timestamp \(microseconde\) de la derni\303\250re impulsion Hall) s
+/F-gs-font 10 10 SF
+18 113 M (128:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 113 M
+(volatile) s
+/F-gs-font 10 10 SF
+96 113 M
+( uint32_t hallPeriode_us = 0; ) s
+/Courier-Oblique 10 10 SUF
+276 113 M
+(// dur\303\251e \(microseconde\) entre les deux derni\303\250res impulsions) s
+/F-gs-font 10 10 SF
+18 102 M (129:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 102 M
+(volatile) s
+/F-gs-font 10 10 SF
+96 102 M
+( ) s
+/Courier-Bold 10 10 SUF
+102 102 M
+(bool) s
+/F-gs-font 10 10 SF
+126 102 M
+( hallNouvelleImpulsion = false; ) s
+/Courier-Oblique 10 10 SUF
+318 102 M
+(// nouvelle impulsion ou non) s
+/F-gs-font 10 10 SF
+18 91 M (130:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 80 M (131:) s
+/Courier-Oblique 10 10 SUF
+48 80 M
+(// Variables de mesures) s
+/F-gs-font 10 10 SF
+18 69 M (132:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 69 M
+(uint32_t lastHallCount = 0; ) s
+/Courier-Oblique 10 10 SUF
+216 69 M
+(// valeur de hallPulseCount au dernier cycle \(m\303\251thode fr\303\251quencem\303\251trique\)) s
+/F-gs-font 10 10 SF
+18 58 M (133:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 58 M
+(float) s
+/F-gs-font 10 10 SF
+78 58 M
+( vitesse_ms = 0.0f; ) s
+/Courier-Oblique 10 10 SUF
+198 58 M
+(// vitesse mesur\303\251e par m\303\251thode fr\303\251quencem\303\251trique \(m/s\)) s
+/F-gs-font 10 10 SF
+18 47 M (134:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 47 M
+(float) s
+/F-gs-font 10 10 SF
+78 47 M
+( vitesse_periode_ms = 0.0f; ) s
+/Courier-Oblique 10 10 SUF
+246 47 M
+(// vitesse mesur\303\251e par m\303\251thode p\303\251riode \(m/s\)) s
+/F-gs-font 10 10 SF
+18 36 M (135:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 25 M (136:) s
+/Courier-Oblique 10 10 SUF
+48 25 M
+(// Variables correcteur) s
+/F-gs-font 10 10 SF
+18 14 M (137:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 14 M
+(float) s
+/F-gs-font 10 10 SF
+78 14 M
+( integrale = 0.0f;   ) s
+/Courier-Oblique 10 10 SUF
+204 14 M
+(// accumulateur de l'int\303\251grale \(terme I du PI et PID\)) s
+/F-gs-font 10 10 SF
+18 3 M (138:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+_R
+S
+%%Page: (4) 4
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 4 def
+/fname (AAC_TIPE_v19.ino) def
+/fdir (.) def
+/ftail (AAC_TIPE_v19.ino) def
+% User defined strings:
+/pagenumstr (4) def
+/moddatestr (06/09/26) def
+/modtimestr (12:26:37) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+18 498 M (139:) s
+/Courier-Oblique 10 10 SUF
+48 498 M
+(// D\303\251riv\303\251e calcul\303\251e sur la mesure de vitesse) s
+/F-gs-font 10 10 SF
+18 487 M (140:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 487 M
+(float) s
+/F-gs-font 10 10 SF
+78 487 M
+( vitessePeriodePrecedente = 0.0f;  ) s
+/Courier-Oblique 10 10 SUF
+288 487 M
+(// vitesse_periode_ms du cycle pr\303\251c\303\251dent) s
+/F-gs-font 10 10 SF
+18 476 M (141:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 476 M
+(bool) s
+/F-gs-font 10 10 SF
+72 476 M
+( deriveeInitialisee = false; ) s
+/Courier-Oblique 10 10 SUF
+246 476 M
+(// faux au d\303\251marrage, le premier cycle n'a pas de "pr\303\251c\303\251dent") s
+/F-gs-font 10 10 SF
+18 465 M (142:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 454 M (143:) s
+/Courier-Oblique 10 10 SUF
+48 454 M
+(// Variables temporelles) s
+/F-gs-font 10 10 SF
+18 443 M (144:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 443 M
+(uint32_t lastControlTime = 0; ) s
+/Courier-Oblique 10 10 SUF
+228 443 M
+(// timestamp du dernier contr\303\264le \(ms\)) s
+/F-gs-font 10 10 SF
+18 432 M (145:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 432 M
+(uint32_t lastLogTime = 0; ) s
+/Courier-Oblique 10 10 SUF
+204 432 M
+(// timestamp du dernier log SD \(ms\)) s
+/F-gs-font 10 10 SF
+18 421 M (146:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 421 M
+(float) s
+/F-gs-font 10 10 SF
+78 421 M
+( derniereCommande = 0.0f; ) s
+/Courier-Oblique 10 10 SUF
+234 421 M
+(// PWM envoy\303\251e au moteur au dernier cycle) s
+/F-gs-font 10 10 SF
+18 410 M (147:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 399 M (148:) s
+/Courier-Oblique 10 10 SUF
+48 399 M
+(// Variables kick start) s
+/F-gs-font 10 10 SF
+18 388 M (149:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 388 M
+(bool) s
+/F-gs-font 10 10 SF
+72 388 M
+( kickActif = false; ) s
+/Courier-Oblique 10 10 SUF
+192 388 M
+(// kick actif ou non) s
+/F-gs-font 10 10 SF
+18 377 M (150:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 377 M
+(uint32_t kickDebutMs = 0; ) s
+/Courier-Oblique 10 10 SUF
+204 377 M
+(// timestamp \(ms\) du d\303\251but du kick en cours) s
+/F-gs-font 10 10 SF
+18 366 M (151:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 366 M
+(float) s
+/F-gs-font 10 10 SF
+78 366 M
+( commandeLisseePWM = 0.0f; ) s
+/Courier-Oblique 10 10 SUF
+240 366 M
+(// commande liss\303\251e par la rampe) s
+/F-gs-font 10 10 SF
+18 355 M (152:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 344 M (153:) s
+/Courier-Oblique 10 10 SUF
+48 344 M
+(// Variables carte SD) s
+/F-gs-font 10 10 SF
+18 333 M (154:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 333 M
+(File logFile; ) s
+/Courier-Oblique 10 10 SUF
+132 333 M
+(// objet fichier ouvert sur la carte SD) s
+/F-gs-font 10 10 SF
+18 322 M (155:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 322 M
+(bool) s
+/F-gs-font 10 10 SF
+72 322 M
+( sdOk = false; ) s
+/Courier-Oblique 10 10 SUF
+162 322 M
+(// carte SD initialis\303\251e et fichier ouvert ou non) s
+/F-gs-font 10 10 SF
+18 311 M (156:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 311 M
+(char) s
+/F-gs-font 10 10 SF
+72 311 M
+( logFilename[13] = {0}; ) s
+/Courier-Oblique 10 10 SUF
+216 311 M
+(// nom du fichier CSV) s
+/F-gs-font 10 10 SF
+18 300 M (157:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 300 M
+(uint16_t logLinesSinceFlush = 0; ) s
+/Courier-Oblique 10 10 SUF
+246 300 M
+(// compteur de lignes depuis le dernier flush\(\) forc\303\251) s
+/F-gs-font 10 10 SF
+18 289 M (158:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 289 M
+(const) s
+/F-gs-font 10 10 SF
+78 289 M
+( uint8_t LOG_FLUSH_EVERY_N_LINES = 10; ) s
+/Courier-Oblique 10 10 SUF
+312 289 M
+(// on force un flush tous les 10 lignes pour ne pas perdre trop de donn\303\251es en ) s
+5 278 M
+(cas de coupure) s
+/F-gs-font 10 10 SF
+18 267 M (159:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 256 M (160:) s
+/Courier-Oblique 10 10 SUF
+48 256 M
+(// Variables bouton) s
+/F-gs-font 10 10 SF
+18 245 M (161:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 245 M
+(bool) s
+/F-gs-font 10 10 SF
+72 245 M
+( programmeActif = false; ) s
+/Courier-Oblique 10 10 SUF
+222 245 M
+(// r\303\251gulateur actif ou non) s
+/F-gs-font 10 10 SF
+18 234 M (162:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 234 M
+(const) s
+/F-gs-font 10 10 SF
+78 234 M
+( uint8_t BUTTON_ACTIVE_LEVEL = LOW; ) s
+/Courier-Oblique 10 10 SUF
+294 234 M
+(// \303\251tat du pin quand le bouton est pr\303\251ss\303\251) s
+/F-gs-font 10 10 SF
+18 223 M (163:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 223 M
+(int) s
+/F-gs-font 10 10 SF
+66 223 M
+( buttonLastRawState = HIGH; ) s
+/Courier-Oblique 10 10 SUF
+234 223 M
+(// \303\251tat lu au cycle pr\303\251c\303\251dent) s
+/F-gs-font 10 10 SF
+18 212 M (164:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 212 M
+(int) s
+/F-gs-font 10 10 SF
+66 212 M
+( buttonStableState = HIGH; ) s
+/Courier-Oblique 10 10 SUF
+228 212 M
+(// \303\251tat stable apr\303\250s anti-rebond) s
+/F-gs-font 10 10 SF
+18 201 M (165:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 201 M
+(uint32_t lastButtonChangeTime = 0; ) s
+/Courier-Oblique 10 10 SUF
+258 201 M
+(// timestamp \(ms\) du dernier changement d'\303\251tat brut) s
+/F-gs-font 10 10 SF
+18 190 M (166:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 179 M (167:) s
+/Courier-Oblique 10 10 SUF
+48 179 M
+(// D\303\251clarations anticip\303\251es des fonctions) s
+/F-gs-font 10 10 SF
+18 168 M (168:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 168 M
+(void) s
+/F-gs-font 10 10 SF
+72 168 M
+(  ) s
+/Courier-Bold 10 10 SUF
+84 168 M
+(appliquerCommande) s
+/F-gs-font 10 10 SF
+186 168 M
+(\() s
+/Courier-Bold 10 10 SUF
+192 168 M
+(float) s
+/F-gs-font 10 10 SF
+222 168 M
+( cmd\);) s
+18 157 M (169:) s
+/Courier-Bold 10 10 SUF
+48 157 M
+(void) s
+/F-gs-font 10 10 SF
+72 157 M
+(  ) s
+/Courier-Bold 10 10 SUF
+84 157 M
+(ecrireLog) s
+/F-gs-font 10 10 SF
+138 157 M
+(\() s
+/Courier-Bold 10 10 SUF
+144 157 M
+(float) s
+/F-gs-font 10 10 SF
+174 157 M
+( t_s, ) s
+/Courier-Bold 10 10 SUF
+210 157 M
+(float) s
+/F-gs-font 10 10 SF
+240 157 M
+( dist_m, ) s
+/Courier-Bold 10 10 SUF
+294 157 M
+(float) s
+/F-gs-font 10 10 SF
+324 157 M
+( erreur_m, uint8_t modeActuel\);) s
+18 146 M (170:) s
+/Courier-Bold 10 10 SUF
+48 146 M
+(void) s
+/F-gs-font 10 10 SF
+72 146 M
+(  ) s
+/Courier-Bold 10 10 SUF
+84 146 M
+(initSD) s
+/F-gs-font 10 10 SF
+120 146 M
+(\(\);) s
+18 135 M (171:) s
+/Courier-Bold 10 10 SUF
+48 135 M
+(void) s
+/F-gs-font 10 10 SF
+72 135 M
+(  ) s
+/Courier-Bold 10 10 SUF
+84 135 M
+(fermerLogSD) s
+/F-gs-font 10 10 SF
+150 135 M
+(\(\);) s
+18 124 M (172:) s
+/Courier-Bold 10 10 SUF
+48 124 M
+(float) s
+/F-gs-font 10 10 SF
+78 124 M
+( ) s
+/Courier-Bold 10 10 SUF
+84 124 M
+(calculerCommandeMoteur) s
+/F-gs-font 10 10 SF
+216 124 M
+(\() s
+/Courier-Bold 10 10 SUF
+222 124 M
+(float) s
+/F-gs-font 10 10 SF
+252 124 M
+( cmdCorrecteur, ) s
+/Courier-Bold 10 10 SUF
+348 124 M
+(float) s
+/F-gs-font 10 10 SF
+378 124 M
+( dt_s, ) s
+/Courier-Bold 10 10 SUF
+420 124 M
+(bool) s
+/F-gs-font 10 10 SF
+444 124 M
+( urgence, ) s
+/Courier-Bold 10 10 SUF
+504 124 M
+(bool) s
+/F-gs-font 10 10 SF
+528 124 M
+( interdireKick, uint32_t now\);) s
+18 113 M (173:) s
+/Courier-Bold 10 10 SUF
+48 113 M
+(float) s
+/F-gs-font 10 10 SF
+78 113 M
+( ) s
+/Courier-Bold 10 10 SUF
+84 113 M
+(calculerCorrecteur) s
+/F-gs-font 10 10 SF
+192 113 M
+(\() s
+/Courier-Bold 10 10 SUF
+198 113 M
+(float) s
+/F-gs-font 10 10 SF
+228 113 M
+( erreur, ) s
+/Courier-Bold 10 10 SUF
+282 113 M
+(float) s
+/F-gs-font 10 10 SF
+312 113 M
+( dt_s, ) s
+/Courier-Bold 10 10 SUF
+354 113 M
+(bool) s
+/F-gs-font 10 10 SF
+378 113 M
+( reinitDerivee\);) s
+18 102 M (174:) s
+18 91 M (175:) s
+/Courier-Oblique 10 10 SUF
+48 91 M
+(// Appel\303\251e \303\240 chaque passage d'aimant devant le cpateur \303\240 effet Hall) s
+/F-gs-font 10 10 SF
+18 80 M (176:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+/Courier-Bold 10 10 SUF
+48 80 M
+(void) s
+/F-gs-font 10 10 SF
+72 80 M
+( ) s
+/Courier-Bold 10 10 SUF
+78 80 M
+(hallISR) s
+/F-gs-font 10 10 SF
+120 80 M
+(\(\) {) s
+18 69 M (177:) s
+48 69 M
+(  uint32_t t_us = micros\(\); ) s
+/Courier-Oblique 10 10 SUF
+216 69 M
+(// timestamp en microseconde au passage de l'aimant) s
+/F-gs-font 10 10 SF
+18 58 M (178:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 47 M (179:) s
+48 47 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 47 M
+(// Anti-rebond) s
+/F-gs-font 10 10 SF
+18 36 M (180:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 36 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 36 M
+(if) s
+/F-gs-font 10 10 SF
+72 36 M
+( \(hallLastPulseTime_us != 0 && \(t_us - hallLastPulseTime_us < 20000UL\)\) ) s
+/Courier-Bold 10 10 SUF
+504 36 M
+(return) s
+/F-gs-font 10 10 SF
+540 36 M
+(;) s
+18 25 M (181:) s
+18 14 M (182:) s
+48 14 M
+(  hallPulseCount++; ) s
+/Courier-Oblique 10 10 SUF
+168 14 M
+(// incr\303\251menter le compteur total d'impulsions \(m\303\251thode fr\303\251quencem\303\251trique\)) s
+/F-gs-font 10 10 SF
+18 3 M (183:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+_R
+S
+%%Page: (5) 5
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 5 def
+/fname (AAC_TIPE_v19.ino) def
+/fdir (.) def
+/ftail (AAC_TIPE_v19.ino) def
+% User defined strings:
+/pagenumstr (5) def
+/moddatestr (06/09/26) def
+/modtimestr (12:26:37) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+18 498 M (184:) s
+48 498 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 498 M
+(if) s
+/F-gs-font 10 10 SF
+72 498 M
+( \(hallLastPulseTime_us != 0\) { ) s
+/Courier-Oblique 10 10 SUF
+258 498 M
+(// si pas la toute premi\303\250re impulsion) s
+/F-gs-font 10 10 SF
+18 487 M (185:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 487 M
+(    hallPeriode_us = t_us - hallLastPulseTime_us; ) s
+/Courier-Oblique 10 10 SUF
+348 487 M
+(// dur\303\251e entre les deux derniers aimants) s
+/F-gs-font 10 10 SF
+18 476 M (186:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 476 M
+(    hallNouvelleImpulsion = true; ) s
+/Courier-Oblique 10 10 SUF
+252 476 M
+(// signalement nouvelle mesure dispo) s
+/F-gs-font 10 10 SF
+18 465 M (187:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 465 M
+(  }) s
+18 454 M (188:) s
+18 443 M (189:) s
+48 443 M
+(  hallLastPulseTime_us = t_us; ) s
+/Courier-Oblique 10 10 SUF
+234 443 M
+(// m\303\251moriser l'heure de cette impulsion pour le prochain calcul de p\303\251riode) s
+/F-gs-font 10 10 SF
+18 432 M (190:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 432 M
+(}) s
+18 421 M (191:) s
+18 410 M (192:) s
+/Courier-Oblique 10 10 SUF
+48 410 M
+(/* ===========================================================) s
+/F-gs-font 10 10 SF
+18 399 M (193:) s
+/Courier-Oblique 10 10 SUF
+48 399 M
+( * gererBoutonStartStop\(\) \342\\200\\224 ANTI-REBOND ET LOGIQUE DU BOUTON) s
+/F-gs-font 10 10 SF
+18 388 M (194:) s
+/Courier-Oblique 10 10 SUF
+48 388 M
+( * =========================================================== */) s
+/F-gs-font 10 10 SF
+18 377 M (195:) s
+/Courier-Bold 10 10 SUF
+48 377 M
+(void) s
+/F-gs-font 10 10 SF
+72 377 M
+( ) s
+/Courier-Bold 10 10 SUF
+78 377 M
+(gererBoutonStartStop) s
+/F-gs-font 10 10 SF
+198 377 M
+(\(uint32_t now\) {) s
+18 366 M (196:) s
+48 366 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 366 M
+(int) s
+/F-gs-font 10 10 SF
+78 366 M
+( rawState = digitalRead\(BUTTON_PIN\);   ) s
+/Courier-Oblique 10 10 SUF
+312 366 M
+(// lire l'\303\251tat brut du bouton \(HIGH ou LOW\)) s
+/F-gs-font 10 10 SF
+18 355 M (197:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 344 M (198:) s
+48 344 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 344 M
+(if) s
+/F-gs-font 10 10 SF
+72 344 M
+( \(rawState != buttonLastRawState\) {     ) s
+/Courier-Oblique 10 10 SUF
+312 344 M
+(// si l'\303\251tat a chang\303\251 par rapport au cycle pr\303\251c\303\251dent) s
+/F-gs-font 10 10 SF
+18 333 M (199:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 333 M
+(    buttonLastRawState   = rawState;        ) s
+/Courier-Oblique 10 10 SUF
+312 333 M
+(// m\303\251moriser le nouvel \303\251tat brut) s
+/F-gs-font 10 10 SF
+18 322 M (200:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 322 M
+(    lastButtonChangeTime = now;             ) s
+/Courier-Oblique 10 10 SUF
+312 322 M
+(// d\303\251marrer le chrono de l'anti-rebond) s
+/F-gs-font 10 10 SF
+18 311 M (201:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 311 M
+(  }) s
+18 300 M (202:) s
+18 289 M (203:) s
+48 289 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 289 M
+(// L'\303\251tat n'est accept\303\251 que si le signal est rest\303\251 stable pendant DEBOUNCE_MS \(30 ms\)) s
+/F-gs-font 10 10 SF
+18 278 M (204:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 278 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 278 M
+(if) s
+/F-gs-font 10 10 SF
+72 278 M
+( \(\(now - lastButtonChangeTime\) >= DEBOUNCE_MS && rawState != buttonStableState\) {) s
+18 267 M (205:) s
+48 267 M
+(    buttonStableState = rawState;                 ) s
+/Courier-Oblique 10 10 SUF
+348 267 M
+(// valider le nouvel \303\251tat stable) s
+/F-gs-font 10 10 SF
+18 256 M (206:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 245 M (207:) s
+48 245 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 245 M
+(if) s
+/F-gs-font 10 10 SF
+84 245 M
+( \(buttonStableState == BUTTON_ACTIVE_LEVEL\) {   ) s
+/Courier-Oblique 10 10 SUF
+372 245 M
+(// si le bouton vient d'\303\252tre press\303\251) s
+/F-gs-font 10 10 SF
+18 234 M (208:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 234 M
+(      programmeActif = !programmeActif;               ) s
+/Courier-Oblique 10 10 SUF
+372 234 M
+(// basculer l'\303\251tat du programme \(start\342\\206\\224stop\)) s
+/F-gs-font 10 10 SF
+18 223 M (209:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 212 M (210:) s
+48 212 M
+(      ) s
+/Courier-Bold 10 10 SUF
+84 212 M
+(if) s
+/F-gs-font 10 10 SF
+96 212 M
+( \(programmeActif\) {                  ) s
+/Courier-Oblique 10 10 SUF
+318 212 M
+(// si on vient de d\303\251marrer) s
+/F-gs-font 10 10 SF
+18 201 M (211:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 201 M
+(        Serial.println\(F\() s
+/Courier-Bold 10 10 SUF
+198 201 M
+("Bouton : START") s
+/F-gs-font 10 10 SF
+294 201 M
+(\)\);) s
+18 190 M (212:) s
+48 190 M
+(        ) s
+/Courier-Bold 10 10 SUF
+96 190 M
+(if) s
+/F-gs-font 10 10 SF
+108 190 M
+( \(!sdOk\) initSD\(\);                 ) s
+/Courier-Oblique 10 10 SUF
+318 190 M
+(// ouvrir un nouveau fichier CSV si la SD n'est pas encore pr\303\252te) s
+/F-gs-font 10 10 SF
+18 179 M (213:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 179 M
+(        lastControlTime = now;               ) s
+/Courier-Oblique 10 10 SUF
+318 179 M
+(// r\303\251initialiser le timer de contr\303\264le pour \303\251viter un grand dt au premier cy) s
+5 168 M
+(cle) s
+/F-gs-font 10 10 SF
+18 157 M (214:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 157 M
+(        lastLogTime     = now;               ) s
+/Courier-Oblique 10 10 SUF
+318 157 M
+(// r\303\251initialiser le timer de log) s
+/F-gs-font 10 10 SF
+18 146 M (215:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 146 M
+(      } ) s
+/Courier-Bold 10 10 SUF
+96 146 M
+(else) s
+/F-gs-font 10 10 SF
+120 146 M
+( {                               ) s
+/Courier-Oblique 10 10 SUF
+318 146 M
+(// si on vient de s'arr\303\252ter) s
+/F-gs-font 10 10 SF
+18 135 M (216:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 135 M
+(        Serial.println\(F\() s
+/Courier-Bold 10 10 SUF
+198 135 M
+("Bouton : STOP") s
+/F-gs-font 10 10 SF
+288 135 M
+(\)\);) s
+18 124 M (217:) s
+48 124 M
+(        arreterProgramme\(\);                  ) s
+/Courier-Oblique 10 10 SUF
+318 124 M
+(// couper le moteur et fermer le fichier SD proprement) s
+/F-gs-font 10 10 SF
+18 113 M (218:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 113 M
+(      }) s
+18 102 M (219:) s
+48 102 M
+(    }) s
+18 91 M (220:) s
+48 91 M
+(  }) s
+18 80 M (221:) s
+48 80 M
+(}) s
+18 69 M (222:) s
+18 58 M (223:) s
+/Courier-Oblique 10 10 SUF
+48 58 M
+(/* ===========================================================) s
+/F-gs-font 10 10 SF
+18 47 M (224:) s
+/Courier-Oblique 10 10 SUF
+48 47 M
+( * arreterProgramme\(\) \342\\200\\224 ARR\303\\212T PROPRE) s
+/F-gs-font 10 10 SF
+18 36 M (225:) s
+/Courier-Oblique 10 10 SUF
+48 36 M
+( * Remet toutes les variables d'\303\251tat \303\240 z\303\251ro et ferme le fichier.) s
+/F-gs-font 10 10 SF
+18 25 M (226:) s
+/Courier-Oblique 10 10 SUF
+48 25 M
+( * =========================================================== */) s
+/F-gs-font 10 10 SF
+18 14 M (227:) s
+/Courier-Bold 10 10 SUF
+48 14 M
+(void) s
+/F-gs-font 10 10 SF
+72 14 M
+( ) s
+/Courier-Bold 10 10 SUF
+78 14 M
+(arreterProgramme) s
+/F-gs-font 10 10 SF
+174 14 M
+(\(\) {) s
+18 3 M (228:) s
+48 3 M
+(  appliquerCommande\(0.0f\);            ) s
+/Courier-Oblique 10 10 SUF
+276 3 M
+(// envoyer PWM = 0 \342\\206\\222 moteur \303\240 l'arr\303\252t imm\303\251diat) s
+_R
+S
+%%Page: (6) 6
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 6 def
+/fname (AAC_TIPE_v19.ino) def
+/fdir (.) def
+/ftail (AAC_TIPE_v19.ino) def
+/Courier-Oblique 10 10 SUF
+% User defined strings:
+/pagenumstr (6) def
+/moddatestr (06/09/26) def
+/modtimestr (12:26:37) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+/F-gs-font 10 10 SF
+18 498 M (229:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 498 M
+(  derniereCommande         = 0.0f;   ) s
+/Courier-Oblique 10 10 SUF
+270 498 M
+(// effacer la derni\303\250re commande m\303\251moris\303\251e) s
+/F-gs-font 10 10 SF
+18 487 M (230:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 487 M
+(  integrale                = 0.0f;   ) s
+/Courier-Oblique 10 10 SUF
+270 487 M
+(// remettre l'accumulateur int\303\251gral \303\240 z\303\251ro) s
+/F-gs-font 10 10 SF
+18 476 M (231:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 476 M
+(  vitessePeriodePrecedente = 0.0f;   ) s
+/Courier-Oblique 10 10 SUF
+270 476 M
+(// effacer la vitesse pr\303\251c\303\251dente \(terme D\)) s
+/F-gs-font 10 10 SF
+18 465 M (232:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 465 M
+(  deriveeInitialisee       = false;  ) s
+/Courier-Oblique 10 10 SUF
+270 465 M
+(// indiquer que le terme D doit \303\252tre r\303\251initialis\303\251 au prochain d\303\251marrage) s
+/F-gs-font 10 10 SF
+18 454 M (233:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 454 M
+(  kickActif                = false;  ) s
+/Courier-Oblique 10 10 SUF
+270 454 M
+(// annuler tout kick en cours) s
+/F-gs-font 10 10 SF
+18 443 M (234:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 443 M
+(  kickDebutMs              = 0;      ) s
+/Courier-Oblique 10 10 SUF
+270 443 M
+(// effacer le timestamp du kick) s
+/F-gs-font 10 10 SF
+18 432 M (235:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 432 M
+(  commandeLisseePWM        = 0.0f;   ) s
+/Courier-Oblique 10 10 SUF
+270 432 M
+(// remettre la rampe \303\240 z\303\251ro) s
+/F-gs-font 10 10 SF
+18 421 M (236:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 421 M
+(  fermerLogSD\(\);                     ) s
+/Courier-Oblique 10 10 SUF
+270 421 M
+(// flush + fermeture propre du fichier CSV sur la SD) s
+/F-gs-font 10 10 SF
+18 410 M (237:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 399 M (238:) s
+48 399 M
+(  noInterrupts\(\);                          ) s
+/Courier-Oblique 10 10 SUF
+306 399 M
+(// d\303\251sactiver les interruptions pour lire les variables volatiles sans conflit) s
+/F-gs-font 10 10 SF
+18 388 M (239:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 388 M
+(  lastHallCount        = hallPulseCount;   ) s
+/Courier-Oblique 10 10 SUF
+306 388 M
+(// remettre le compteur fr\303\251quencem\303\251trique \303\240 niveau) s
+/F-gs-font 10 10 SF
+18 377 M (240:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 377 M
+(  hallLastPulseTime_us = 0;                ) s
+/Courier-Oblique 10 10 SUF
+306 377 M
+(// effacer le timestamp Hall \(force v=0 au prochain calculerVitessePeriode\)) s
+/F-gs-font 10 10 SF
+18 366 M (241:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 366 M
+(  hallPeriode_us       = 0;               ) s
+/Courier-Oblique 10 10 SUF
+300 366 M
+(// effacer la p\303\251riode Hall) s
+/F-gs-font 10 10 SF
+18 355 M (242:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 355 M
+(  hallNouvelleImpulsion = false;           ) s
+/Courier-Oblique 10 10 SUF
+306 355 M
+(// effacer le drapeau de nouvelle impulsion) s
+/F-gs-font 10 10 SF
+18 344 M (243:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 344 M
+(  interrupts\(\);                            ) s
+/Courier-Oblique 10 10 SUF
+306 344 M
+(// r\303\251activer les interruptions) s
+/F-gs-font 10 10 SF
+18 333 M (244:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 322 M (245:) s
+48 322 M
+(  vitesse_periode_ms = 0.0f;  ) s
+/Courier-Oblique 10 10 SUF
+228 322 M
+(// remettre la vitesse liss\303\251e \303\240 z\303\251ro) s
+/F-gs-font 10 10 SF
+18 311 M (246:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 311 M
+(}) s
+18 300 M (247:) s
+18 289 M (248:) s
+/Courier-Oblique 10 10 SUF
+48 289 M
+(/* ===========================================================) s
+/F-gs-font 10 10 SF
+18 278 M (249:) s
+/Courier-Oblique 10 10 SUF
+48 278 M
+( * lireDistance\(\) \342\\200\\224 MESURE PAR ULTRASON HC-SR04) s
+/F-gs-font 10 10 SF
+18 267 M (250:) s
+/Courier-Oblique 10 10 SUF
+48 267 M
+( * Envoie une impulsion et mesure le temps d'\303\251cho \342\\206\\222 distance.) s
+/F-gs-font 10 10 SF
+18 256 M (251:) s
+/Courier-Oblique 10 10 SUF
+48 256 M
+( * Retourne la distance en m\303\250tres, ou -1.0f si mesure invalide.) s
+/F-gs-font 10 10 SF
+18 245 M (252:) s
+/Courier-Oblique 10 10 SUF
+48 245 M
+( * =========================================================== */) s
+/F-gs-font 10 10 SF
+18 234 M (253:) s
+/Courier-Bold 10 10 SUF
+48 234 M
+(float) s
+/F-gs-font 10 10 SF
+78 234 M
+( ) s
+/Courier-Bold 10 10 SUF
+84 234 M
+(lireDistance) s
+/F-gs-font 10 10 SF
+156 234 M
+(\(\) {) s
+18 223 M (254:) s
+48 223 M
+(  digitalWrite\(TRIG_PIN, LOW\);            ) s
+/Courier-Oblique 10 10 SUF
+300 223 M
+(// s'assurer que TRIG est bas avant de d\303\251marrer) s
+/F-gs-font 10 10 SF
+18 212 M (255:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 212 M
+(  delayMicroseconds\(2\);                   ) s
+/Courier-Oblique 10 10 SUF
+300 212 M
+(// attendre 2 \302\265s pour stabiliser le signal) s
+/F-gs-font 10 10 SF
+18 201 M (256:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 201 M
+(  digitalWrite\(TRIG_PIN, HIGH\);           ) s
+/Courier-Oblique 10 10 SUF
+300 201 M
+(// envoyer l'impulsion ultrason \(d\303\251but\)) s
+/F-gs-font 10 10 SF
+18 190 M (257:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 190 M
+(  delayMicroseconds\(10\);                  ) s
+/Courier-Oblique 10 10 SUF
+300 190 M
+(// maintenir l'impulsion 10 \302\265s \(dur\303\251e minimale spec HC-SR04\)) s
+/F-gs-font 10 10 SF
+18 179 M (258:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 179 M
+(  digitalWrite\(TRIG_PIN, LOW\);            ) s
+/Courier-Oblique 10 10 SUF
+300 179 M
+(// arr\303\252ter l'impulsion \342\\206\\222 le capteur \303\251met la rafale ultrason) s
+/F-gs-font 10 10 SF
+18 168 M (259:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 157 M (260:) s
+48 157 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 157 M
+(// Mesurer la dur\303\251e de l'\303\251cho : pulseIn attend un front montant puis un front descendant sur ECHO_PIN.) s
+/F-gs-font 10 10 SF
+18 146 M (261:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 146 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 146 M
+(// ECHO_TIMEOUT_US = 12 000 \302\265s \342\\206\\222 distance max ~2 m. Si timeout \342\\206\\222 retour 0.) s
+/F-gs-font 10 10 SF
+18 135 M (262:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 135 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 135 M
+(long) s
+/F-gs-font 10 10 SF
+84 135 M
+( duree_us = pulseIn\(ECHO_PIN, HIGH, ECHO_TIMEOUT_US\);) s
+18 124 M (263:) s
+18 113 M (264:) s
+48 113 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 113 M
+(if) s
+/F-gs-font 10 10 SF
+72 113 M
+( \(duree_us == 0\) ) s
+/Courier-Bold 10 10 SUF
+174 113 M
+(return) s
+/F-gs-font 10 10 SF
+210 113 M
+( -1.0f;   ) s
+/Courier-Oblique 10 10 SUF
+270 113 M
+(// pas d'\303\251cho re\303\247u \(timeout ou obstacle hors port\303\251e\)) s
+/F-gs-font 10 10 SF
+18 102 M (265:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 91 M (266:) s
+48 91 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 91 M
+(// Conversion dur\303\251e \342\\206\\222 distance : d = \(t \303\\227 vitesse_son\) / 2) s
+/F-gs-font 10 10 SF
+18 80 M (267:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 80 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 80 M
+(// vitesse du son \342\\211\\210 343 m/s \342\\206\\222 0.000343 m/\302\265s ; \303\2672 car aller-retour \342\\206\\222 \303\\227 0.0001715 m/\302\265s) s
+/F-gs-font 10 10 SF
+18 69 M (268:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 69 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 69 M
+(float) s
+/F-gs-font 10 10 SF
+90 69 M
+( d = \() s
+/Courier-Bold 10 10 SUF
+126 69 M
+(float) s
+/F-gs-font 10 10 SF
+156 69 M
+(\)duree_us * 0.0001715f;) s
+18 58 M (269:) s
+18 47 M (270:) s
+48 47 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 47 M
+(if) s
+/F-gs-font 10 10 SF
+72 47 M
+( \(d < 0.02f || d > 4.0f\) ) s
+/Courier-Bold 10 10 SUF
+222 47 M
+(return) s
+/F-gs-font 10 10 SF
+258 47 M
+( -1.0f;  ) s
+/Courier-Oblique 10 10 SUF
+312 47 M
+(// valeur hors plage physique : rejet\303\251e) s
+/F-gs-font 10 10 SF
+18 36 M (271:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 25 M (272:) s
+48 25 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 25 M
+(return) s
+/F-gs-font 10 10 SF
+96 25 M
+( d;   ) s
+/Courier-Oblique 10 10 SUF
+132 25 M
+(// distance valide en m\303\250tres) s
+/F-gs-font 10 10 SF
+18 14 M (273:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 14 M
+(}) s
+18 3 M (274:) s
+_R
+S
+%%Page: (7) 7
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 7 def
+/fname (AAC_TIPE_v19.ino) def
+/fdir (.) def
+/ftail (AAC_TIPE_v19.ino) def
+% User defined strings:
+/pagenumstr (7) def
+/moddatestr (06/09/26) def
+/modtimestr (12:26:37) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+18 498 M (275:) s
+/Courier-Oblique 10 10 SUF
+48 498 M
+(/* ===========================================================) s
+/F-gs-font 10 10 SF
+18 487 M (276:) s
+/Courier-Oblique 10 10 SUF
+48 487 M
+( * calculerVitesse\(\) \342\\200\\224 M\303\\211THODE FR\303\\211QUENCEM\303\\211TRIQUE) s
+/F-gs-font 10 10 SF
+18 476 M (277:) s
+/Courier-Oblique 10 10 SUF
+48 476 M
+( * Compte les impulsions Hall sur l'intervalle dt_ms.) s
+/F-gs-font 10 10 SF
+18 465 M (278:) s
+/Courier-Oblique 10 10 SUF
+48 465 M
+( * Plus pr\303\251cis \303\240 haute vitesse, inutilisable \303\240 basse vitesse.) s
+/F-gs-font 10 10 SF
+18 454 M (279:) s
+/Courier-Oblique 10 10 SUF
+48 454 M
+( * Utilis\303\251 UNIQUEMENT pour le log \(pas pour le PID\).) s
+/F-gs-font 10 10 SF
+18 443 M (280:) s
+/Courier-Oblique 10 10 SUF
+48 443 M
+( * =========================================================== */) s
+/F-gs-font 10 10 SF
+18 432 M (281:) s
+/Courier-Bold 10 10 SUF
+48 432 M
+(float) s
+/F-gs-font 10 10 SF
+78 432 M
+( ) s
+/Courier-Bold 10 10 SUF
+84 432 M
+(calculerVitesse) s
+/F-gs-font 10 10 SF
+174 432 M
+(\(uint32_t dt_ms\) {) s
+18 421 M (282:) s
+48 421 M
+(  noInterrupts\(\);                    ) s
+/Courier-Oblique 10 10 SUF
+270 421 M
+(// bloquer les interruptions pour lire hallPulseCount sans conflit) s
+/F-gs-font 10 10 SF
+18 410 M (283:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 410 M
+(  uint32_t cnt = hallPulseCount;    ) s
+/Courier-Oblique 10 10 SUF
+264 410 M
+(// copier le compteur atomiquement) s
+/F-gs-font 10 10 SF
+18 399 M (284:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 399 M
+(  interrupts\(\);                      ) s
+/Courier-Oblique 10 10 SUF
+270 399 M
+(// r\303\251tablir les interruptions) s
+/F-gs-font 10 10 SF
+18 388 M (285:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 377 M (286:) s
+48 377 M
+(  uint32_t delta = cnt - lastHallCount;  ) s
+/Courier-Oblique 10 10 SUF
+294 377 M
+(// nombre d'impulsions depuis le dernier appel) s
+/F-gs-font 10 10 SF
+18 366 M (287:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 366 M
+(  lastHallCount  = cnt;                   ) s
+/Courier-Oblique 10 10 SUF
+300 366 M
+(// m\303\251moriser la valeur actuelle pour le prochain cycle) s
+/F-gs-font 10 10 SF
+18 355 M (288:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 344 M (289:) s
+48 344 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 344 M
+(if) s
+/F-gs-font 10 10 SF
+72 344 M
+( \(dt_ms == 0\) ) s
+/Courier-Bold 10 10 SUF
+156 344 M
+(return) s
+/F-gs-font 10 10 SF
+192 344 M
+( 0.0f;   ) s
+/Courier-Oblique 10 10 SUF
+246 344 M
+(// protection contre division par z\303\251ro) s
+/F-gs-font 10 10 SF
+18 333 M (290:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 322 M (291:) s
+48 322 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 322 M
+(// v = \(nombre_de_tours \303\\227 p\303\251rim\303\250tre\) / dur\303\251e) s
+/F-gs-font 10 10 SF
+18 311 M (292:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 311 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 311 M
+(// nombre_de_tours = delta / NB_AIMANTS  \(3 aimants = 3 impulsions par tour\)) s
+/F-gs-font 10 10 SF
+18 300 M (293:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 300 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 300 M
+(return) s
+/F-gs-font 10 10 SF
+96 300 M
+( \(\() s
+/Courier-Bold 10 10 SUF
+114 300 M
+(float) s
+/F-gs-font 10 10 SF
+144 300 M
+(\)delta / \() s
+/Courier-Bold 10 10 SUF
+204 300 M
+(float) s
+/F-gs-font 10 10 SF
+234 300 M
+(\)NB_AIMANTS * PERIMETRE_M\)) s
+18 289 M (294:) s
+48 289 M
+(         / \(\() s
+/Courier-Bold 10 10 SUF
+126 289 M
+(float) s
+/F-gs-font 10 10 SF
+156 289 M
+(\)dt_ms / 1000.0f\);) s
+18 278 M (295:) s
+48 278 M
+(}) s
+18 267 M (296:) s
+18 256 M (297:) s
+/Courier-Oblique 10 10 SUF
+48 256 M
+(/* ===========================================================) s
+/F-gs-font 10 10 SF
+18 245 M (298:) s
+/Courier-Oblique 10 10 SUF
+48 245 M
+( * calculerVitessePeriode\(\) \342\\200\\224 M\303\\211THODE P\303\\211RIODE \(utilis\303\251e par le PID\)) s
+/F-gs-font 10 10 SF
+18 234 M (299:) s
+/Courier-Oblique 10 10 SUF
+48 234 M
+( * Calcule la vitesse \303\240 partir de la dur\303\251e entre deux aimants) s
+/F-gs-font 10 10 SF
+18 223 M (300:) s
+/Courier-Oblique 10 10 SUF
+48 223 M
+( * cons\303\251cutifs. Tr\303\250s pr\303\251cis \303\240 basse vitesse \(\303\\227155 meilleur\).) s
+/F-gs-font 10 10 SF
+18 212 M (301:) s
+/Courier-Oblique 10 10 SUF
+48 212 M
+( * Filtre exponentiel asym\303\251trique pour lisser sans retarder.) s
+/F-gs-font 10 10 SF
+18 201 M (302:) s
+/Courier-Oblique 10 10 SUF
+48 201 M
+( * =========================================================== */) s
+/F-gs-font 10 10 SF
+18 190 M (303:) s
+/Courier-Bold 10 10 SUF
+48 190 M
+(float) s
+/F-gs-font 10 10 SF
+78 190 M
+( ) s
+/Courier-Bold 10 10 SUF
+84 190 M
+(calculerVitessePeriode) s
+/F-gs-font 10 10 SF
+216 190 M
+(\(\) {) s
+18 179 M (304:) s
+48 179 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 179 M
+(// PAS_M : distance parcourue entre deux impulsions Hall cons\303\251cutives) s
+/F-gs-font 10 10 SF
+18 168 M (305:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 168 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 168 M
+(// = p\303\251rim\303\250tre / nb_aimants. static : calcul\303\251 une seule fois.) s
+/F-gs-font 10 10 SF
+18 157 M (306:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 157 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 157 M
+(static) s
+/F-gs-font 10 10 SF
+96 157 M
+( ) s
+/Courier-Bold 10 10 SUF
+102 157 M
+(const) s
+/F-gs-font 10 10 SF
+132 157 M
+( ) s
+/Courier-Bold 10 10 SUF
+138 157 M
+(float) s
+/F-gs-font 10 10 SF
+168 157 M
+( PAS_M      = PERIMETRE_M / \() s
+/Courier-Bold 10 10 SUF
+342 157 M
+(float) s
+/F-gs-font 10 10 SF
+372 157 M
+(\)NB_AIMANTS;) s
+18 146 M (307:) s
+18 135 M (308:) s
+48 135 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 135 M
+(// Variation maximale physiquement possible en un cycle de 50 ms.) s
+/F-gs-font 10 10 SF
+18 124 M (309:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 124 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 124 M
+(// Au-del\303\240, c'est un parasite \(rebond m\303\251canique\) \342\\206\\222 on rejette.) s
+/F-gs-font 10 10 SF
+18 113 M (310:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 113 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 113 M
+(static) s
+/F-gs-font 10 10 SF
+96 113 M
+( ) s
+/Courier-Bold 10 10 SUF
+102 113 M
+(const) s
+/F-gs-font 10 10 SF
+132 113 M
+( ) s
+/Courier-Bold 10 10 SUF
+138 113 M
+(float) s
+/F-gs-font 10 10 SF
+168 113 M
+( DELTA_V_MAX = 0.8f;  ) s
+/Courier-Oblique 10 10 SUF
+300 113 M
+(// m/s par cycle de 50 ms) s
+/F-gs-font 10 10 SF
+18 102 M (311:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 91 M (312:) s
+48 91 M
+(  noInterrupts\(\);) s
+18 80 M (313:) s
+48 80 M
+(  uint32_t derniereImp_us = hallLastPulseTime_us;  ) s
+/Courier-Oblique 10 10 SUF
+354 80 M
+(// lire le timestamp de la derni\303\250re impulsion) s
+/F-gs-font 10 10 SF
+18 69 M (314:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 69 M
+(  interrupts\(\);) s
+18 58 M (315:) s
+18 47 M (316:) s
+48 47 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 47 M
+(if) s
+/F-gs-font 10 10 SF
+72 47 M
+( \(derniereImp_us == 0\) ) s
+/Courier-Bold 10 10 SUF
+210 47 M
+(return) s
+/F-gs-font 10 10 SF
+246 47 M
+( 0.0f;   ) s
+/Courier-Oblique 10 10 SUF
+300 47 M
+(// pas encore d'impulsion re\303\247ue depuis le d\303\251marrage) s
+/F-gs-font 10 10 SF
+18 36 M (317:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 25 M (318:) s
+48 25 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 25 M
+(// Si aucune impulsion depuis plus de HALL_TIMEOUT_US \(400 ms\) \342\\206\\222 roue \303\240 l'arr\303\252t) s
+/F-gs-font 10 10 SF
+18 14 M (319:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 14 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 14 M
+(if) s
+/F-gs-font 10 10 SF
+72 14 M
+( \(\(micros\(\) - derniereImp_us\) > HALL_TIMEOUT_US\) {) s
+18 3 M (320:) s
+48 3 M
+(    noInterrupts\(\); hallNouvelleImpulsion = false; interrupts\(\);  ) s
+/Courier-Oblique 10 10 SUF
+444 3 M
+(// effacer le drapeau) s
+_R
+S
+%%Page: (8) 8
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 8 def
+/fname (AAC_TIPE_v19.ino) def
+/fdir (.) def
+/ftail (AAC_TIPE_v19.ino) def
+/Courier-Oblique 10 10 SUF
+% User defined strings:
+/pagenumstr (8) def
+/moddatestr (06/09/26) def
+/modtimestr (12:26:37) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+/F-gs-font 10 10 SF
+18 498 M (321:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 498 M
+(    vitesse_periode_ms = 0.0f;  ) s
+/Courier-Oblique 10 10 SUF
+240 498 M
+(// forcer la vitesse \303\240 z\303\251ro) s
+/F-gs-font 10 10 SF
+18 487 M (322:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 487 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 487 M
+(return) s
+/F-gs-font 10 10 SF
+108 487 M
+( 0.0f;) s
+18 476 M (323:) s
+48 476 M
+(  }) s
+18 465 M (324:) s
+18 454 M (325:) s
+48 454 M
+(  noInterrupts\(\);) s
+18 443 M (326:) s
+48 443 M
+(  uint32_t periode_us = hallPeriode_us;  ) s
+/Courier-Oblique 10 10 SUF
+294 443 M
+(// copier la p\303\251riode mesur\303\251e par l'ISR) s
+/F-gs-font 10 10 SF
+18 432 M (327:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 432 M
+(  hallNouvelleImpulsion = false;         ) s
+/Courier-Oblique 10 10 SUF
+294 432 M
+(// effacer le drapeau de nouvelle mesure) s
+/F-gs-font 10 10 SF
+18 421 M (328:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 421 M
+(  interrupts\(\);) s
+18 410 M (329:) s
+18 399 M (330:) s
+48 399 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 399 M
+(if) s
+/F-gs-font 10 10 SF
+72 399 M
+( \(periode_us == 0\) ) s
+/Courier-Bold 10 10 SUF
+186 399 M
+(return) s
+/F-gs-font 10 10 SF
+222 399 M
+( vitesse_periode_ms;  ) s
+/Courier-Oblique 10 10 SUF
+354 399 M
+(// pas de nouvelle p\303\251riode \342\\206\\222 garder l'ancienne valeur) s
+/F-gs-font 10 10 SF
+18 388 M (331:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 377 M (332:) s
+48 377 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 377 M
+(// v = distance / temps = PAS_M / \(periode_us / 1 000 000\)) s
+/F-gs-font 10 10 SF
+18 366 M (333:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 366 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 366 M
+(float) s
+/F-gs-font 10 10 SF
+90 366 M
+( v_brute = PAS_M / \(\() s
+/Courier-Bold 10 10 SUF
+216 366 M
+(float) s
+/F-gs-font 10 10 SF
+246 366 M
+(\)periode_us / 1000000.0f\);) s
+18 355 M (334:) s
+18 344 M (335:) s
+48 344 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 344 M
+(// Rejet des parasites : si le saut de vitesse est physiquement impossible \342\\206\\222 ignorer) s
+/F-gs-font 10 10 SF
+18 333 M (336:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 333 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 333 M
+(if) s
+/F-gs-font 10 10 SF
+72 333 M
+( \(vitesse_periode_ms > 0.0f) s
+18 322 M (337:) s
+48 322 M
+(      && fabsf\(v_brute - vitesse_periode_ms\) > DELTA_V_MAX\) {) s
+18 311 M (338:) s
+48 311 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 311 M
+(return) s
+/F-gs-font 10 10 SF
+108 311 M
+( vitesse_periode_ms;  ) s
+/Courier-Oblique 10 10 SUF
+240 311 M
+(// mesure rejet\303\251e, on conserve la valeur pr\303\251c\303\251dente) s
+/F-gs-font 10 10 SF
+18 300 M (339:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 300 M
+(  }) s
+18 289 M (340:) s
+18 278 M (341:) s
+48 278 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 278 M
+(// Filtre exponentiel asym\303\251trique :) s
+/F-gs-font 10 10 SF
+18 267 M (342:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 267 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 267 M
+(//   mont\303\251e  \342\\206\\222 alpha = 0.25 \(filtre fort : att\303\251nue les fausses vitesses \303\251lev\303\251es\)) s
+/F-gs-font 10 10 SF
+18 256 M (343:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 256 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 256 M
+(//   descente \342\\206\\222 alpha = 0.85 \(filtre faible : suit vite la d\303\251c\303\251l\303\251ration r\303\251elle\)) s
+/F-gs-font 10 10 SF
+18 245 M (344:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 245 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 245 M
+(// v_filtr\303\251 = alpha \303\\227 v_brute + \(1-alpha\) \303\\227 v_filtr\303\251_pr\303\251c\303\251dent) s
+/F-gs-font 10 10 SF
+18 234 M (345:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 234 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 234 M
+(float) s
+/F-gs-font 10 10 SF
+90 234 M
+( alpha = \(v_brute >= vitesse_periode_ms\) ? 0.25f : 0.85f;) s
+18 223 M (346:) s
+18 212 M (347:) s
+48 212 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 212 M
+(if) s
+/F-gs-font 10 10 SF
+72 212 M
+( \(vitesse_periode_ms == 0.0f\) {        ) s
+/Courier-Oblique 10 10 SUF
+306 212 M
+(// premier calcul : initialiser directement sans filtrage) s
+/F-gs-font 10 10 SF
+18 201 M (348:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 201 M
+(    vitesse_periode_ms = v_brute;) s
+18 190 M (349:) s
+48 190 M
+(  } ) s
+/Courier-Bold 10 10 SUF
+72 190 M
+(else) s
+/F-gs-font 10 10 SF
+96 190 M
+( {) s
+18 179 M (350:) s
+48 179 M
+(    vitesse_periode_ms = alpha * v_brute + \(1.0f - alpha\) * vitesse_periode_ms;  ) s
+/Courier-Oblique 10 10 SUF
+534 179 M
+(// filtre IIR) s
+/F-gs-font 10 10 SF
+18 168 M (351:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 168 M
+(  }) s
+18 157 M (352:) s
+18 146 M (353:) s
+48 146 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 146 M
+(return) s
+/F-gs-font 10 10 SF
+96 146 M
+( vitesse_periode_ms;  ) s
+/Courier-Oblique 10 10 SUF
+228 146 M
+(// retourner la vitesse filtr\303\251e en m/s) s
+/F-gs-font 10 10 SF
+18 135 M (354:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 135 M
+(}) s
+18 124 M (355:) s
+18 113 M (356:) s
+/Courier-Oblique 10 10 SUF
+48 113 M
+(/* ===========================================================) s
+/F-gs-font 10 10 SF
+18 102 M (357:) s
+/Courier-Oblique 10 10 SUF
+48 102 M
+( * appliquerCommande\(\) \342\\200\\224 ENVOI PWM AU PONT EN H L298N) s
+/F-gs-font 10 10 SF
+18 91 M (358:) s
+/Courier-Oblique 10 10 SUF
+48 91 M
+( * Commande positive \342\\206\\222 moteur en avant.) s
+/F-gs-font 10 10 SF
+18 80 M (359:) s
+/Courier-Oblique 10 10 SUF
+48 80 M
+( * Commande n\303\251gative \342\\206\\222 moteur en arri\303\250re \(freinage actif\).) s
+/F-gs-font 10 10 SF
+18 69 M (360:) s
+/Courier-Oblique 10 10 SUF
+48 69 M
+( * Zone morte [0, PWM_ZONE_MORTE[ \342\\206\\222 roue libre \(commande forc\303\251e \303\240 0\).) s
+/F-gs-font 10 10 SF
+18 58 M (361:) s
+/Courier-Oblique 10 10 SUF
+48 58 M
+( * =========================================================== */) s
+/F-gs-font 10 10 SF
+18 47 M (362:) s
+/Courier-Bold 10 10 SUF
+48 47 M
+(void) s
+/F-gs-font 10 10 SF
+72 47 M
+( ) s
+/Courier-Bold 10 10 SUF
+78 47 M
+(appliquerCommande) s
+/F-gs-font 10 10 SF
+180 47 M
+(\() s
+/Courier-Bold 10 10 SUF
+186 47 M
+(float) s
+/F-gs-font 10 10 SF
+216 47 M
+( cmd\) {) s
+18 36 M (363:) s
+48 36 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 36 M
+(// Zone morte : entre 0 et 76 PWM le moteur ne produit aucun couple.) s
+/F-gs-font 10 10 SF
+18 25 M (364:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 25 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 25 M
+(// On force \303\240 0 pour \303\251viter que l'int\303\251grale accumule une erreur fictive.) s
+/F-gs-font 10 10 SF
+18 14 M (365:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 14 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 14 M
+(if) s
+/F-gs-font 10 10 SF
+72 14 M
+( \(cmd > 0.0f && cmd < PWM_ZONE_MORTE\) cmd = 0.0f;) s
+18 3 M (366:) s
+_R
+S
+%%Page: (9) 9
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 9 def
+/fname (AAC_TIPE_v19.ino) def
+/fdir (.) def
+/ftail (AAC_TIPE_v19.ino) def
+% User defined strings:
+/pagenumstr (9) def
+/moddatestr (06/09/26) def
+/modtimestr (12:26:37) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+18 498 M (367:) s
+48 498 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 498 M
+(int) s
+/F-gs-font 10 10 SF
+78 498 M
+( pwm = \() s
+/Courier-Bold 10 10 SUF
+126 498 M
+(int) s
+/F-gs-font 10 10 SF
+144 498 M
+(\)constrain\(cmd, -255.0f, 255.0f\);  ) s
+/Courier-Oblique 10 10 SUF
+354 498 M
+(// limiter entre -255 et +255 et convertir en entier) s
+/F-gs-font 10 10 SF
+18 487 M (368:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 476 M (369:) s
+48 476 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 476 M
+(if) s
+/F-gs-font 10 10 SF
+72 476 M
+( \(pwm >= 0\) {                              ) s
+/Courier-Oblique 10 10 SUF
+330 476 M
+(// commande positive \342\\206\\222 sens avant) s
+/F-gs-font 10 10 SF
+18 465 M (370:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 465 M
+(    digitalWrite\(IN3_PIN, HIGH\);               ) s
+/Courier-Oblique 10 10 SUF
+330 465 M
+(// IN3 = HIGH : s\303\251lectionne le sens avant) s
+/F-gs-font 10 10 SF
+18 454 M (371:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 454 M
+(    digitalWrite\(IN4_PIN, LOW\);                ) s
+/Courier-Oblique 10 10 SUF
+330 454 M
+(// IN4 = LOW  : compl\303\251ment de IN3) s
+/F-gs-font 10 10 SF
+18 443 M (372:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 443 M
+(    analogWrite\(ENB_PIN, \(uint8_t\)pwm\);        ) s
+/Courier-Oblique 10 10 SUF
+330 443 M
+(// ENB : fixer la puissance par PWM \(0\342\\200\246255\)) s
+/F-gs-font 10 10 SF
+18 432 M (373:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 432 M
+(  } ) s
+/Courier-Bold 10 10 SUF
+72 432 M
+(else) s
+/F-gs-font 10 10 SF
+96 432 M
+( {                                     ) s
+/Courier-Oblique 10 10 SUF
+330 432 M
+(// commande n\303\251gative \342\\206\\222 freinage actif / sens arri\303\250re) s
+/F-gs-font 10 10 SF
+18 421 M (374:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 421 M
+(    digitalWrite\(IN3_PIN, LOW\);                ) s
+/Courier-Oblique 10 10 SUF
+330 421 M
+(// IN3 = LOW  : sens inverse) s
+/F-gs-font 10 10 SF
+18 410 M (375:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 410 M
+(    digitalWrite\(IN4_PIN, HIGH\);               ) s
+/Courier-Oblique 10 10 SUF
+330 410 M
+(// IN4 = HIGH : compl\303\251ment de IN3) s
+/F-gs-font 10 10 SF
+18 399 M (376:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 399 M
+(    analogWrite\(ENB_PIN, \(uint8_t\)\(-pwm\)\);     ) s
+/Courier-Oblique 10 10 SUF
+330 399 M
+(// valeur absolue pour PWM \(toujours positif 0\342\\200\246255\)) s
+/F-gs-font 10 10 SF
+18 388 M (377:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 388 M
+(  }) s
+18 377 M (378:) s
+48 377 M
+(}) s
+18 366 M (379:) s
+18 355 M (380:) s
+/Courier-Oblique 10 10 SUF
+48 355 M
+(/* ===========================================================) s
+/F-gs-font 10 10 SF
+18 344 M (381:) s
+/Courier-Oblique 10 10 SUF
+48 344 M
+( * calculerCorrecteur\(\) \342\\200\\224 CALCUL PID) s
+/F-gs-font 10 10 SF
+18 333 M (382:) s
+/Courier-Oblique 10 10 SUF
+48 333 M
+( *) s
+/F-gs-font 10 10 SF
+18 322 M (383:) s
+/Courier-Oblique 10 10 SUF
+48 322 M
+( * Retourne la correction u_PID en PWM \303\240 ajouter au feedforward.) s
+/F-gs-font 10 10 SF
+18 311 M (384:) s
+/Courier-Oblique 10 10 SUF
+48 311 M
+( * u_total = FEEDFORWARD_PWM + calculerCorrecteur\(erreur, dt_s, ...\)) s
+/F-gs-font 10 10 SF
+18 300 M (385:) s
+/Courier-Oblique 10 10 SUF
+48 300 M
+( *) s
+/F-gs-font 10 10 SF
+18 289 M (386:) s
+/Courier-Oblique 10 10 SUF
+48 289 M
+( * NOUVEAUT\303\\211 v19 : d\303\251riv\303\251e calcul\303\251e sur la mesure de vitesse \(pas sur l'erreur\).) s
+/F-gs-font 10 10 SF
+18 278 M (387:) s
+/Courier-Oblique 10 10 SUF
+48 278 M
+( *   d\(erreur\)/dt = d\(Vc \342\\210\\222 v\)/dt = \342\\210\\222dv/dt) s
+/F-gs-font 10 10 SF
+18 267 M (388:) s
+/Courier-Oblique 10 10 SUF
+48 267 M
+( *   u_D = Kd \303\\227 d\(erreur\)/dt = \342\\210\\222Kd \303\\227 dv/dt) s
+/F-gs-font 10 10 SF
+18 256 M (389:) s
+/Courier-Oblique 10 10 SUF
+48 256 M
+( * Cela \303\251vite le pic brutal \("derivative kick"\) quand la consigne Vc) s
+/F-gs-font 10 10 SF
+18 245 M (390:) s
+/Courier-Oblique 10 10 SUF
+48 245 M
+( * change soudainement \(fin de kick, changement de mode\).) s
+/F-gs-font 10 10 SF
+18 234 M (391:) s
+/Courier-Oblique 10 10 SUF
+48 234 M
+( * =========================================================== */) s
+/F-gs-font 10 10 SF
+18 223 M (392:) s
+/Courier-Bold 10 10 SUF
+48 223 M
+(float) s
+/F-gs-font 10 10 SF
+78 223 M
+( ) s
+/Courier-Bold 10 10 SUF
+84 223 M
+(calculerCorrecteur) s
+/F-gs-font 10 10 SF
+192 223 M
+(\() s
+/Courier-Bold 10 10 SUF
+198 223 M
+(float) s
+/F-gs-font 10 10 SF
+228 223 M
+( erreur, ) s
+/Courier-Bold 10 10 SUF
+282 223 M
+(float) s
+/F-gs-font 10 10 SF
+312 223 M
+( dt_s, ) s
+/Courier-Bold 10 10 SUF
+354 223 M
+(bool) s
+/F-gs-font 10 10 SF
+378 223 M
+( reinitDerivee\) {) s
+18 212 M (393:) s
+18 201 M (394:) s
+48 201 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 201 M
+(// \342\\224\\200\342\\224\\200 Terme P \342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342) s
+5 190 M
+(\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224) s
+5 179 M
+(\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200) s
+5 168 M
+(\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200) s
+/F-gs-font 10 10 SF
+18 157 M (395:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 157 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 157 M
+(float) s
+/F-gs-font 10 10 SF
+90 157 M
+( u_P = Kp_VAL * erreur;  ) s
+/Courier-Oblique 10 10 SUF
+240 157 M
+(// proportionnel : r\303\251ponse imm\303\251diate proportionnelle \303\240 l'\303\251cart courant) s
+/F-gs-font 10 10 SF
+18 146 M (396:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 135 M (397:) s
+48 135 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 135 M
+(// \342\\224\\200\342\\224\\200 Terme I \342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342) s
+5 124 M
+(\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224) s
+5 113 M
+(\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200) s
+5 102 M
+(\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200) s
+/F-gs-font 10 10 SF
+18 91 M (398:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 91 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 91 M
+(float) s
+/F-gs-font 10 10 SF
+90 91 M
+( u_I = 0.0f;    ) s
+/Courier-Oblique 10 10 SUF
+186 91 M
+(// initialiser \303\240 0 ; sera calcul\303\251 seulement si USE_I = 1) s
+/F-gs-font 10 10 SF
+18 80 M (399:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 80 M
+(#) s
+/Courier-Bold 10 10 SUF
+54 80 M
+(if) s
+/F-gs-font 10 10 SF
+66 80 M
+( ) s
+/Courier-Bold 10 10 SUF
+72 80 M
+(USE_I) s
+/F-gs-font 10 10 SF
+102 80 M
+(              // ) s
+/Courier-Bold 10 10 SUF
+204 80 M
+(bloc) s
+/F-gs-font 10 10 SF
+228 80 M
+( ) s
+/Courier-Bold 10 10 SUF
+234 80 M
+(compil) s
+/F-gs-font 10 10 SF
+270 80 M
+(\303\251 ) s
+/Courier-Bold 10 10 SUF
+288 80 M
+(seulement) s
+/F-gs-font 10 10 SF
+342 80 M
+( ) s
+/Courier-Bold 10 10 SUF
+348 80 M
+(si) s
+/F-gs-font 10 10 SF
+360 80 M
+( ) s
+/Courier-Bold 10 10 SUF
+366 80 M
+(le) s
+/F-gs-font 10 10 SF
+378 80 M
+( ) s
+/Courier-Bold 10 10 SUF
+384 80 M
+(correcteur) s
+/F-gs-font 10 10 SF
+444 80 M
+( ) s
+/Courier-Bold 10 10 SUF
+450 80 M
+(a) s
+/F-gs-font 10 10 SF
+456 80 M
+( ) s
+/Courier-Bold 10 10 SUF
+462 80 M
+(une) s
+/F-gs-font 10 10 SF
+480 80 M
+( ) s
+/Courier-Bold 10 10 SUF
+486 80 M
+(int) s
+/F-gs-font 10 10 SF
+504 80 M
+(\303\251) s
+/Courier-Bold 10 10 SUF
+516 80 M
+(grale) s
+/F-gs-font 10 10 SF
+546 80 M
+( \() s
+/Courier-Bold 10 10 SUF
+558 80 M
+(PI) s
+/F-gs-font 10 10 SF
+570 80 M
+( ) s
+/Courier-Bold 10 10 SUF
+576 80 M
+(ou) s
+/F-gs-font 10 10 SF
+588 80 M
+( ) s
+/Courier-Bold 10 10 SUF
+594 80 M
+(PID) s
+/F-gs-font 10 10 SF
+612 80 M
+(\)) s
+18 69 M (400:) s
+48 69 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 69 M
+(if) s
+/F-gs-font 10 10 SF
+72 69 M
+( \(!kickActif\) {                              ) s
+/Courier-Oblique 10 10 SUF
+342 69 M
+(// NE PAS int\303\251grer pendant le kick \(anti-windup kick\)) s
+/F-gs-font 10 10 SF
+18 58 M (401:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 58 M
+(    integrale += erreur * dt_s;                  ) s
+/Courier-Oblique 10 10 SUF
+342 58 M
+(// int\303\251grale discr\303\250te : I += \316\265 \303\\227 \316\\224t \(approximation rectangulair) s
+5 47 M
+(e\)) s
+/F-gs-font 10 10 SF
+18 36 M (402:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 36 M
+(    integrale = constrain\(integrale,             ) s
+/Courier-Oblique 10 10 SUF
+342 36 M
+(// saturation anti-windup : limiter l'int\303\251grale \303\240 \302\261INTEGRALE_MAX) s
+/F-gs-font 10 10 SF
+18 25 M (403:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 25 M
+(                          -INTEGRALE_MAX,) s
+18 14 M (404:) s
+48 14 M
+(                          INTEGRALE_MAX\);) s
+18 3 M (405:) s
+48 3 M
+(  }) s
+_R
+S
+%%Page: (10) 10
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 10 def
+/fname (AAC_TIPE_v19.ino) def
+/fdir (.) def
+/ftail (AAC_TIPE_v19.ino) def
+% User defined strings:
+/pagenumstr (10) def
+/moddatestr (06/09/26) def
+/modtimestr (12:26:37) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+18 498 M (406:) s
+48 498 M
+(  u_I = Ki_VAL * integrale;  ) s
+/Courier-Oblique 10 10 SUF
+222 498 M
+(// terme int\303\251gral en PWM = Ki \303\\227 \342\\210\253\316\265 dt) s
+/F-gs-font 10 10 SF
+18 487 M (407:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 487 M
+(#) s
+/Courier-Bold 10 10 SUF
+54 487 M
+(endif) s
+/F-gs-font 10 10 SF
+18 476 M (408:) s
+18 465 M (409:) s
+48 465 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 465 M
+(// \342\\224\\200\342\\224\\200 Terme D sur la mesure \(pas sur l'erreur\) \342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342) s
+5 454 M
+(\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200) s
+/F-gs-font 10 10 SF
+18 443 M (410:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 443 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 443 M
+(float) s
+/F-gs-font 10 10 SF
+90 443 M
+( u_D = 0.0f;    ) s
+/Courier-Oblique 10 10 SUF
+186 443 M
+(// initialiser \303\240 0 ; sera calcul\303\251 seulement si USE_D = 1) s
+/F-gs-font 10 10 SF
+18 432 M (411:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 432 M
+(#) s
+/Courier-Bold 10 10 SUF
+54 432 M
+(if) s
+/F-gs-font 10 10 SF
+66 432 M
+( ) s
+/Courier-Bold 10 10 SUF
+72 432 M
+(USE_D) s
+/F-gs-font 10 10 SF
+102 432 M
+(              // ) s
+/Courier-Bold 10 10 SUF
+204 432 M
+(bloc) s
+/F-gs-font 10 10 SF
+228 432 M
+( ) s
+/Courier-Bold 10 10 SUF
+234 432 M
+(compil) s
+/F-gs-font 10 10 SF
+270 432 M
+(\303\251 ) s
+/Courier-Bold 10 10 SUF
+288 432 M
+(seulement) s
+/F-gs-font 10 10 SF
+342 432 M
+( ) s
+/Courier-Bold 10 10 SUF
+348 432 M
+(si) s
+/F-gs-font 10 10 SF
+360 432 M
+( ) s
+/Courier-Bold 10 10 SUF
+366 432 M
+(le) s
+/F-gs-font 10 10 SF
+378 432 M
+( ) s
+/Courier-Bold 10 10 SUF
+384 432 M
+(correcteur) s
+/F-gs-font 10 10 SF
+444 432 M
+( ) s
+/Courier-Bold 10 10 SUF
+450 432 M
+(a) s
+/F-gs-font 10 10 SF
+456 432 M
+( ) s
+/Courier-Bold 10 10 SUF
+462 432 M
+(une) s
+/F-gs-font 10 10 SF
+480 432 M
+( ) s
+/Courier-Bold 10 10 SUF
+486 432 M
+(d) s
+/F-gs-font 10 10 SF
+492 432 M
+(\303\251) s
+/Courier-Bold 10 10 SUF
+504 432 M
+(riv) s
+/F-gs-font 10 10 SF
+522 432 M
+(\303\251) s
+/Courier-Bold 10 10 SUF
+534 432 M
+(e) s
+/F-gs-font 10 10 SF
+540 432 M
+( \() s
+/Courier-Bold 10 10 SUF
+552 432 M
+(PD) s
+/F-gs-font 10 10 SF
+564 432 M
+( ) s
+/Courier-Bold 10 10 SUF
+570 432 M
+(ou) s
+/F-gs-font 10 10 SF
+582 432 M
+( ) s
+/Courier-Bold 10 10 SUF
+588 432 M
+(PID) s
+/F-gs-font 10 10 SF
+606 432 M
+(\)) s
+18 421 M (412:) s
+48 421 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 421 M
+(if) s
+/F-gs-font 10 10 SF
+72 421 M
+( \(!reinitDerivee && deriveeInitialisee && dt_s > 0.0f\) {) s
+18 410 M (413:) s
+48 410 M
+(    ) s
+/Courier-Oblique 10 10 SUF
+72 410 M
+(// dv/dt \342\\211\\210 \(v_actuel \342\\210\\222 v_pr\303\251c\303\251dent\) / \316\\224t   \(d\303\251riv\303\251e num\303\251rique 1er ordre\)) s
+/F-gs-font 10 10 SF
+18 399 M (414:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 399 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 399 M
+(float) s
+/F-gs-font 10 10 SF
+102 399 M
+( dv_dt = \(vitesse_periode_ms - vitessePeriodePrecedente\) / dt_s;) s
+18 388 M (415:) s
+48 388 M
+(    ) s
+/Courier-Oblique 10 10 SUF
+72 388 M
+(// u_D = \342\\210\\222Kd \303\\227 dv/dt   car d\(erreur\)/dt = \342\\210\\222dv/dt \(Vc constant en r\303\251gime\)) s
+/F-gs-font 10 10 SF
+18 377 M (416:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 377 M
+(    u_D = -Kd_VAL * dv_dt;) s
+18 366 M (417:) s
+48 366 M
+(  }) s
+18 355 M (418:) s
+48 355 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 355 M
+(// reinitDerivee = vrai lors d'une transition de mode \342\\206\\222 on saute ce cycle) s
+/F-gs-font 10 10 SF
+18 344 M (419:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 344 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 344 M
+(// deriveeInitialisee = faux au d\303\251marrage ou apr\303\250s un kick \342\\206\\222 pas de "pr\303\251c\303\251dent" disponible) s
+/F-gs-font 10 10 SF
+18 333 M (420:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 333 M
+(#) s
+/Courier-Bold 10 10 SUF
+54 333 M
+(endif) s
+/F-gs-font 10 10 SF
+18 322 M (421:) s
+18 311 M (422:) s
+48 311 M
+(  vitessePeriodePrecedente = vitesse_periode_ms;  ) s
+/Courier-Oblique 10 10 SUF
+348 311 M
+(// m\303\251moriser la vitesse pour le prochain calcul D) s
+/F-gs-font 10 10 SF
+18 300 M (423:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 300 M
+(  deriveeInitialisee       = true;                ) s
+/Courier-Oblique 10 10 SUF
+348 300 M
+(// indiquer que le "pr\303\251c\303\251dent" est maintenant valide) s
+/F-gs-font 10 10 SF
+18 289 M (424:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 278 M (425:) s
+48 278 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 278 M
+(return) s
+/F-gs-font 10 10 SF
+96 278 M
+( u_P + u_I + u_D;  ) s
+/Courier-Oblique 10 10 SUF
+210 278 M
+(// retourner la somme des trois termes PID \(en PWM\)) s
+/F-gs-font 10 10 SF
+18 267 M (426:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 267 M
+(}) s
+18 256 M (427:) s
+18 245 M (428:) s
+/Courier-Oblique 10 10 SUF
+48 245 M
+(/* ===========================================================) s
+/F-gs-font 10 10 SF
+18 234 M (429:) s
+/Courier-Oblique 10 10 SUF
+48 234 M
+( * calculerCommandeMoteur\(\) \342\\200\\224 KICK-START + RAMPE ASYM\303\\211TRIQUE) s
+/F-gs-font 10 10 SF
+18 223 M (430:) s
+/Courier-Oblique 10 10 SUF
+48 223 M
+( *) s
+/F-gs-font 10 10 SF
+18 212 M (431:) s
+/Courier-Oblique 10 10 SUF
+48 212 M
+( * Prend la commande brute du correcteur et applique :) s
+/F-gs-font 10 10 SF
+18 201 M (432:) s
+/Courier-Oblique 10 10 SUF
+48 201 M
+( *   1\) la logique de kick-start \(impulsion initiale pour d\303\251marrer\)) s
+/F-gs-font 10 10 SF
+18 190 M (433:) s
+/Courier-Oblique 10 10 SUF
+48 190 M
+( *   2\) la rampe asym\303\251trique \(lissage de la commande\)) s
+/F-gs-font 10 10 SF
+18 179 M (434:) s
+/Courier-Oblique 10 10 SUF
+48 179 M
+( * =========================================================== */) s
+/F-gs-font 10 10 SF
+18 168 M (435:) s
+/Courier-Bold 10 10 SUF
+48 168 M
+(float) s
+/F-gs-font 10 10 SF
+78 168 M
+( ) s
+/Courier-Bold 10 10 SUF
+84 168 M
+(calculerCommandeMoteur) s
+/F-gs-font 10 10 SF
+216 168 M
+(\() s
+/Courier-Bold 10 10 SUF
+222 168 M
+(float) s
+/F-gs-font 10 10 SF
+252 168 M
+( cmdCorrecteur, ) s
+/Courier-Bold 10 10 SUF
+348 168 M
+(float) s
+/F-gs-font 10 10 SF
+378 168 M
+( dt_s,) s
+18 157 M (436:) s
+48 157 M
+(                              ) s
+/Courier-Bold 10 10 SUF
+228 157 M
+(bool) s
+/F-gs-font 10 10 SF
+252 157 M
+( urgence, ) s
+/Courier-Bold 10 10 SUF
+312 157 M
+(bool) s
+/F-gs-font 10 10 SF
+336 157 M
+( interdireKick, uint32_t now\) {) s
+18 146 M (437:) s
+18 135 M (438:) s
+48 135 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 135 M
+(static) s
+/F-gs-font 10 10 SF
+96 135 M
+( uint32_t kickFinMs  = 0;   ) s
+/Courier-Oblique 10 10 SUF
+264 135 M
+(// timestamp de la fin du dernier kick \(persistant entre appels\)) s
+/F-gs-font 10 10 SF
+18 124 M (439:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 124 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 124 M
+(const) s
+/F-gs-font 10 10 SF
+90 124 M
+(  uint16_t KICK_GRACE = 300; ) s
+/Courier-Oblique 10 10 SUF
+264 124 M
+(// d\303\251lai de gr\303\242ce apr\303\250s un kick : 300 ms sans nouveau kick) s
+/F-gs-font 10 10 SF
+18 113 M (440:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 102 M (441:) s
+48 102 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 102 M
+(// \342\\224\\200\342\\224\\200 Mode urgence : bypasser tout, commande directe \342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224) s
+5 91 M
+(\\200\342\\224\\200\342\\224\\200) s
+/F-gs-font 10 10 SF
+18 80 M (442:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 80 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 80 M
+(if) s
+/F-gs-font 10 10 SF
+72 80 M
+( \(urgence\) {) s
+18 69 M (443:) s
+48 69 M
+(    kickActif = false;                  ) s
+/Courier-Oblique 10 10 SUF
+288 69 M
+(// couper tout kick en cours) s
+/F-gs-font 10 10 SF
+18 58 M (444:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 58 M
+(    commandeLisseePWM = cmdCorrecteur;  ) s
+/Courier-Oblique 10 10 SUF
+288 58 M
+(// mettre la rampe \303\240 jour \(pour coh\303\251rence au retour\)) s
+/F-gs-font 10 10 SF
+18 47 M (445:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 47 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 47 M
+(return) s
+/F-gs-font 10 10 SF
+108 47 M
+( cmdCorrecteur;               ) s
+/Courier-Oblique 10 10 SUF
+288 47 M
+(// retourner la commande d'urgence sans rampe ni kick) s
+/F-gs-font 10 10 SF
+18 36 M (446:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 36 M
+(  }) s
+18 25 M (447:) s
+18 14 M (448:) s
+48 14 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 14 M
+(if) s
+/F-gs-font 10 10 SF
+72 14 M
+( \(interdireKick\) kickActif = false;  ) s
+/Courier-Oblique 10 10 SUF
+294 14 M
+(// si obstacle proche \342\\206\\222 couper le kick imm\303\251diatement) s
+/F-gs-font 10 10 SF
+18 3 M (449:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+_R
+S
+%%Page: (11) 11
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 11 def
+/fname (AAC_TIPE_v19.ino) def
+/fdir (.) def
+/ftail (AAC_TIPE_v19.ino) def
+% User defined strings:
+/pagenumstr (11) def
+/moddatestr (06/09/26) def
+/modtimestr (12:26:37) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+18 498 M (450:) s
+48 498 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 498 M
+(// \342\\224\\200\342\\224\\200 Kick en cours : continuer tant que conditions remplies \342\\224\\200) s
+/F-gs-font 10 10 SF
+18 487 M (451:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 487 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 487 M
+(if) s
+/F-gs-font 10 10 SF
+72 487 M
+( \(kickActif\) {) s
+18 476 M (452:) s
+48 476 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 476 M
+(if) s
+/F-gs-font 10 10 SF
+84 476 M
+( \(\(now - kickDebutMs\) < KICK_DUREE_MS_C          ) s
+/Courier-Oblique 10 10 SUF
+378 476 M
+(// kick encore dans sa dur\303\251e maximale) s
+/F-gs-font 10 10 SF
+18 465 M (453:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 465 M
+(        && vitesse_periode_ms < VITESSE_QUASI_NULLE_MS\) { ) s
+/Courier-Oblique 10 10 SUF
+396 465 M
+(// ET roue encore quasi arr\303\252t\303\251e) s
+/F-gs-font 10 10 SF
+18 454 M (454:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 454 M
+(      commandeLisseePWM = KICK_PWM_C;      ) s
+/Courier-Oblique 10 10 SUF
+306 454 M
+(// maintenir la rampe au niveau du kick) s
+/F-gs-font 10 10 SF
+18 443 M (455:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 443 M
+(      ) s
+/Courier-Bold 10 10 SUF
+84 443 M
+(return) s
+/F-gs-font 10 10 SF
+120 443 M
+( \() s
+/Courier-Bold 10 10 SUF
+132 443 M
+(float) s
+/F-gs-font 10 10 SF
+162 443 M
+(\)KICK_PWM_C;            ) s
+/Courier-Oblique 10 10 SUF
+306 443 M
+(// envoyer la commande kick directement \(sans rampe\)) s
+/F-gs-font 10 10 SF
+18 432 M (456:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 432 M
+(    } ) s
+/Courier-Bold 10 10 SUF
+84 432 M
+(else) s
+/F-gs-font 10 10 SF
+108 432 M
+( {                               ) s
+/Courier-Oblique 10 10 SUF
+306 432 M
+(// fin du kick \(dur\303\251e \303\251coul\303\251e OU voiture a d\303\251marr\303\251\)) s
+/F-gs-font 10 10 SF
+18 421 M (457:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 421 M
+(      kickActif = false;                   ) s
+/Courier-Oblique 10 10 SUF
+306 421 M
+(// d\303\251sactiver le drapeau kick) s
+/F-gs-font 10 10 SF
+18 410 M (458:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 410 M
+(      kickFinMs = now;                     ) s
+/Courier-Oblique 10 10 SUF
+306 410 M
+(// m\303\251moriser l'heure de fin pour le d\303\251lai de gr\303\242ce) s
+/F-gs-font 10 10 SF
+18 399 M (459:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 399 M
+(      deriveeInitialisee = false;          ) s
+/Courier-Oblique 10 10 SUF
+306 399 M
+(// r\303\251initialiser D : \303\251vite le pic \316\\224v au premier cycle post-kick) s
+/F-gs-font 10 10 SF
+18 388 M (460:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 388 M
+(      integrale = 0.0f;                    ) s
+/Courier-Oblique 10 10 SUF
+306 388 M
+(// r\303\251initialiser I : \303\251vite le windup accumul\303\251 pendant le kick) s
+/F-gs-font 10 10 SF
+18 377 M (461:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 377 M
+(      commandeLisseePWM = FEEDFORWARD_PWM; ) s
+/Courier-Oblique 10 10 SUF
+306 377 M
+(// repartir la rampe depuis le feedforward \(transition douce\)) s
+/F-gs-font 10 10 SF
+18 366 M (462:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 366 M
+(    }) s
+18 355 M (463:) s
+48 355 M
+(  }) s
+18 344 M (464:) s
+18 333 M (465:) s
+48 333 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 333 M
+(// \342\\224\\200\342\\224\\200 D\303\251clenchement d'un nouveau kick \342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342) s
+5 322 M
+(\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224) s
+5 311 M
+(\\200) s
+/F-gs-font 10 10 SF
+18 300 M (466:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 300 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 300 M
+(bool) s
+/F-gs-font 10 10 SF
+84 300 M
+( graceActive = \(now - kickFinMs\) < KICK_GRACE; ) s
+/Courier-Oblique 10 10 SUF
+366 300 M
+(// vrai si on est dans les 300 ms post-kick) s
+/F-gs-font 10 10 SF
+18 289 M (467:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 289 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 289 M
+(bool) s
+/F-gs-font 10 10 SF
+84 289 M
+( roueArretee = \(vitesse_periode_ms < VITESSE_QUASI_NULLE_MS\)  ) s
+/Courier-Oblique 10 10 SUF
+456 289 M
+(// mesure p\303\251riode < 0.05 m/s) s
+/F-gs-font 10 10 SF
+18 278 M (468:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 278 M
+(                  && \(vitesse_ms         < VITESSE_QUASI_NULLE_MS\); ) s
+/Courier-Oblique 10 10 SUF
+456 278 M
+(// ET mesure fr\303\251q < 0.05 m/s) s
+/F-gs-font 10 10 SF
+18 267 M (469:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 256 M (470:) s
+48 256 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 256 M
+(if) s
+/F-gs-font 10 10 SF
+72 256 M
+( \(!interdireKick          ) s
+/Courier-Oblique 10 10 SUF
+228 256 M
+(// kick non interdit \(pas d'obstacle proche\)) s
+/F-gs-font 10 10 SF
+18 245 M (471:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 245 M
+(      && !graceActive         ) s
+/Courier-Oblique 10 10 SUF
+228 245 M
+(// d\303\251lai de gr\303\242ce \303\251coul\303\251 \(\303\251vite les kicks en rafale\)) s
+/F-gs-font 10 10 SF
+18 234 M (472:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 234 M
+(      && cmdCorrecteur > COMMANDE_MIN_DEMARRAGE  ) s
+/Courier-Oblique 10 10 SUF
+342 234 M
+(// le correcteur demande bien d'avancer) s
+/F-gs-font 10 10 SF
+18 223 M (473:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 223 M
+(      && roueArretee\) {       ) s
+/Courier-Oblique 10 10 SUF
+228 223 M
+(// les deux mesures confirment que la roue est arr\303\252t\303\251e) s
+/F-gs-font 10 10 SF
+18 212 M (474:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 212 M
+(    integrale          = 0.0f;   ) s
+/Courier-Oblique 10 10 SUF
+246 212 M
+(// reset I au lancement kick \(anti-windup\)) s
+/F-gs-font 10 10 SF
+18 201 M (475:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 201 M
+(    deriveeInitialisee = false;  ) s
+/Courier-Oblique 10 10 SUF
+246 201 M
+(// reset D \(v=0 \342\\206\\222 pas de "pr\303\251c\303\251dent" fiable\)) s
+/F-gs-font 10 10 SF
+18 190 M (476:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 190 M
+(    kickActif          = true;   ) s
+/Courier-Oblique 10 10 SUF
+246 190 M
+(// activer le kick) s
+/F-gs-font 10 10 SF
+18 179 M (477:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 179 M
+(    kickDebutMs        = now;    ) s
+/Courier-Oblique 10 10 SUF
+246 179 M
+(// m\303\251moriser l'heure de d\303\251but) s
+/F-gs-font 10 10 SF
+18 168 M (478:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 168 M
+(    commandeLisseePWM  = KICK_PWM_C;   ) s
+/Courier-Oblique 10 10 SUF
+282 168 M
+(// initialiser la rampe au niveau kick) s
+/F-gs-font 10 10 SF
+18 157 M (479:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 157 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 157 M
+(return) s
+/F-gs-font 10 10 SF
+108 157 M
+( \() s
+/Courier-Bold 10 10 SUF
+120 157 M
+(float) s
+/F-gs-font 10 10 SF
+150 157 M
+(\)KICK_PWM_C;   ) s
+/Courier-Oblique 10 10 SUF
+240 157 M
+(// retourner la commande kick imm\303\251diatement) s
+/F-gs-font 10 10 SF
+18 146 M (480:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 146 M
+(  }) s
+18 135 M (481:) s
+18 124 M (482:) s
+48 124 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 124 M
+(// \342\\224\\200\342\\224\\200 Rampe asym\303\251trique \342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224) s
+5 113 M
+(\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200) s
+5 102 M
+(\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200) s
+/F-gs-font 10 10 SF
+18 91 M (483:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 91 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 91 M
+(float) s
+/F-gs-font 10 10 SF
+90 91 M
+( cible = constrain\(cmdCorrecteur, 0.0f, 255.0f\);  ) s
+/Courier-Oblique 10 10 SUF
+390 91 M
+(// limiter la cible \303\240 [0, 255] PWM) s
+/F-gs-font 10 10 SF
+18 80 M (484:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 69 M (485:) s
+48 69 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 69 M
+(// Calcul du d\303\251placement maximal autoris\303\251 ce cycle selon la direction) s
+/F-gs-font 10 10 SF
+18 58 M (486:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 58 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 58 M
+(float) s
+/F-gs-font 10 10 SF
+90 58 M
+( dMax = \(cible < commandeLisseePWM\)          ) s
+/Courier-Oblique 10 10 SUF
+360 58 M
+(// si on descend \(frein ou d\303\251c\303\251l\303\251ration\)) s
+/F-gs-font 10 10 SF
+18 47 M (487:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 47 M
+(               ? RAMPE_DESCENTE_PAR_S * dt_s         ) s
+/Courier-Oblique 10 10 SUF
+366 47 M
+(//   descente rapide : 700 PWM/s \303\\227 \316\\224t) s
+/F-gs-font 10 10 SF
+18 36 M (488:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 36 M
+(               : RAMPE_MONTEE_PAR_S   * dt_s;        ) s
+/Courier-Oblique 10 10 SUF
+366 36 M
+(//   mont\303\251e lente   : 350 PWM/s \303\\227 \316\\224t) s
+/F-gs-font 10 10 SF
+18 25 M (489:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 14 M (490:) s
+48 14 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 14 M
+(float) s
+/F-gs-font 10 10 SF
+90 14 M
+( delta = constrain\(cible - commandeLisseePWM, -dMax, dMax\);  ) s
+/Courier-Oblique 10 10 SUF
+456 14 M
+(// delta limit\303\251 \303\240 \302\261dMax) s
+/F-gs-font 10 10 SF
+18 3 M (491:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 3 M
+(  commandeLisseePWM += delta;   ) s
+/Courier-Oblique 10 10 SUF
+240 3 M
+(// avancer la rampe d'un pas vers la cible) s
+_R
+S
+%%Page: (12) 12
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 12 def
+/fname (AAC_TIPE_v19.ino) def
+/fdir (.) def
+/ftail (AAC_TIPE_v19.ino) def
+/Courier-Oblique 10 10 SUF
+% User defined strings:
+/pagenumstr (12) def
+/moddatestr (06/09/26) def
+/modtimestr (12:26:37) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+/F-gs-font 10 10 SF
+18 498 M (492:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 487 M (493:) s
+48 487 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 487 M
+(return) s
+/F-gs-font 10 10 SF
+96 487 M
+( constrain\(commandeLisseePWM, 0.0f, 255.0f\);  ) s
+/Courier-Oblique 10 10 SUF
+372 487 M
+(// retourner la commande liss\303\251e, born\303\251e [0,255]) s
+/F-gs-font 10 10 SF
+18 476 M (494:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 476 M
+(}) s
+18 465 M (495:) s
+18 454 M (496:) s
+/Courier-Oblique 10 10 SUF
+48 454 M
+(/* ===========================================================) s
+/F-gs-font 10 10 SF
+18 443 M (497:) s
+/Courier-Oblique 10 10 SUF
+48 443 M
+( * setup\(\) \342\\200\\224 INITIALISATION \(ex\303\251cut\303\251 une seule fois au d\303\251marrage\)) s
+/F-gs-font 10 10 SF
+18 432 M (498:) s
+/Courier-Oblique 10 10 SUF
+48 432 M
+( * =========================================================== */) s
+/F-gs-font 10 10 SF
+18 421 M (499:) s
+/Courier-Bold 10 10 SUF
+48 421 M
+(void) s
+/F-gs-font 10 10 SF
+72 421 M
+( ) s
+/Courier-Bold 10 10 SUF
+78 421 M
+(setup) s
+/F-gs-font 10 10 SF
+108 421 M
+(\(\) {) s
+18 410 M (500:) s
+48 410 M
+(  Serial.begin\(115200\);  ) s
+/Courier-Oblique 10 10 SUF
+198 410 M
+(// d\303\251marrer le port s\303\251rie \303\240 115 200 baud pour les messages de debug) s
+/F-gs-font 10 10 SF
+18 399 M (501:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 388 M (502:) s
+48 388 M
+(  Serial.print\(F\() s
+/Courier-Bold 10 10 SUF
+150 388 M
+("=== AAC TIPE v19 \342\\200\\224 correcteur : ") s
+/F-gs-font 10 10 SF
+402 388 M
+(\)\);   ) s
+/Courier-Oblique 10 10 SUF
+438 388 M
+(// afficher la version et le correcteur actif) s
+/F-gs-font 10 10 SF
+18 377 M (503:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 377 M
+(  Serial.print\(MODE_STR\);   ) s
+/Courier-Oblique 10 10 SUF
+216 377 M
+(// afficher "P", "PI", "PD" ou "PID" selon la s\303\251lection) s
+/F-gs-font 10 10 SF
+18 366 M (504:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 366 M
+(  Serial.println\(F\() s
+/Courier-Bold 10 10 SUF
+162 366 M
+(" ===") s
+/F-gs-font 10 10 SF
+198 366 M
+(\)\);) s
+18 355 M (505:) s
+18 344 M (506:) s
+48 344 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 344 M
+(// \342\\224\\200\342\\224\\200 Capteur ultrason HC-SR04 \342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342) s
+5 333 M
+(\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224) s
+5 322 M
+(\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200) s
+/F-gs-font 10 10 SF
+18 311 M (507:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 311 M
+(  pinMode\(TRIG_PIN, OUTPUT\);  ) s
+/Courier-Oblique 10 10 SUF
+228 311 M
+(// TRIG est une sortie : on g\303\251n\303\250re l'impulsion) s
+/F-gs-font 10 10 SF
+18 300 M (508:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 300 M
+(  pinMode\(ECHO_PIN, INPUT\);   ) s
+/Courier-Oblique 10 10 SUF
+228 300 M
+(// ECHO est une entr\303\251e : on mesure le retour) s
+/F-gs-font 10 10 SF
+18 289 M (509:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 289 M
+(  digitalWrite\(TRIG_PIN, LOW\);  ) s
+/Courier-Oblique 10 10 SUF
+240 289 M
+(// s'assurer que TRIG est bas au d\303\251marrage) s
+/F-gs-font 10 10 SF
+18 278 M (510:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 267 M (511:) s
+48 267 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 267 M
+(// \342\\224\\200\342\\224\\200 Capteur Hall \342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224) s
+5 256 M
+(\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200) s
+5 245 M
+(\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342) s
+5 234 M
+(\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200) s
+/F-gs-font 10 10 SF
+18 223 M (512:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 223 M
+(  pinMode\(HALL_PIN, INPUT_PULLUP\);  ) s
+/Courier-Oblique 10 10 SUF
+264 223 M
+(// activer la r\303\251sistance de pull-up interne \(signal actif LOW\)) s
+/F-gs-font 10 10 SF
+18 212 M (513:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 212 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 212 M
+(// Attacher l'ISR hallISR\(\) \303\240 l'interruption INT0 \(broche 2\) sur front descendant \(FALLING\)) s
+/F-gs-font 10 10 SF
+18 201 M (514:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 201 M
+(  attachInterrupt\(digitalPinToInterrupt\(HALL_PIN\), hallISR, FALLING\);) s
+18 190 M (515:) s
+18 179 M (516:) s
+48 179 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 179 M
+(// \342\\224\\200\342\\224\\200 Bouton start/stop \342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200) s
+5 168 M
+(\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342) s
+5 157 M
+(\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224) s
+5 146 M
+(\\200) s
+/F-gs-font 10 10 SF
+18 135 M (517:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 135 M
+(  pinMode\(BUTTON_PIN, INPUT_PULLUP\);              ) s
+/Courier-Oblique 10 10 SUF
+348 135 M
+(// pull-up interne : bouton appuy\303\251 = LOW) s
+/F-gs-font 10 10 SF
+18 124 M (518:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 124 M
+(  buttonLastRawState = digitalRead\(BUTTON_PIN\);   ) s
+/Courier-Oblique 10 10 SUF
+348 124 M
+(// lire l'\303\251tat initial pour \303\251viter un faux d\303\251marrage) s
+/F-gs-font 10 10 SF
+18 113 M (519:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 113 M
+(  buttonStableState  = buttonLastRawState;         ) s
+/Courier-Oblique 10 10 SUF
+354 113 M
+(// initialiser l'\303\251tat stable = \303\251tat initial) s
+/F-gs-font 10 10 SF
+18 102 M (520:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 91 M (521:) s
+48 91 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 91 M
+(// \342\\224\\200\342\\224\\200 Pont en H L298N \342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342) s
+5 80 M
+(\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224) s
+5 69 M
+(\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200) s
+5 58 M
+(\342\\224\\200\342\\224\\200) s
+/F-gs-font 10 10 SF
+18 47 M (522:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 47 M
+(  pinMode\(ENB_PIN,  OUTPUT\);   ) s
+/Courier-Oblique 10 10 SUF
+234 47 M
+(// Enable B : sortie PWM pour la vitesse) s
+/F-gs-font 10 10 SF
+18 36 M (523:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 36 M
+(  pinMode\(IN3_PIN,  OUTPUT\);   ) s
+/Courier-Oblique 10 10 SUF
+234 36 M
+(// IN3 : sortie num\303\251rique pour le sens) s
+/F-gs-font 10 10 SF
+18 25 M (524:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 25 M
+(  pinMode\(IN4_PIN,  OUTPUT\);   ) s
+/Courier-Oblique 10 10 SUF
+234 25 M
+(// IN4 : sortie num\303\251rique pour le sens \(compl\303\251ment de IN3\)) s
+/F-gs-font 10 10 SF
+18 14 M (525:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 14 M
+(  analogWrite\(ENB_PIN, 0\);     ) s
+/Courier-Oblique 10 10 SUF
+234 14 M
+(// d\303\251marrer avec PWM = 0 \342\\206\\222 moteur arr\303\252t\303\251) s
+/F-gs-font 10 10 SF
+18 3 M (526:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 3 M
+(  digitalWrite\(IN3_PIN, LOW\);  ) s
+/Courier-Oblique 10 10 SUF
+234 3 M
+(// IN3 bas) s
+_R
+S
+%%Page: (13) 13
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 13 def
+/fname (AAC_TIPE_v19.ino) def
+/fdir (.) def
+/ftail (AAC_TIPE_v19.ino) def
+/Courier-Oblique 10 10 SUF
+% User defined strings:
+/pagenumstr (13) def
+/moddatestr (06/09/26) def
+/modtimestr (12:26:37) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+/F-gs-font 10 10 SF
+18 498 M (527:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 498 M
+(  digitalWrite\(IN4_PIN, LOW\);  ) s
+/Courier-Oblique 10 10 SUF
+234 498 M
+(// IN4 bas \342\\206\\222 pas de courant dans le moteur) s
+/F-gs-font 10 10 SF
+18 487 M (528:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 476 M (529:) s
+48 476 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 476 M
+(// \342\\224\\200\342\\224\\200 Carte SD via SPI \342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342) s
+5 465 M
+(\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224) s
+5 454 M
+(\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200) s
+/F-gs-font 10 10 SF
+18 443 M (530:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 443 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 443 M
+(// Le shield SD partage le bus SPI avec d'\303\251ventuels autres p\303\251riph\303\251riques.) s
+/F-gs-font 10 10 SF
+18 432 M (531:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 432 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 432 M
+(// On force le CS de la SD \303\240 HIGH \(d\303\251s\303\251lectionn\303\251\) et le pin 10 aussi) s
+/F-gs-font 10 10 SF
+18 421 M (532:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 421 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 421 M
+(// \(n\303\251cessaire sur certaines cartes pour que la SD fonctionne correctement\).) s
+/F-gs-font 10 10 SF
+18 410 M (533:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 410 M
+(  pinMode\(SD_CS_PIN, OUTPUT\);    ) s
+/Courier-Oblique 10 10 SUF
+246 410 M
+(// CS de la SD en sortie) s
+/F-gs-font 10 10 SF
+18 399 M (534:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 399 M
+(  digitalWrite\(SD_CS_PIN, HIGH\); ) s
+/Courier-Oblique 10 10 SUF
+246 399 M
+(// SD d\303\251s\303\251lectionn\303\251e au d\303\251marrage) s
+/F-gs-font 10 10 SF
+18 388 M (535:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 388 M
+(  pinMode\(10, OUTPUT\);           ) s
+/Courier-Oblique 10 10 SUF
+246 388 M
+(// pin SPI ma\303\256tre n\303\251cessaire m\303\252me si non utilis\303\251 comme CS) s
+/F-gs-font 10 10 SF
+18 377 M (536:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 377 M
+(  digitalWrite\(10, HIGH\);        ) s
+/Courier-Oblique 10 10 SUF
+246 377 M
+(// mettre HIGH pour ne pas interf\303\251rer avec le bus SPI) s
+/F-gs-font 10 10 SF
+18 366 M (537:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 355 M (538:) s
+48 355 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 355 M
+(// \342\\224\\200\342\\224\\200 Calcul du feedforward \342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224) s
+5 344 M
+(\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200) s
+5 333 M
+(\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200) s
+/F-gs-font 10 10 SF
+18 322 M (539:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 322 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 322 M
+(// Formule : U_FF = \(Vc / K_moteur + seuil_d\303\251marrage\) \303\\227 255) s
+/F-gs-font 10 10 SF
+18 311 M (540:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 311 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 311 M
+(// Cette valeur est la commande qui maintient exactement Vc en r\303\251gime permanent) s
+/F-gs-font 10 10 SF
+18 300 M (541:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 300 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 300 M
+(// si le mod\303\250le moteur \(K, seuil\) est correct.) s
+/F-gs-font 10 10 SF
+18 289 M (542:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 289 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 289 M
+(// On la sature \303\240 250 pour garder 5 PWM de marge pour le terme P.) s
+/F-gs-font 10 10 SF
+18 278 M (543:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 278 M
+(  FEEDFORWARD_PWM = constrain\() s
+18 267 M (544:) s
+48 267 M
+(    \(VITESSE_CIBLE_MS / K_MOTEUR + SEUIL_DEMARRAGE\) * 255.0f,  ) s
+/Courier-Oblique 10 10 SUF
+426 267 M
+(// calcul brut) s
+/F-gs-font 10 10 SF
+18 256 M (545:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 256 M
+(    0.0f, 250.0f\);  ) s
+/Courier-Oblique 10 10 SUF
+168 256 M
+(// saturation \303\240 250 PWM maxi) s
+/F-gs-font 10 10 SF
+18 245 M (546:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 234 M (547:) s
+48 234 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 234 M
+(// Afficher un r\303\251sum\303\251 des param\303\250tres sur le port s\303\251rie pour v\303\251rification avant d\303\251marrage) s
+/F-gs-font 10 10 SF
+18 223 M (548:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 223 M
+(  Serial.print\(F\() s
+/Courier-Bold 10 10 SUF
+150 223 M
+("Vc = ") s
+/F-gs-font 10 10 SF
+192 223 M
+(\)\);       Serial.print\(VITESSE_CIBLE_MS, 2\); Serial.println\(F\() s
+/Courier-Bold 10 10 SUF
+564 223 M
+(" m/s") s
+/F-gs-font 10 10 SF
+600 223 M
+(\)\);) s
+18 212 M (549:) s
+48 212 M
+(  Serial.print\(F\() s
+/Courier-Bold 10 10 SUF
+150 212 M
+("U_FF = ") s
+/F-gs-font 10 10 SF
+204 212 M
+(\)\);     Serial.print\(FEEDFORWARD_PWM,  1\); Serial.println\(F\() s
+/Courier-Bold 10 10 SUF
+564 212 M
+(" PWM") s
+/F-gs-font 10 10 SF
+600 212 M
+(\)\);) s
+18 201 M (550:) s
+48 201 M
+(  Serial.print\(F\() s
+/Courier-Bold 10 10 SUF
+150 201 M
+("Kp_BRAKE = ") s
+/F-gs-font 10 10 SF
+228 201 M
+(\)\); Serial.print\(KP_BRAKE_PWM,    1\); Serial.println\(F\() s
+/Courier-Bold 10 10 SUF
+558 201 M
+(" PWM/m") s
+/F-gs-font 10 10 SF
+606 201 M
+(\)\);) s
+18 190 M (551:) s
+48 190 M
+(  Serial.print\(F\() s
+/Courier-Bold 10 10 SUF
+150 190 M
+("Kp=") s
+/F-gs-font 10 10 SF
+180 190 M
+(\)\);         Serial.print\(Kp_VAL, 0\);) s
+18 179 M (552:) s
+48 179 M
+(  Serial.print\(F\() s
+/Courier-Bold 10 10 SUF
+150 179 M
+(" Ki=") s
+/F-gs-font 10 10 SF
+186 179 M
+(\)\);        Serial.print\(Ki_VAL, 0\);) s
+18 168 M (553:) s
+48 168 M
+(  Serial.print\(F\() s
+/Courier-Bold 10 10 SUF
+150 168 M
+(" Kd=") s
+/F-gs-font 10 10 SF
+186 168 M
+(\)\);        Serial.print\(Kd_VAL, 0\);) s
+18 157 M (554:) s
+48 157 M
+(  Serial.print\(F\() s
+/Courier-Bold 10 10 SUF
+150 157 M
+("  KICK=") s
+/F-gs-font 10 10 SF
+204 157 M
+(\)\);     Serial.print\(KICK_PWM_C\);) s
+18 146 M (555:) s
+48 146 M
+(  Serial.print\(F\() s
+/Courier-Bold 10 10 SUF
+150 146 M
+(" PWM / ") s
+/F-gs-font 10 10 SF
+204 146 M
+(\)\);     Serial.print\(KICK_DUREE_MS_C\);) s
+18 135 M (556:) s
+48 135 M
+(  Serial.println\(F\() s
+/Courier-Bold 10 10 SUF
+162 135 M
+(" ms") s
+/F-gs-font 10 10 SF
+192 135 M
+(\)\);) s
+18 124 M (557:) s
+18 113 M (558:) s
+48 113 M
+(  initSD\(\);                         ) s
+/Courier-Oblique 10 10 SUF
+264 113 M
+(// tenter d'ouvrir un nouveau fichier CSV sur la carte SD) s
+/F-gs-font 10 10 SF
+18 102 M (559:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 102 M
+(  lastControlTime = millis\(\);       ) s
+/Courier-Oblique 10 10 SUF
+264 102 M
+(// initialiser le timer de contr\303\264le \303\240 l'instant pr\303\251sent) s
+/F-gs-font 10 10 SF
+18 91 M (560:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 91 M
+(  lastLogTime     = millis\(\);       ) s
+/Courier-Oblique 10 10 SUF
+264 91 M
+(// initialiser le timer de log \303\240 l'instant pr\303\251sent) s
+/F-gs-font 10 10 SF
+18 80 M (561:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 80 M
+(}) s
+18 69 M (562:) s
+18 58 M (563:) s
+/Courier-Oblique 10 10 SUF
+48 58 M
+(/* ===========================================================) s
+/F-gs-font 10 10 SF
+18 47 M (564:) s
+/Courier-Oblique 10 10 SUF
+48 47 M
+( * loop\(\) \342\\200\\224 BOUCLE PRINCIPALE \(r\303\251p\303\251t\303\251e ind\303\251finiment\)) s
+/F-gs-font 10 10 SF
+18 36 M (565:) s
+/Courier-Oblique 10 10 SUF
+48 36 M
+( * S'ex\303\251cute aussi vite que possible. La r\303\251gulation et le log) s
+/F-gs-font 10 10 SF
+18 25 M (566:) s
+/Courier-Oblique 10 10 SUF
+48 25 M
+( * sont cadenc\303\251s par des timers \(toutes les 50 ms et 100 ms\).) s
+/F-gs-font 10 10 SF
+18 14 M (567:) s
+/Courier-Oblique 10 10 SUF
+48 14 M
+( * =========================================================== */) s
+/F-gs-font 10 10 SF
+18 3 M (568:) s
+/Courier-Bold 10 10 SUF
+48 3 M
+(void) s
+/F-gs-font 10 10 SF
+72 3 M
+( ) s
+/Courier-Bold 10 10 SUF
+78 3 M
+(loop) s
+/F-gs-font 10 10 SF
+102 3 M
+(\(\) {) s
+_R
+S
+%%Page: (14) 14
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 14 def
+/fname (AAC_TIPE_v19.ino) def
+/fdir (.) def
+/ftail (AAC_TIPE_v19.ino) def
+% User defined strings:
+/pagenumstr (14) def
+/moddatestr (06/09/26) def
+/modtimestr (12:26:37) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+18 498 M (569:) s
+48 498 M
+(  uint32_t now = millis\(\);   ) s
+/Courier-Oblique 10 10 SUF
+222 498 M
+(// lire l'horloge syst\303\250me en millisecondes \(d\303\251bordement tous les 49 jours\)) s
+/F-gs-font 10 10 SF
+18 487 M (570:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 476 M (571:) s
+48 476 M
+(  gererBoutonStartStop\(now\);   ) s
+/Courier-Oblique 10 10 SUF
+234 476 M
+(// v\303\251rifier l'\303\251tat du bouton et d\303\251cider start/stop) s
+/F-gs-font 10 10 SF
+18 465 M (572:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 454 M (573:) s
+48 454 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 454 M
+(if) s
+/F-gs-font 10 10 SF
+72 454 M
+( \(!programmeActif\) {        ) s
+/Courier-Oblique 10 10 SUF
+240 454 M
+(// si le programme est \303\240 l'arr\303\252t :) s
+/F-gs-font 10 10 SF
+18 443 M (574:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 443 M
+(    appliquerCommande\(0.0f\);    ) s
+/Courier-Oblique 10 10 SUF
+240 443 M
+(//   forcer le moteur \303\240 0 en permanence \(s\303\251curit\303\251\)) s
+/F-gs-font 10 10 SF
+18 432 M (575:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 432 M
+(    lastControlTime = now;      ) s
+/Courier-Oblique 10 10 SUF
+240 432 M
+(//   maintenir le timer \303\240 jour pour \303\251viter un grand dt au d\303\251marrage) s
+/F-gs-font 10 10 SF
+18 421 M (576:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 421 M
+(    lastLogTime     = now;      ) s
+/Courier-Oblique 10 10 SUF
+240 421 M
+(//   idem pour le timer de log) s
+/F-gs-font 10 10 SF
+18 410 M (577:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 410 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 410 M
+(return) s
+/F-gs-font 10 10 SF
+108 410 M
+(;                     ) s
+/Courier-Oblique 10 10 SUF
+240 410 M
+(//   sortir imm\303\251diatement de loop\(\) sans rien calculer) s
+/F-gs-font 10 10 SF
+18 399 M (578:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 399 M
+(  }) s
+18 388 M (579:) s
+18 377 M (580:) s
+48 377 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 377 M
+(// \342\\224\\200\342\\224\\200 Caden\303\247age : ex\303\251cuter le bloc de contr\303\264le toutes les 50 ms \342\\224\\200\342\\224\\200) s
+/F-gs-font 10 10 SF
+18 366 M (581:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 366 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 366 M
+(if) s
+/F-gs-font 10 10 SF
+72 366 M
+( \(now - lastControlTime >= CONTROL_PERIOD_MS\) {) s
+18 355 M (582:) s
+48 355 M
+(    uint32_t dt_ms = now - lastControlTime;  ) s
+/Courier-Oblique 10 10 SUF
+318 355 M
+(// temps r\303\251el \303\251coul\303\251 depuis le dernier cycle \(peut diff\303\251rer de 50 ms\)) s
+/F-gs-font 10 10 SF
+18 344 M (583:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 344 M
+(    lastControlTime = now;                    ) s
+/Courier-Oblique 10 10 SUF
+324 344 M
+(// mettre \303\240 jour le timestamp de r\303\251f\303\251rence) s
+/F-gs-font 10 10 SF
+18 333 M (584:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 333 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 333 M
+(float) s
+/F-gs-font 10 10 SF
+102 333 M
+( dt_s = \() s
+/Courier-Bold 10 10 SUF
+156 333 M
+(float) s
+/F-gs-font 10 10 SF
+186 333 M
+(\)dt_ms / 1000.0f;    ) s
+/Courier-Oblique 10 10 SUF
+312 333 M
+(// convertir en secondes pour les calculs PID) s
+/F-gs-font 10 10 SF
+18 322 M (585:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 311 M (586:) s
+48 311 M
+(    ) s
+/Courier-Oblique 10 10 SUF
+72 311 M
+(// \342\\224\\200\342\\224\\200 \303\\211TAPE 1 : MESURES \342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342) s
+5 300 M
+(\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224) s
+5 289 M
+(\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200) s
+/F-gs-font 10 10 SF
+18 278 M (587:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 278 M
+(    vitesse_ms         = calculerVitesse\(dt_ms\);         ) s
+/Courier-Oblique 10 10 SUF
+390 278 M
+(// vitesse fr\303\251quencem\303\251trique \(pour log seulement\)) s
+/F-gs-font 10 10 SF
+18 267 M (588:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 267 M
+(    vitesse_periode_ms = calculerVitessePeriode\(\);        ) s
+/Courier-Oblique 10 10 SUF
+396 267 M
+(// vitesse p\303\251riode filtr\303\251e \(utilis\303\251e par le PID\)) s
+/F-gs-font 10 10 SF
+18 256 M (589:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 256 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 256 M
+(float) s
+/F-gs-font 10 10 SF
+102 256 M
+( dist_m       = lireDistance\(\);                  ) s
+/Courier-Oblique 10 10 SUF
+396 256 M
+(// distance ultrason en m\303\250tres \(-1 si invalide\)) s
+/F-gs-font 10 10 SF
+18 245 M (590:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 234 M (591:) s
+48 234 M
+(    ) s
+/Courier-Oblique 10 10 SUF
+72 234 M
+(// \342\\224\\200\342\\224\\200 \303\\211TAPE 2 : M\303\\211MOIRE D'OBSTACLE \342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224) s
+5 223 M
+(\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200) s
+5 212 M
+(\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200) s
+/F-gs-font 10 10 SF
+18 201 M (592:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 201 M
+(    ) s
+/Courier-Oblique 10 10 SUF
+72 201 M
+(// Le HC-SR04 renvoie parfois -1 \(timeout\) m\303\252me avec un obstacle pr\303\251sent.) s
+/F-gs-font 10 10 SF
+18 190 M (593:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 190 M
+(    ) s
+/Courier-Oblique 10 10 SUF
+72 190 M
+(// Sans m\303\251moire, un seul -1 ferait basculer en mode vitesse pour 50 ms,) s
+/F-gs-font 10 10 SF
+18 179 M (594:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 179 M
+(    ) s
+/Courier-Oblique 10 10 SUF
+72 179 M
+(// remettant l'int\303\251grale \303\240 0, puis retour en mode distance \342\\206\\222 instabilit\303\251.) s
+/F-gs-font 10 10 SF
+18 168 M (595:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 168 M
+(    ) s
+/Courier-Oblique 10 10 SUF
+72 168 M
+(// Solution : si une mesure invalide arrive dans les 300 ms suivant une) s
+/F-gs-font 10 10 SF
+18 157 M (596:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 157 M
+(    ) s
+/Courier-Oblique 10 10 SUF
+72 157 M
+(// mesure valide, on r\303\251utilise la derni\303\250re valeur valide.) s
+/F-gs-font 10 10 SF
+18 146 M (597:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 146 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 146 M
+(static) s
+/F-gs-font 10 10 SF
+108 146 M
+( ) s
+/Courier-Bold 10 10 SUF
+114 146 M
+(float) s
+/F-gs-font 10 10 SF
+144 146 M
+(    derniereDist_m     = -1.0f;   ) s
+/Courier-Oblique 10 10 SUF
+348 146 M
+(// derni\303\250re distance valide m\303\251moris\303\251e) s
+/F-gs-font 10 10 SF
+18 135 M (598:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 135 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 135 M
+(static) s
+/F-gs-font 10 10 SF
+108 135 M
+( uint32_t dernierDistTime_ms = 0;        ) s
+/Courier-Oblique 10 10 SUF
+354 135 M
+(// timestamp de la derni\303\250re mesure valide) s
+/F-gs-font 10 10 SF
+18 124 M (599:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 124 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 124 M
+(const) s
+/F-gs-font 10 10 SF
+102 124 M
+(  uint16_t OBSTACLE_MEMORY_MS = 300;      ) s
+/Courier-Oblique 10 10 SUF
+354 124 M
+(// dur\303\251e de validit\303\251 de la m\303\251moire d'obstacle) s
+/F-gs-font 10 10 SF
+18 113 M (600:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 102 M (601:) s
+48 102 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 102 M
+(if) s
+/F-gs-font 10 10 SF
+84 102 M
+( \(dist_m >= 0.0f\) {              ) s
+/Courier-Oblique 10 10 SUF
+282 102 M
+(// si la mesure est valide) s
+/F-gs-font 10 10 SF
+18 91 M (602:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 91 M
+(      derniereDist_m     = dist_m;     ) s
+/Courier-Oblique 10 10 SUF
+282 91 M
+(//   mettre \303\240 jour la m\303\251moire) s
+/F-gs-font 10 10 SF
+18 80 M (603:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 80 M
+(      dernierDistTime_ms = now;         ) s
+/Courier-Oblique 10 10 SUF
+288 80 M
+(//   m\303\251moriser l'heure) s
+/F-gs-font 10 10 SF
+18 69 M (604:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 69 M
+(    }) s
+18 58 M (605:) s
+18 47 M (606:) s
+48 47 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 47 M
+(float) s
+/F-gs-font 10 10 SF
+102 47 M
+( dist_eff = dist_m;   ) s
+/Courier-Oblique 10 10 SUF
+234 47 M
+(// commencer avec la mesure brute) s
+/F-gs-font 10 10 SF
+18 36 M (607:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 36 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 36 M
+(if) s
+/F-gs-font 10 10 SF
+84 36 M
+( \(dist_m < 0.0f                                    ) s
+/Courier-Oblique 10 10 SUF
+390 36 M
+(// si la mesure est invalide) s
+/F-gs-font 10 10 SF
+18 25 M (608:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 25 M
+(        && derniereDist_m >= 0.0f                        ) s
+/Courier-Oblique 10 10 SUF
+390 25 M
+(// et qu'on avait une valeur m\303\251moris\303\251e) s
+/F-gs-font 10 10 SF
+18 14 M (609:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 14 M
+(        && derniereDist_m < DIST_MAX_OBSTACLE_M          ) s
+/Courier-Oblique 10 10 SUF
+390 14 M
+(// et que cette valeur signalait un obstacle) s
+/F-gs-font 10 10 SF
+18 3 M (610:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 3 M
+(        && \(now - dernierDistTime_ms\) < OBSTACLE_MEMORY_MS\) { ) s
+/Courier-Oblique 10 10 SUF
+420 3 M
+(// et que la m\303\251moire n'a pas expir\303\251) s
+_R
+S
+%%Page: (15) 15
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 15 def
+/fname (AAC_TIPE_v19.ino) def
+/fdir (.) def
+/ftail (AAC_TIPE_v19.ino) def
+/Courier-Oblique 10 10 SUF
+% User defined strings:
+/pagenumstr (15) def
+/moddatestr (06/09/26) def
+/modtimestr (12:26:37) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+/F-gs-font 10 10 SF
+18 498 M (611:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 498 M
+(      dist_eff = derniereDist_m;   ) s
+/Courier-Oblique 10 10 SUF
+258 498 M
+(// utiliser la valeur m\303\251moris\303\251e \303\240 la place de -1) s
+/F-gs-font 10 10 SF
+18 487 M (612:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 487 M
+(    }) s
+18 476 M (613:) s
+18 465 M (614:) s
+48 465 M
+(    ) s
+/Courier-Oblique 10 10 SUF
+72 465 M
+(// \342\\224\\200\342\\224\\200 \303\\211TAPE 3 : D\303\\211TERMINATION DU MODE \342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342) s
+5 454 M
+(\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224) s
+5 443 M
+(\\200\342\\224\\200) s
+/F-gs-font 10 10 SF
+18 432 M (615:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 432 M
+(    ) s
+/Courier-Oblique 10 10 SUF
+72 432 M
+(// Trois modes exclusifs, par ordre de priorit\303\251 d\303\251croissante :) s
+/F-gs-font 10 10 SF
+18 421 M (616:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 421 M
+(    ) s
+/Courier-Oblique 10 10 SUF
+72 421 M
+(//   Mode 1 \342\\200\\224 Urgence  : obstacle tr\303\250s proche \342\\206\\222 freinage maximal imm\303\251diat) s
+/F-gs-font 10 10 SF
+18 410 M (617:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 410 M
+(    ) s
+/Courier-Oblique 10 10 SUF
+72 410 M
+(//   Mode 2 \342\\200\\224 Vitesse  : pas d'obstacle \342\\206\\222 maintenir Vc) s
+/F-gs-font 10 10 SF
+18 399 M (618:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 399 M
+(    ) s
+/Courier-Oblique 10 10 SUF
+72 399 M
+(//   Mode 3 \342\\200\\224 Distance : obstacle en zone ACC \342\\206\\222 maintenir vitesse + freiner si trop proche) s
+/F-gs-font 10 10 SF
+18 388 M (619:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 388 M
+(    uint8_t modeActuel;) s
+18 377 M (620:) s
+18 366 M (621:) s
+48 366 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 366 M
+(if) s
+/F-gs-font 10 10 SF
+84 366 M
+( \(dist_eff > 0.0f && dist_eff < DIST_URGENCE_M + 0.5f * vitesse_periode_ms\) {) s
+18 355 M (622:) s
+48 355 M
+(      ) s
+/Courier-Oblique 10 10 SUF
+84 355 M
+(// Urgence : obstacle d\303\251tect\303\251 ET sa distance est inf\303\251rieure \303\240 6 cm + marge cin\303\251tique) s
+/F-gs-font 10 10 SF
+18 344 M (623:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 344 M
+(      ) s
+/Courier-Oblique 10 10 SUF
+84 344 M
+(// La marge 0.5\303\\227v permet d'anticiper l'urgence si la voiture roule vite) s
+/F-gs-font 10 10 SF
+18 333 M (624:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 333 M
+(      modeActuel = 1;) s
+18 322 M (625:) s
+48 322 M
+(    } ) s
+/Courier-Bold 10 10 SUF
+84 322 M
+(else) s
+/F-gs-font 10 10 SF
+108 322 M
+( ) s
+/Courier-Bold 10 10 SUF
+114 322 M
+(if) s
+/F-gs-font 10 10 SF
+126 322 M
+( \(dist_eff < 0.0f || dist_eff >= DIST_MAX_OBSTACLE_M\) {) s
+18 311 M (626:) s
+48 311 M
+(      ) s
+/Courier-Oblique 10 10 SUF
+84 311 M
+(// Vitesse : pas d'obstacle d\303\251tect\303\251 \(dist=-1\) OU obstacle trop loin \(>1.20 m\)) s
+/F-gs-font 10 10 SF
+18 300 M (627:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 300 M
+(      modeActuel = 2;) s
+18 289 M (628:) s
+48 289 M
+(    } ) s
+/Courier-Bold 10 10 SUF
+84 289 M
+(else) s
+/F-gs-font 10 10 SF
+108 289 M
+( {) s
+18 278 M (629:) s
+48 278 M
+(      ) s
+/Courier-Oblique 10 10 SUF
+84 278 M
+(// Distance : obstacle pr\303\251sent dans la zone [0.06 m, 1.20 m] \342\\206\\222 ACC actif) s
+/F-gs-font 10 10 SF
+18 267 M (630:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 267 M
+(      modeActuel = 3;) s
+18 256 M (631:) s
+48 256 M
+(    }) s
+18 245 M (632:) s
+18 234 M (633:) s
+48 234 M
+(    ) s
+/Courier-Oblique 10 10 SUF
+72 234 M
+(// \342\\224\\200\342\\224\\200 \303\\211TAPE 4 : INTERDIRE LE KICK SI OBSTACLE PROCHE \342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342) s
+5 223 M
+(\\224\\200) s
+/F-gs-font 10 10 SF
+18 212 M (634:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 212 M
+(    ) s
+/Courier-Oblique 10 10 SUF
+72 212 M
+(// Le kick envoie une impulsion de forte puissance.) s
+/F-gs-font 10 10 SF
+18 201 M (635:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 201 M
+(    ) s
+/Courier-Oblique 10 10 SUF
+72 201 M
+(// Si un obstacle est proche, cette impulsion pourrait lancer) s
+/F-gs-font 10 10 SF
+18 190 M (636:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 190 M
+(    ) s
+/Courier-Oblique 10 10 SUF
+72 190 M
+(// la voiture vers lui \342\\206\\222 collision \342\\206\\222 interdit.) s
+/F-gs-font 10 10 SF
+18 179 M (637:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 179 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 179 M
+(bool) s
+/F-gs-font 10 10 SF
+96 179 M
+( interdireKick = \(modeActuel == 3\)                             ) s
+/Courier-Oblique 10 10 SUF
+474 179 M
+(// en mode distance : toujours interdit) s
+/F-gs-font 10 10 SF
+18 168 M (638:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 168 M
+(                      || \(dist_eff > 0.0f && dist_eff < DIST_CONSIGNE_M\); ) s
+/Courier-Oblique 10 10 SUF
+492 168 M
+(// obstacle dans la zone de s\303\251curit\303\251) s
+/F-gs-font 10 10 SF
+18 157 M (639:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 146 M (640:) s
+48 146 M
+(    ) s
+/Courier-Oblique 10 10 SUF
+72 146 M
+(// \342\\224\\200\342\\224\\200 \303\\211TAPE 5 : GESTION DES TRANSITIONS DE MODE \342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224) s
+5 135 M
+(\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200) s
+/F-gs-font 10 10 SF
+18 124 M (641:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 124 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 124 M
+(static) s
+/F-gs-font 10 10 SF
+108 124 M
+( uint8_t ancienMode = 0;   ) s
+/Courier-Oblique 10 10 SUF
+270 124 M
+(// mode du cycle pr\303\251c\303\251dent \(persistant entre les appels\)) s
+/F-gs-font 10 10 SF
+18 113 M (642:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 113 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 113 M
+(bool) s
+/F-gs-font 10 10 SF
+96 113 M
+( reinitDerivee = false;       ) s
+/Courier-Oblique 10 10 SUF
+276 113 M
+(// drapeau : r\303\251initialiser le terme D ce cycle ?) s
+/F-gs-font 10 10 SF
+18 102 M (643:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 91 M (644:) s
+48 91 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 91 M
+(if) s
+/F-gs-font 10 10 SF
+84 91 M
+( \(modeActuel != ancienMode\) {   ) s
+/Courier-Oblique 10 10 SUF
+276 91 M
+(// si le mode vient de changer) s
+/F-gs-font 10 10 SF
+18 80 M (645:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 80 M
+(      reinitDerivee = true;           ) s
+/Courier-Oblique 10 10 SUF
+276 80 M
+(// toujours r\303\251initialiser la d\303\251riv\303\251e lors d'une transition) s
+/F-gs-font 10 10 SF
+18 69 M (646:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 69 M
+(                                      ) s
+/Courier-Oblique 10 10 SUF
+276 69 M
+(// \(\303\251vite un saut sur le terme D \303\240 cause du changement d'erreur\)) s
+/F-gs-font 10 10 SF
+18 58 M (647:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 47 M (648:) s
+48 47 M
+(      ) s
+/Courier-Oblique 10 10 SUF
+84 47 M
+(// R\303\251initialiser l'int\303\251grale SEULEMENT en cas de transition depuis/vers l'urgence.) s
+/F-gs-font 10 10 SF
+18 36 M (649:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 36 M
+(      ) s
+/Courier-Oblique 10 10 SUF
+84 36 M
+(// Les transitions 2\342\\206\\2243 sont intentionnellement continues \(v19\) :) s
+/F-gs-font 10 10 SF
+18 25 M (650:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 25 M
+(      ) s
+/Courier-Oblique 10 10 SUF
+84 25 M
+(// garder l'int\303\251grale \303\251vite le saut de commande qui causait l'acc\303\251l\303\251ration.) s
+/F-gs-font 10 10 SF
+18 14 M (651:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 14 M
+(      ) s
+/Courier-Bold 10 10 SUF
+84 14 M
+(if) s
+/F-gs-font 10 10 SF
+96 14 M
+( \(modeActuel == 1 || ancienMode == 1\) {) s
+18 3 M (652:) s
+48 3 M
+(        integrale = 0.0f;   ) s
+/Courier-Oblique 10 10 SUF
+216 3 M
+(// reset I lors d'une transition urgence \342\\206\\224 autre mode) s
+_R
+S
+%%Page: (16) 16
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 16 def
+/fname (AAC_TIPE_v19.ino) def
+/fdir (.) def
+/ftail (AAC_TIPE_v19.ino) def
+/Courier-Oblique 10 10 SUF
+% User defined strings:
+/pagenumstr (16) def
+/moddatestr (06/09/26) def
+/modtimestr (12:26:37) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+/F-gs-font 10 10 SF
+18 498 M (653:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 498 M
+(      }) s
+18 487 M (654:) s
+48 487 M
+(    }) s
+18 476 M (655:) s
+48 476 M
+(    ancienMode = modeActuel;   ) s
+/Courier-Oblique 10 10 SUF
+234 476 M
+(// m\303\251moriser le mode pour la comparaison du prochain cycle) s
+/F-gs-font 10 10 SF
+18 465 M (656:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 454 M (657:) s
+48 454 M
+(    ) s
+/Courier-Oblique 10 10 SUF
+72 454 M
+(// \342\\224\\200\342\\224\\200 \303\\211TAPE 6 : CALCUL DE LA COMMANDE \342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224) s
+5 443 M
+(\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200) s
+5 432 M
+(\342\\224\\200) s
+/F-gs-font 10 10 SF
+18 421 M (658:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 421 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 421 M
+(float) s
+/F-gs-font 10 10 SF
+102 421 M
+( erreur   = 0.0f;    ) s
+/Courier-Oblique 10 10 SUF
+228 421 M
+(// erreur de vitesse \316\265 = Vc \342\\210\\222 v_mesur\303\251e \(initialis\303\251e \303\240 0\)) s
+/F-gs-font 10 10 SF
+18 410 M (659:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 410 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 410 M
+(float) s
+/F-gs-font 10 10 SF
+102 410 M
+( commande = 0.0f;    ) s
+/Courier-Oblique 10 10 SUF
+228 410 M
+(// commande PWM \303\240 envoyer \(initialis\303\251e \303\240 0\)) s
+/F-gs-font 10 10 SF
+18 399 M (660:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 388 M (661:) s
+48 388 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 388 M
+(if) s
+/F-gs-font 10 10 SF
+84 388 M
+( \(modeActuel == 1\) {) s
+18 377 M (662:) s
+48 377 M
+(      ) s
+/Courier-Oblique 10 10 SUF
+84 377 M
+(// \342\\224\\200\342\\224\\200 MODE 1 : URGENCE \342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224) s
+5 366 M
+(\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200) s
+5 355 M
+(\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200) s
+/F-gs-font 10 10 SF
+18 344 M (663:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 344 M
+(      integrale          = 0.0f;          ) s
+/Courier-Oblique 10 10 SUF
+300 344 M
+(// vider l'int\303\251grale \342\\206\\222 pas d'effet r\303\251siduel sur le freinage) s
+/F-gs-font 10 10 SF
+18 333 M (664:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 333 M
+(      deriveeInitialisee = false;          ) s
+/Courier-Oblique 10 10 SUF
+306 333 M
+(// invalider le terme D \(v peut chuter brutalement\)) s
+/F-gs-font 10 10 SF
+18 322 M (665:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 322 M
+(      erreur    = VITESSE_CIBLE_MS - vitesse_periode_ms;  ) s
+/Courier-Oblique 10 10 SUF
+396 322 M
+(// calculer l'erreur pour le log uniquement) s
+/F-gs-font 10 10 SF
+18 311 M (666:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 311 M
+(      commande  = -255.0f;                ) s
+/Courier-Oblique 10 10 SUF
+300 311 M
+(// freinage maximal : -255 PWM \342\\206\\222 L298N en sens inverse) s
+/F-gs-font 10 10 SF
+18 300 M (667:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 289 M (668:) s
+48 289 M
+(    } ) s
+/Courier-Bold 10 10 SUF
+84 289 M
+(else) s
+/F-gs-font 10 10 SF
+108 289 M
+( ) s
+/Courier-Bold 10 10 SUF
+114 289 M
+(if) s
+/F-gs-font 10 10 SF
+126 289 M
+( \(modeActuel == 2\) {) s
+18 278 M (669:) s
+48 278 M
+(      ) s
+/Courier-Oblique 10 10 SUF
+84 278 M
+(// \342\\224\\200\342\\224\\200 MODE 2 : VITESSE \(r\303\251gulation de croisi\303\250re\) \342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224) s
+5 267 M
+(\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200) s
+/F-gs-font 10 10 SF
+18 256 M (670:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 256 M
+(      ) s
+/Courier-Oblique 10 10 SUF
+84 256 M
+(// Erreur de vitesse : positive si on est trop lent, n\303\251gative si trop rapide) s
+/F-gs-font 10 10 SF
+18 245 M (671:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 245 M
+(      erreur    = VITESSE_CIBLE_MS - vitesse_periode_ms;) s
+18 234 M (672:) s
+48 234 M
+(      ) s
+/Courier-Oblique 10 10 SUF
+84 234 M
+(// Calculer la correction PID) s
+/F-gs-font 10 10 SF
+18 223 M (673:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 223 M
+(      ) s
+/Courier-Bold 10 10 SUF
+84 223 M
+(float) s
+/F-gs-font 10 10 SF
+114 223 M
+( corr = calculerCorrecteur\(erreur, dt_s, reinitDerivee\);) s
+18 212 M (674:) s
+48 212 M
+(      ) s
+/Courier-Oblique 10 10 SUF
+84 212 M
+(// Commande = feedforward \(point de fonctionnement\) + correction PID \(\303\251carts\)) s
+/F-gs-font 10 10 SF
+18 201 M (675:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 201 M
+(      commande  = FEEDFORWARD_PWM + corr;) s
+18 190 M (676:) s
+18 179 M (677:) s
+48 179 M
+(    } ) s
+/Courier-Bold 10 10 SUF
+84 179 M
+(else) s
+/F-gs-font 10 10 SF
+108 179 M
+( {) s
+18 168 M (678:) s
+48 168 M
+(      ) s
+/Courier-Oblique 10 10 SUF
+84 168 M
+(// \342\\224\\200\342\\224\\200 MODE 3 : DISTANCE \(ACC r\303\251aliste, architecture v19\) \342\\224\\200\342\\224\\200) s
+/F-gs-font 10 10 SF
+18 157 M (679:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 157 M
+(      ) s
+/Courier-Oblique 10 10 SUF
+84 157 M
+(//) s
+/F-gs-font 10 10 SF
+18 146 M (680:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 146 M
+(      ) s
+/Courier-Oblique 10 10 SUF
+84 146 M
+(// Principe : cmd = cmd_vitesse \342\\210\\222 freinage) s
+/F-gs-font 10 10 SF
+18 135 M (681:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 135 M
+(      ) s
+/Courier-Oblique 10 10 SUF
+84 135 M
+(//) s
+/F-gs-font 10 10 SF
+18 124 M (682:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 124 M
+(      ) s
+/Courier-Oblique 10 10 SUF
+84 124 M
+(// cmd_vitesse : le r\303\251gulateur de vitesse tourne IDENTIQUEMENT au mode 2.) s
+/F-gs-font 10 10 SF
+18 113 M (683:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 113 M
+(      ) s
+/Courier-Oblique 10 10 SUF
+84 113 M
+(//   Il essaie de maintenir Vc. L'int\303\251grale continue de tourner \(pas de reset\).) s
+/F-gs-font 10 10 SF
+18 102 M (684:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 102 M
+(      ) s
+/Courier-Oblique 10 10 SUF
+84 102 M
+(//   \342\\206\\222 la voiture maintient sa vitesse lors du passage en mode distance.) s
+/F-gs-font 10 10 SF
+18 91 M (685:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 91 M
+(      ) s
+/Courier-Oblique 10 10 SUF
+84 91 M
+(//) s
+/F-gs-font 10 10 SF
+18 80 M (686:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 80 M
+(      ) s
+/Courier-Oblique 10 10 SUF
+84 80 M
+(// freinage : terme de s\303\251curit\303\251, UNIQUEMENT actif si d < Dc.) s
+/F-gs-font 10 10 SF
+18 69 M (687:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 69 M
+(      ) s
+/Courier-Oblique 10 10 SUF
+84 69 M
+(//   freinage = KP_BRAKE \303\\227 max\(0, Dc \342\\210\\222 d\)) s
+/F-gs-font 10 10 SF
+18 58 M (688:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 58 M
+(      ) s
+/Courier-Oblique 10 10 SUF
+84 58 M
+(//   \342\\206\\222 d >= Dc : freinage = 0 \342\\206\\222 vitesse inchang\303\251e) s
+/F-gs-font 10 10 SF
+18 47 M (689:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 47 M
+(      ) s
+/Courier-Oblique 10 10 SUF
+84 47 M
+(//   \342\\206\\222 d < Dc  : freinage > 0 \342\\206\\222 commande r\303\251duite \342\\206\\222 voiture freine) s
+/F-gs-font 10 10 SF
+18 36 M (690:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 25 M (691:) s
+48 25 M
+(      erreur       = VITESSE_CIBLE_MS - vitesse_periode_ms;  ) s
+/Courier-Oblique 10 10 SUF
+414 25 M
+(// m\303\252me erreur de vitesse que mode 2) s
+/F-gs-font 10 10 SF
+18 14 M (692:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 14 M
+(      ) s
+/Courier-Bold 10 10 SUF
+84 14 M
+(float) s
+/F-gs-font 10 10 SF
+114 14 M
+( corr   = calculerCorrecteur\(erreur, dt_s, reinitDerivee\);  ) s
+/Courier-Oblique 10 10 SUF
+474 14 M
+(// m\303\252me PID que mode 2) s
+/F-gs-font 10 10 SF
+18 3 M (693:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 3 M
+(      ) s
+/Courier-Bold 10 10 SUF
+84 3 M
+(float) s
+/F-gs-font 10 10 SF
+114 3 M
+( cmd_vitesse = FEEDFORWARD_PWM + corr;  ) s
+/Courier-Oblique 10 10 SUF
+354 3 M
+(// commande qu'on aurait en mode vitesse) s
+_R
+S
+%%Page: (17) 17
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 17 def
+/fname (AAC_TIPE_v19.ino) def
+/fdir (.) def
+/ftail (AAC_TIPE_v19.ino) def
+/Courier-Oblique 10 10 SUF
+% User defined strings:
+/pagenumstr (17) def
+/moddatestr (06/09/26) def
+/modtimestr (12:26:37) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+/F-gs-font 10 10 SF
+18 498 M (694:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 487 M (695:) s
+48 487 M
+(      ) s
+/Courier-Oblique 10 10 SUF
+84 487 M
+(// Terme de freinage : proportionnel \303\240 l'exc\303\250s de proximit\303\251 par rapport \303\240 Dc) s
+/F-gs-font 10 10 SF
+18 476 M (696:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 476 M
+(      ) s
+/Courier-Bold 10 10 SUF
+84 476 M
+(float) s
+/F-gs-font 10 10 SF
+114 476 M
+( freinage = KP_BRAKE_PWM * max\(0.0f, DIST_CONSIGNE_M - dist_eff\);) s
+18 465 M (697:) s
+18 454 M (698:) s
+48 454 M
+(      commande = max\(0.0f, cmd_vitesse - freinage\);  ) s
+/Courier-Oblique 10 10 SUF
+366 454 M
+(// soustraire le freinage, jamais n\303\251gatif ici) s
+/F-gs-font 10 10 SF
+18 443 M (699:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 432 M (700:) s
+48 432 M
+(      ) s
+/Courier-Oblique 10 10 SUF
+84 432 M
+(// \342\\224\\200\342\\224\\200 Anti-windup freinage \342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342) s
+5 421 M
+(\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224) s
+5 410 M
+(\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200) s
+/F-gs-font 10 10 SF
+18 399 M (701:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 399 M
+(      ) s
+/Courier-Oblique 10 10 SUF
+84 399 M
+(// Pendant le freinage, la voiture est ralentie de force sous Vc.) s
+/F-gs-font 10 10 SF
+18 388 M (702:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 388 M
+(      ) s
+/Courier-Oblique 10 10 SUF
+84 388 M
+(// L'int\303\251grale voit une erreur positive \(v < Vc\) et continue d'accumuler.) s
+/F-gs-font 10 10 SF
+18 377 M (703:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 377 M
+(      ) s
+/Courier-Oblique 10 10 SUF
+84 377 M
+(// Sans correction, quand le freinage s'arr\303\252te, cette int\303\251grale accumul\303\251e) s
+/F-gs-font 10 10 SF
+18 366 M (704:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 366 M
+(      ) s
+/Courier-Oblique 10 10 SUF
+84 366 M
+(// ferait acc\303\251l\303\251rer la voiture au-del\303\240 de Vc.) s
+/F-gs-font 10 10 SF
+18 355 M (705:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 355 M
+(      ) s
+/Courier-Oblique 10 10 SUF
+84 355 M
+(// Solution : annuler l'accumulation du cycle courant quand le freinage est actif.) s
+/F-gs-font 10 10 SF
+18 344 M (706:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 344 M
+(#) s
+/Courier-Bold 10 10 SUF
+54 344 M
+(if) s
+/F-gs-font 10 10 SF
+66 344 M
+( ) s
+/Courier-Bold 10 10 SUF
+72 344 M
+(USE_I) s
+/F-gs-font 10 10 SF
+102 344 M
+(       // ) s
+/Courier-Bold 10 10 SUF
+162 344 M
+(ce) s
+/F-gs-font 10 10 SF
+174 344 M
+( ) s
+/Courier-Bold 10 10 SUF
+180 344 M
+(bloc) s
+/F-gs-font 10 10 SF
+204 344 M
+( ) s
+/Courier-Bold 10 10 SUF
+210 344 M
+(n) s
+/F-gs-font 10 10 SF
+216 344 M
+(') s
+/Courier-Bold 10 10 SUF
+222 344 M
+(est) s
+/F-gs-font 10 10 SF
+240 344 M
+( ) s
+/Courier-Bold 10 10 SUF
+246 344 M
+(compil) s
+/F-gs-font 10 10 SF
+282 344 M
+(\303\251 ) s
+/Courier-Bold 10 10 SUF
+300 344 M
+(que) s
+/F-gs-font 10 10 SF
+318 344 M
+( ) s
+/Courier-Bold 10 10 SUF
+324 344 M
+(pour) s
+/F-gs-font 10 10 SF
+348 344 M
+( ) s
+/Courier-Bold 10 10 SUF
+354 344 M
+(les) s
+/F-gs-font 10 10 SF
+372 344 M
+( ) s
+/Courier-Bold 10 10 SUF
+378 344 M
+(correcteurs) s
+/F-gs-font 10 10 SF
+444 344 M
+( ) s
+/Courier-Bold 10 10 SUF
+450 344 M
+(avec) s
+/F-gs-font 10 10 SF
+474 344 M
+( ) s
+/Courier-Bold 10 10 SUF
+480 344 M
+(int) s
+/F-gs-font 10 10 SF
+498 344 M
+(\303\251) s
+/Courier-Bold 10 10 SUF
+510 344 M
+(grale) s
+/F-gs-font 10 10 SF
+540 344 M
+( \() s
+/Courier-Bold 10 10 SUF
+552 344 M
+(PI) s
+/F-gs-font 10 10 SF
+564 344 M
+( ) s
+/Courier-Bold 10 10 SUF
+570 344 M
+(et) s
+/F-gs-font 10 10 SF
+582 344 M
+( ) s
+/Courier-Bold 10 10 SUF
+588 344 M
+(PID) s
+/F-gs-font 10 10 SF
+606 344 M
+(\)) s
+18 333 M (707:) s
+48 333 M
+(      ) s
+/Courier-Bold 10 10 SUF
+84 333 M
+(if) s
+/F-gs-font 10 10 SF
+96 333 M
+( \(freinage > 0.0f\) {) s
+18 322 M (708:) s
+48 322 M
+(        integrale -= erreur * dt_s;  ) s
+/Courier-Oblique 10 10 SUF
+270 322 M
+(// soustraire ce qu'on vient d'ajouter dans calculerCorrecteur\(\)) s
+/F-gs-font 10 10 SF
+18 311 M (709:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 311 M
+(        integrale = constrain\(integrale, -INTEGRALE_MAX, INTEGRALE_MAX\);  ) s
+/Courier-Oblique 10 10 SUF
+492 311 M
+(// re-saturer par s\303\251curit\303\251) s
+/F-gs-font 10 10 SF
+18 300 M (710:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 300 M
+(      }) s
+18 289 M (711:) s
+48 289 M
+(#) s
+/Courier-Bold 10 10 SUF
+54 289 M
+(endif) s
+/F-gs-font 10 10 SF
+18 278 M (712:) s
+48 278 M
+(    }) s
+18 267 M (713:) s
+18 256 M (714:) s
+48 256 M
+(    ) s
+/Courier-Oblique 10 10 SUF
+72 256 M
+(// \342\\224\\200\342\\224\\200 \303\\211TAPE 7 : RAMPE + KICK + ZONE MORTE \342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342) s
+5 245 M
+(\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200) s
+/F-gs-font 10 10 SF
+18 234 M (715:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 234 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 234 M
+(bool) s
+/F-gs-font 10 10 SF
+96 234 M
+( urgence = \(modeActuel == 1\);  ) s
+/Courier-Oblique 10 10 SUF
+282 234 M
+(// drapeau urgence pour calculerCommandeMoteur\(\)) s
+/F-gs-font 10 10 SF
+18 223 M (716:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 212 M (717:) s
+48 212 M
+(    ) s
+/Courier-Oblique 10 10 SUF
+72 212 M
+(// Appliquer le kick-start et la rampe asym\303\251trique sur la commande calcul\303\251e) s
+/F-gs-font 10 10 SF
+18 201 M (718:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 201 M
+(    commande = calculerCommandeMoteur\(commande, dt_s, urgence, interdireKick, now\);) s
+18 190 M (719:) s
+18 179 M (720:) s
+48 179 M
+(    ) s
+/Courier-Oblique 10 10 SUF
+72 179 M
+(// Saturation finale \303\240 [-255, +255]) s
+/F-gs-font 10 10 SF
+18 168 M (721:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 168 M
+(    commande = constrain\(commande, -255.0f, 255.0f\);) s
+18 157 M (722:) s
+18 146 M (723:) s
+48 146 M
+(    ) s
+/Courier-Oblique 10 10 SUF
+72 146 M
+(// Anti-windup zone morte : si la commande atterrit dans [0, 76 PWM]) s
+/F-gs-font 10 10 SF
+18 135 M (724:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 135 M
+(    ) s
+/Courier-Oblique 10 10 SUF
+72 135 M
+(// \342\\206\\222 le moteur est en roue libre mais le PID croit qu'il agit.) s
+/F-gs-font 10 10 SF
+18 124 M (725:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 124 M
+(    ) s
+/Courier-Oblique 10 10 SUF
+72 124 M
+(// On annule l'accumulation de l'int\303\251grale pour ce cycle.) s
+/F-gs-font 10 10 SF
+18 113 M (726:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 113 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 113 M
+(if) s
+/F-gs-font 10 10 SF
+84 113 M
+( \(commande > 0.0f && commande < PWM_ZONE_MORTE\) {) s
+18 102 M (727:) s
+48 102 M
+(      integrale -= erreur * dt_s;  ) s
+/Courier-Oblique 10 10 SUF
+258 102 M
+(// annuler l'int\303\251grale accumul\303\251e inutilement) s
+/F-gs-font 10 10 SF
+18 91 M (728:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 91 M
+(      integrale = constrain\(integrale, -INTEGRALE_MAX, INTEGRALE_MAX\);  ) s
+/Courier-Oblique 10 10 SUF
+480 91 M
+(// re-saturer) s
+/F-gs-font 10 10 SF
+18 80 M (729:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 80 M
+(    }) s
+18 69 M (730:) s
+18 58 M (731:) s
+48 58 M
+(    derniereCommande = commande;    ) s
+/Courier-Oblique 10 10 SUF
+264 58 M
+(// m\303\251moriser pour le log) s
+/F-gs-font 10 10 SF
+18 47 M (732:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 47 M
+(    appliquerCommande\(commande\);    ) s
+/Courier-Oblique 10 10 SUF
+264 47 M
+(// envoyer au pont en H \342\\206\\222 moteur) s
+/F-gs-font 10 10 SF
+18 36 M (733:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 25 M (734:) s
+48 25 M
+(    ) s
+/Courier-Oblique 10 10 SUF
+72 25 M
+(// \342\\224\\200\342\\224\\200 \303\\211TAPE 8 : LOG CSV \(toutes les 100 ms\) \342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342) s
+5 14 M
+(\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200) s
+/F-gs-font 10 10 SF
+18 3 M (735:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 3 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 3 M
+(if) s
+/F-gs-font 10 10 SF
+84 3 M
+( \(now - lastLogTime >= LOG_PERIOD_MS\) {) s
+_R
+S
+%%Page: (18) 18
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 18 def
+/fname (AAC_TIPE_v19.ino) def
+/fdir (.) def
+/ftail (AAC_TIPE_v19.ino) def
+% User defined strings:
+/pagenumstr (18) def
+/moddatestr (06/09/26) def
+/modtimestr (12:26:37) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+18 498 M (736:) s
+48 498 M
+(      lastLogTime = now;  ) s
+/Courier-Oblique 10 10 SUF
+204 498 M
+(// mettre \303\240 jour le timer de log) s
+/F-gs-font 10 10 SF
+18 487 M (737:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 476 M (738:) s
+48 476 M
+(      ) s
+/Courier-Oblique 10 10 SUF
+84 476 M
+(// En mode vitesse, loger dist = -1 \(pas d'obstacle, distance non pertinente\)) s
+/F-gs-font 10 10 SF
+18 465 M (739:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 465 M
+(      ) s
+/Courier-Bold 10 10 SUF
+84 465 M
+(float) s
+/F-gs-font 10 10 SF
+114 465 M
+( dist_log = \(modeActuel == 2\) ? -1.0f : dist_eff;) s
+18 454 M (740:) s
+18 443 M (741:) s
+48 443 M
+(      ) s
+/Courier-Oblique 10 10 SUF
+84 443 M
+(// \303\\211crire une ligne CSV sur la carte SD) s
+/F-gs-font 10 10 SF
+18 432 M (742:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 432 M
+(      ecrireLog\(\() s
+/Courier-Bold 10 10 SUF
+150 432 M
+(float) s
+/F-gs-font 10 10 SF
+180 432 M
+(\)now / 1000.0f, dist_log, erreur, modeActuel\);) s
+18 421 M (743:) s
+48 421 M
+(    }) s
+18 410 M (744:) s
+18 399 M (745:) s
+48 399 M
+(    ) s
+/Courier-Oblique 10 10 SUF
+72 399 M
+(// \342\\224\\200\342\\224\\200 \303\\211TAPE 9 : DEBUG PORT S\303\\211RIE \342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224) s
+5 388 M
+(\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200) s
+5 377 M
+(\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200\342\\224\\200) s
+/F-gs-font 10 10 SF
+18 366 M (746:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 366 M
+(    ) s
+/Courier-Oblique 10 10 SUF
+72 366 M
+(// Afficher l'\303\251tat du syst\303\250me sur le moniteur s\303\251rie \303\240 chaque cycle de contr\303\264le \(50 ms\)) s
+/F-gs-font 10 10 SF
+18 355 M (747:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 355 M
+(    Serial.print\(F\() s
+/Courier-Bold 10 10 SUF
+162 355 M
+("[") s
+/F-gs-font 10 10 SF
+180 355 M
+(\)\); Serial.print\(MODE_STR\); Serial.print\(F\() s
+/Courier-Bold 10 10 SUF
+438 355 M
+("] ") s
+/F-gs-font 10 10 SF
+462 355 M
+(\)\);  ) s
+/Courier-Oblique 10 10 SUF
+492 355 M
+(// [P], [PI], [PD] ou [PID]) s
+/F-gs-font 10 10 SF
+18 344 M (748:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 333 M (749:) s
+48 333 M
+(    Serial.print\(F\() s
+/Courier-Bold 10 10 SUF
+162 333 M
+("mode=") s
+/F-gs-font 10 10 SF
+204 333 M
+(\)\);) s
+18 322 M (750:) s
+48 322 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 322 M
+(if) s
+/F-gs-font 10 10 SF
+84 322 M
+(      \(modeActuel == 1\) Serial.print\(F\() s
+/Courier-Bold 10 10 SUF
+318 322 M
+("URGENCE ") s
+/F-gs-font 10 10 SF
+378 322 M
+(\)\);  ) s
+/Courier-Oblique 10 10 SUF
+408 322 M
+(// mode urgence : freinage) s
+/F-gs-font 10 10 SF
+18 311 M (751:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 311 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 311 M
+(else) s
+/F-gs-font 10 10 SF
+96 311 M
+( ) s
+/Courier-Bold 10 10 SUF
+102 311 M
+(if) s
+/F-gs-font 10 10 SF
+114 311 M
+( \(modeActuel == 2\) Serial.print\(F\() s
+/Courier-Bold 10 10 SUF
+318 311 M
+("VITESSE ") s
+/F-gs-font 10 10 SF
+378 311 M
+(\)\);  ) s
+/Courier-Oblique 10 10 SUF
+408 311 M
+(// mode vitesse : croisi\303\250re) s
+/F-gs-font 10 10 SF
+18 300 M (752:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 300 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 300 M
+(else) s
+/F-gs-font 10 10 SF
+96 300 M
+(                      Serial.print\(F\() s
+/Courier-Bold 10 10 SUF
+318 300 M
+("DIST    ") s
+/F-gs-font 10 10 SF
+378 300 M
+(\)\);  ) s
+/Courier-Oblique 10 10 SUF
+408 300 M
+(// mode distance : ACC actif) s
+/F-gs-font 10 10 SF
+18 289 M (753:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 278 M (754:) s
+48 278 M
+(    Serial.print\(F\() s
+/Courier-Bold 10 10 SUF
+162 278 M
+("| v=") s
+/F-gs-font 10 10 SF
+198 278 M
+(\)\);    Serial.print\(vitesse_periode_ms, 3\);  ) s
+/Courier-Oblique 10 10 SUF
+468 278 M
+(// vitesse mesur\303\251e \(m\303\251thode p\303\251riode\)) s
+/F-gs-font 10 10 SF
+18 267 M (755:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 267 M
+(    Serial.print\(F\() s
+/Courier-Bold 10 10 SUF
+162 267 M
+(" | d=") s
+/F-gs-font 10 10 SF
+204 267 M
+(\)\);   Serial.print\(dist_m, 3\);               ) s
+/Courier-Oblique 10 10 SUF
+474 267 M
+(// distance brute du capteur ultrason) s
+/F-gs-font 10 10 SF
+18 256 M (756:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 256 M
+(    Serial.print\(F\() s
+/Courier-Bold 10 10 SUF
+162 256 M
+(" | e=") s
+/F-gs-font 10 10 SF
+204 256 M
+(\)\);   Serial.print\(erreur, 3\);               ) s
+/Courier-Oblique 10 10 SUF
+474 256 M
+(// erreur de vitesse \316\265 = Vc \342\\210\\222 v) s
+/F-gs-font 10 10 SF
+18 245 M (757:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 245 M
+(    Serial.print\(F\() s
+/Courier-Bold 10 10 SUF
+162 245 M
+(" | cmd=") s
+/F-gs-font 10 10 SF
+216 245 M
+(\)\); Serial.print\(commande, 1\);             ) s
+/Courier-Oblique 10 10 SUF
+474 245 M
+(// commande envoy\303\251e au moteur \(PWM\)) s
+/F-gs-font 10 10 SF
+18 234 M (758:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 223 M (759:) s
+48 223 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 223 M
+(if) s
+/F-gs-font 10 10 SF
+84 223 M
+( \(modeActuel == 3\) {    ) s
+/Courier-Oblique 10 10 SUF
+228 223 M
+(// en mode distance : afficher aussi la valeur du freinage) s
+/F-gs-font 10 10 SF
+18 212 M (760:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 212 M
+(      ) s
+/Courier-Bold 10 10 SUF
+84 212 M
+(float) s
+/F-gs-font 10 10 SF
+114 212 M
+( fr = KP_BRAKE_PWM * max\(0.0f, DIST_CONSIGNE_M - dist_eff\);  ) s
+/Courier-Oblique 10 10 SUF
+480 212 M
+(// recalculer le freinage pour l'affichage) s
+/F-gs-font 10 10 SF
+18 201 M (761:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 201 M
+(      Serial.print\(F\() s
+/Courier-Bold 10 10 SUF
+174 201 M
+(" | brk=") s
+/F-gs-font 10 10 SF
+228 201 M
+(\)\); Serial.print\(fr, 1\);   ) s
+/Courier-Oblique 10 10 SUF
+390 201 M
+(// valeur du freinage en PWM) s
+/F-gs-font 10 10 SF
+18 190 M (762:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 190 M
+(    }) s
+18 179 M (763:) s
+18 168 M (764:) s
+48 168 M
+(    Serial.print\(F\() s
+/Courier-Bold 10 10 SUF
+162 168 M
+(" | kick=") s
+/F-gs-font 10 10 SF
+222 168 M
+(\)\); Serial.println\(kickActif ? F\() s
+/Courier-Bold 10 10 SUF
+420 168 M
+("OUI") s
+/F-gs-font 10 10 SF
+450 168 M
+(\) : F\() s
+/Courier-Bold 10 10 SUF
+486 168 M
+("non") s
+/F-gs-font 10 10 SF
+516 168 M
+(\)\);  ) s
+/Courier-Oblique 10 10 SUF
+546 168 M
+(// \303\251tat du kick) s
+/F-gs-font 10 10 SF
+18 157 M (765:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 157 M
+(  }) s
+18 146 M (766:) s
+48 146 M
+(}) s
+18 135 M (767:) s
+18 124 M (768:) s
+/Courier-Oblique 10 10 SUF
+48 124 M
+(/* ===========================================================) s
+/F-gs-font 10 10 SF
+18 113 M (769:) s
+/Courier-Oblique 10 10 SUF
+48 113 M
+( * initSD\(\) \342\\200\\224 INITIALISATION DE LA CARTE MICROSD) s
+/F-gs-font 10 10 SF
+18 102 M (770:) s
+/Courier-Oblique 10 10 SUF
+48 102 M
+( * Ouvre un nouveau fichier CSV avec un nom incr\303\251mental.) s
+/F-gs-font 10 10 SF
+18 91 M (771:) s
+/Courier-Oblique 10 10 SUF
+48 91 M
+( * =========================================================== */) s
+/F-gs-font 10 10 SF
+18 80 M (772:) s
+/Courier-Bold 10 10 SUF
+48 80 M
+(void) s
+/F-gs-font 10 10 SF
+72 80 M
+( ) s
+/Courier-Bold 10 10 SUF
+78 80 M
+(initSD) s
+/F-gs-font 10 10 SF
+114 80 M
+(\(\) {) s
+18 69 M (773:) s
+48 69 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 69 M
+(if) s
+/F-gs-font 10 10 SF
+72 69 M
+( \(!SD.begin\(SD_CS_PIN\)\) {  ) s
+/Courier-Oblique 10 10 SUF
+234 69 M
+(// tenter d'initialiser la SD sur la broche CS d\303\251finie) s
+/F-gs-font 10 10 SF
+18 58 M (774:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 58 M
+(    Serial.println\(F\() s
+/Courier-Bold 10 10 SUF
+174 58 M
+("SD : \303\251chec init") s
+/F-gs-font 10 10 SF
+282 58 M
+(\)\);  ) s
+/Courier-Oblique 10 10 SUF
+312 58 M
+(// afficher l'erreur sur le port s\303\251rie) s
+/F-gs-font 10 10 SF
+18 47 M (775:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 47 M
+(    sdOk = false;   ) s
+/Courier-Oblique 10 10 SUF
+168 47 M
+(// marquer la SD comme non disponible) s
+/F-gs-font 10 10 SF
+18 36 M (776:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 36 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 36 M
+(return) s
+/F-gs-font 10 10 SF
+108 36 M
+(;         ) s
+/Courier-Oblique 10 10 SUF
+168 36 M
+(// abandonner l'initialisation) s
+/F-gs-font 10 10 SF
+18 25 M (777:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 25 M
+(  }) s
+18 14 M (778:) s
+18 3 M (779:) s
+48 3 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 3 M
+(char) s
+/F-gs-font 10 10 SF
+84 3 M
+( fn[13]; uint8_t n = 0;  ) s
+/Courier-Oblique 10 10 SUF
+234 3 M
+(// nom de fichier \(max 8.3 = 12 chars + '\\0'\) et num\303\251ro incr\303\251mental) s
+_R
+S
+%%Page: (19) 19
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 19 def
+/fname (AAC_TIPE_v19.ino) def
+/fdir (.) def
+/ftail (AAC_TIPE_v19.ino) def
+/Courier-Oblique 10 10 SUF
+% User defined strings:
+/pagenumstr (19) def
+/moddatestr (06/09/26) def
+/modtimestr (12:26:37) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+/F-gs-font 10 10 SF
+18 498 M (780:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 498 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 498 M
+(do) s
+/F-gs-font 10 10 SF
+72 498 M
+( {) s
+18 487 M (781:) s
+48 487 M
+(    snprintf\(fn, ) s
+/Courier-Bold 10 10 SUF
+150 487 M
+(sizeof) s
+/F-gs-font 10 10 SF
+186 487 M
+(\(fn\), ) s
+/Courier-Bold 10 10 SUF
+222 487 M
+("%s%03d.CSV") s
+/F-gs-font 10 10 SF
+294 487 M
+(, MODE_STR, n++\);  ) s
+/Courier-Oblique 10 10 SUF
+408 487 M
+(// g\303\251n\303\251rer "PID000.CSV", "PID001.CSV", etc.) s
+/F-gs-font 10 10 SF
+18 476 M (782:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 476 M
+(  } ) s
+/Courier-Bold 10 10 SUF
+72 476 M
+(while) s
+/F-gs-font 10 10 SF
+102 476 M
+( \(SD.exists\(fn\) && n < 255\);  ) s
+/Courier-Oblique 10 10 SUF
+282 476 M
+(// incr\303\251menter jusqu'\303\240 trouver un nom non utilis\303\251) s
+/F-gs-font 10 10 SF
+18 465 M (783:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 454 M (784:) s
+48 454 M
+(  logFile = SD.open\(fn, FILE_WRITE\);  ) s
+/Courier-Oblique 10 10 SUF
+276 454 M
+(// ouvrir le fichier en \303\251criture \(cr\303\251e le fichier si inexistant\)) s
+/F-gs-font 10 10 SF
+18 443 M (785:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 443 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 443 M
+(if) s
+/F-gs-font 10 10 SF
+72 443 M
+( \(!logFile\) {   ) s
+/Courier-Oblique 10 10 SUF
+168 443 M
+(// si l'ouverture a \303\251chou\303\251) s
+/F-gs-font 10 10 SF
+18 432 M (786:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 432 M
+(    Serial.print\(F\() s
+/Courier-Bold 10 10 SUF
+162 432 M
+("SD : impossible d'ouvrir ") s
+/F-gs-font 10 10 SF
+324 432 M
+(\)\); Serial.println\(fn\);  ) s
+/Courier-Oblique 10 10 SUF
+474 432 M
+(// afficher l'erreur) s
+/F-gs-font 10 10 SF
+18 421 M (787:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 421 M
+(    sdOk = false;   ) s
+/Courier-Oblique 10 10 SUF
+168 421 M
+(// marquer la SD comme non disponible) s
+/F-gs-font 10 10 SF
+18 410 M (788:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 410 M
+(    ) s
+/Courier-Bold 10 10 SUF
+72 410 M
+(return) s
+/F-gs-font 10 10 SF
+108 410 M
+(;) s
+18 399 M (789:) s
+48 399 M
+(  }) s
+18 388 M (790:) s
+18 377 M (791:) s
+48 377 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 377 M
+(// \303\\211crire le commentaire d'en-t\303\252te avec les param\303\250tres de l'essai \(ligne commen\303\247ant par #\)) s
+/F-gs-font 10 10 SF
+18 366 M (792:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 366 M
+(  logFile.print\(F\() s
+/Courier-Bold 10 10 SUF
+156 366 M
+("#correcteur=") s
+/F-gs-font 10 10 SF
+240 366 M
+(\)\);  logFile.print\(MODE_STR\);           ) s
+/Courier-Oblique 10 10 SUF
+480 366 M
+(// nom du correcteur) s
+/F-gs-font 10 10 SF
+18 355 M (793:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 355 M
+(  logFile.print\(F\() s
+/Courier-Bold 10 10 SUF
+156 355 M
+(",Kp=") s
+/F-gs-font 10 10 SF
+192 355 M
+(\)\);          logFile.print\(Kp_VAL, 1\);          ) s
+/Courier-Oblique 10 10 SUF
+480 355 M
+(// gain proportionnel) s
+/F-gs-font 10 10 SF
+18 344 M (794:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 344 M
+(  logFile.print\(F\() s
+/Courier-Bold 10 10 SUF
+156 344 M
+(",Ki=") s
+/F-gs-font 10 10 SF
+192 344 M
+(\)\);          logFile.print\(Ki_VAL, 1\);          ) s
+/Courier-Oblique 10 10 SUF
+480 344 M
+(// gain int\303\251gral) s
+/F-gs-font 10 10 SF
+18 333 M (795:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 333 M
+(  logFile.print\(F\() s
+/Courier-Bold 10 10 SUF
+156 333 M
+(",Kd=") s
+/F-gs-font 10 10 SF
+192 333 M
+(\)\);          logFile.print\(Kd_VAL, 1\);          ) s
+/Courier-Oblique 10 10 SUF
+480 333 M
+(// gain d\303\251riv\303\251) s
+/F-gs-font 10 10 SF
+18 322 M (796:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 322 M
+(  logFile.print\(F\() s
+/Courier-Bold 10 10 SUF
+156 322 M
+(",FF=") s
+/F-gs-font 10 10 SF
+192 322 M
+(\)\);          logFile.print\(FEEDFORWARD_PWM, 1\); ) s
+/Courier-Oblique 10 10 SUF
+480 322 M
+(// feedforward calcul\303\251) s
+/F-gs-font 10 10 SF
+18 311 M (797:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 311 M
+(  logFile.print\(F\() s
+/Courier-Bold 10 10 SUF
+156 311 M
+(",Vc=") s
+/F-gs-font 10 10 SF
+192 311 M
+(\)\);          logFile.println\(VITESSE_CIBLE_MS, 2\); ) s
+/Courier-Oblique 10 10 SUF
+498 311 M
+(// vitesse cible) s
+/F-gs-font 10 10 SF
+18 300 M (798:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 289 M (799:) s
+48 289 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 289 M
+(// \303\\211crire la ligne d'en-t\303\252te CSV avec le nom des colonnes) s
+/F-gs-font 10 10 SF
+18 278 M (800:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 278 M
+(  logFile.println\(F\() s
+/Courier-Bold 10 10 SUF
+168 278 M
+("t_s,mode,vitesse_freq_ms,vitesse_periode_ms,") s
+/F-gs-font 10 10 SF
+18 267 M (801:) s
+48 267 M
+(                    ) s
+/Courier-Bold 10 10 SUF
+168 267 M
+("consigne_vitesse_ms,distance_m,consigne_dist_m,") s
+/F-gs-font 10 10 SF
+18 256 M (802:) s
+48 256 M
+(                    ) s
+/Courier-Bold 10 10 SUF
+168 256 M
+("erreur_m,commande_pwm") s
+/F-gs-font 10 10 SF
+306 256 M
+(\)\);) s
+18 245 M (803:) s
+18 234 M (804:) s
+48 234 M
+(  logFile.flush\(\);   ) s
+/Courier-Oblique 10 10 SUF
+174 234 M
+(// forcer l'\303\251criture sur la carte SD \(\303\251vite la perte des en-t\303\252tes en cas de coupure\)) s
+/F-gs-font 10 10 SF
+18 223 M (805:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 212 M (806:) s
+48 212 M
+(  strncpy\(logFilename, fn, ) s
+/Courier-Bold 10 10 SUF
+210 212 M
+(sizeof) s
+/F-gs-font 10 10 SF
+246 212 M
+(\(logFilename\)\);  ) s
+/Courier-Oblique 10 10 SUF
+348 212 M
+(// copier le nom du fichier dans logFilename) s
+/F-gs-font 10 10 SF
+18 201 M (807:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 201 M
+(  logFilename[) s
+/Courier-Bold 10 10 SUF
+132 201 M
+(sizeof) s
+/F-gs-font 10 10 SF
+168 201 M
+(\(logFilename\)-1] = ) s
+/Courier-Bold 10 10 SUF
+282 201 M
+('\\0') s
+/F-gs-font 10 10 SF
+306 201 M
+(;       ) s
+/Courier-Oblique 10 10 SUF
+354 201 M
+(// s'assurer que la cha\303\256ne est bien termin\303\251e par '\\0') s
+/F-gs-font 10 10 SF
+18 190 M (808:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 190 M
+(  logLinesSinceFlush = 0;  ) s
+/Courier-Oblique 10 10 SUF
+210 190 M
+(// remettre le compteur de lignes depuis le dernier flush \303\240 z\303\251ro) s
+/F-gs-font 10 10 SF
+18 179 M (809:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 179 M
+(  sdOk = true;             ) s
+/Courier-Oblique 10 10 SUF
+210 179 M
+(// marquer la SD comme op\303\251rationnelle) s
+/F-gs-font 10 10 SF
+18 168 M (810:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 157 M (811:) s
+48 157 M
+(  Serial.print\(F\() s
+/Courier-Bold 10 10 SUF
+150 157 M
+("SD : ") s
+/F-gs-font 10 10 SF
+192 157 M
+(\)\); Serial.println\(fn\);  ) s
+/Courier-Oblique 10 10 SUF
+342 157 M
+(// confirmer l'ouverture sur le port s\303\251rie) s
+/F-gs-font 10 10 SF
+18 146 M (812:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 146 M
+(}) s
+18 135 M (813:) s
+18 124 M (814:) s
+/Courier-Oblique 10 10 SUF
+48 124 M
+(/* ===========================================================) s
+/F-gs-font 10 10 SF
+18 113 M (815:) s
+/Courier-Oblique 10 10 SUF
+48 113 M
+( * fermerLogSD\(\) \342\\200\\224 FERMETURE PROPRE DU FICHIER SD) s
+/F-gs-font 10 10 SF
+18 102 M (816:) s
+/Courier-Oblique 10 10 SUF
+48 102 M
+( * =========================================================== */) s
+/F-gs-font 10 10 SF
+18 91 M (817:) s
+/Courier-Bold 10 10 SUF
+48 91 M
+(void) s
+/F-gs-font 10 10 SF
+72 91 M
+( ) s
+/Courier-Bold 10 10 SUF
+78 91 M
+(fermerLogSD) s
+/F-gs-font 10 10 SF
+144 91 M
+(\(\) {) s
+18 80 M (818:) s
+48 80 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 80 M
+(if) s
+/F-gs-font 10 10 SF
+72 80 M
+( \(sdOk && logFile\) {   ) s
+/Courier-Oblique 10 10 SUF
+210 80 M
+(// si la SD est disponible et le fichier ouvert) s
+/F-gs-font 10 10 SF
+18 69 M (819:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 69 M
+(    logFile.flush\(\);        ) s
+/Courier-Oblique 10 10 SUF
+216 69 M
+(// \303\251crire toutes les donn\303\251es en m\303\251moire tampon sur la carte) s
+/F-gs-font 10 10 SF
+18 58 M (820:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 58 M
+(    logFile.close\(\);        ) s
+/Courier-Oblique 10 10 SUF
+216 58 M
+(// fermer proprement le fichier \(finalise l'en-t\303\252te FAT\)) s
+/F-gs-font 10 10 SF
+18 47 M (821:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 47 M
+(  }) s
+18 36 M (822:) s
+48 36 M
+(  sdOk = false;   ) s
+/Courier-Oblique 10 10 SUF
+156 36 M
+(// marquer la SD comme indisponible jusqu'\303\240 la prochaine initSD\(\)) s
+/F-gs-font 10 10 SF
+18 25 M (823:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 25 M
+(}) s
+18 14 M (824:) s
+18 3 M (825:) s
+/Courier-Oblique 10 10 SUF
+48 3 M
+(/* ===========================================================) s
+_R
+S
+%%Page: (20) 20
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 20 def
+/fname (AAC_TIPE_v19.ino) def
+/fdir (.) def
+/ftail (AAC_TIPE_v19.ino) def
+/Courier-Oblique 10 10 SUF
+% User defined strings:
+/pagenumstr (20) def
+/moddatestr (06/09/26) def
+/modtimestr (12:26:37) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+/F-gs-font 10 10 SF
+18 498 M (826:) s
+/Courier-Oblique 10 10 SUF
+48 498 M
+( * ecrireLog\(\) \342\\200\\224 \303\\211CRITURE D'UNE LIGNE CSV SUR LA CARTE SD) s
+/F-gs-font 10 10 SF
+18 487 M (827:) s
+/Courier-Oblique 10 10 SUF
+48 487 M
+( * =========================================================== */) s
+/F-gs-font 10 10 SF
+18 476 M (828:) s
+/Courier-Bold 10 10 SUF
+48 476 M
+(void) s
+/F-gs-font 10 10 SF
+72 476 M
+( ) s
+/Courier-Bold 10 10 SUF
+78 476 M
+(ecrireLog) s
+/F-gs-font 10 10 SF
+132 476 M
+(\() s
+/Courier-Bold 10 10 SUF
+138 476 M
+(float) s
+/F-gs-font 10 10 SF
+168 476 M
+( t_s, ) s
+/Courier-Bold 10 10 SUF
+204 476 M
+(float) s
+/F-gs-font 10 10 SF
+234 476 M
+( dist_m, ) s
+/Courier-Bold 10 10 SUF
+288 476 M
+(float) s
+/F-gs-font 10 10 SF
+318 476 M
+( erreur_m, uint8_t mode\) {) s
+18 465 M (829:) s
+48 465 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 465 M
+(if) s
+/F-gs-font 10 10 SF
+72 465 M
+( \(!sdOk\) ) s
+/Courier-Bold 10 10 SUF
+126 465 M
+(return) s
+/F-gs-font 10 10 SF
+162 465 M
+(;  ) s
+/Courier-Oblique 10 10 SUF
+180 465 M
+(// ne rien faire si la SD n'est pas disponible) s
+/F-gs-font 10 10 SF
+18 454 M (830:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 443 M (831:) s
+48 443 M
+(  logFile.print\(t_s,               3\); logFile.print\() s
+/Courier-Bold 10 10 SUF
+366 443 M
+(',') s
+/F-gs-font 10 10 SF
+384 443 M
+(\);  ) s
+/Courier-Oblique 10 10 SUF
+408 443 M
+(// temps en secondes \(3 d\303\251cimales\)) s
+/F-gs-font 10 10 SF
+18 432 M (832:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 432 M
+(  logFile.print\(mode\);                 logFile.print\() s
+/Courier-Bold 10 10 SUF
+366 432 M
+(',') s
+/F-gs-font 10 10 SF
+384 432 M
+(\);  ) s
+/Courier-Oblique 10 10 SUF
+408 432 M
+(// mode : 1=urgence, 2=vitesse, 3=distance) s
+/F-gs-font 10 10 SF
+18 421 M (833:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 421 M
+(  logFile.print\(vitesse_ms,        4\); logFile.print\() s
+/Courier-Bold 10 10 SUF
+366 421 M
+(',') s
+/F-gs-font 10 10 SF
+384 421 M
+(\);  ) s
+/Courier-Oblique 10 10 SUF
+408 421 M
+(// vitesse fr\303\251quencem\303\251trique \(m/s\)) s
+/F-gs-font 10 10 SF
+18 410 M (834:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 410 M
+(  logFile.print\(vitesse_periode_ms,4\); logFile.print\() s
+/Courier-Bold 10 10 SUF
+366 410 M
+(',') s
+/F-gs-font 10 10 SF
+384 410 M
+(\);  ) s
+/Courier-Oblique 10 10 SUF
+408 410 M
+(// vitesse p\303\251riode filtr\303\251e \(m/s\) \342\\200\\224 utilis\303\251e par PID) s
+/F-gs-font 10 10 SF
+18 399 M (835:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 399 M
+(  logFile.print\(VITESSE_CIBLE_MS,  4\); logFile.print\() s
+/Courier-Bold 10 10 SUF
+366 399 M
+(',') s
+/F-gs-font 10 10 SF
+384 399 M
+(\);  ) s
+/Courier-Oblique 10 10 SUF
+408 399 M
+(// consigne de vitesse \(m/s\) \342\\200\\224 constante) s
+/F-gs-font 10 10 SF
+18 388 M (836:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 388 M
+(  logFile.print\(dist_m,            4\); logFile.print\() s
+/Courier-Bold 10 10 SUF
+366 388 M
+(',') s
+/F-gs-font 10 10 SF
+384 388 M
+(\);  ) s
+/Courier-Oblique 10 10 SUF
+408 388 M
+(// distance obstacle \(-1 si mode vitesse\)) s
+/F-gs-font 10 10 SF
+18 377 M (837:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 377 M
+(  logFile.print\(DIST_CONSIGNE_M,   4\); logFile.print\() s
+/Courier-Bold 10 10 SUF
+366 377 M
+(',') s
+/F-gs-font 10 10 SF
+384 377 M
+(\);  ) s
+/Courier-Oblique 10 10 SUF
+408 377 M
+(// consigne de distance \(m\) \342\\200\\224 constante) s
+/F-gs-font 10 10 SF
+18 366 M (838:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 366 M
+(  logFile.print\(erreur_m,          4\); logFile.print\() s
+/Courier-Bold 10 10 SUF
+366 366 M
+(',') s
+/F-gs-font 10 10 SF
+384 366 M
+(\);  ) s
+/Courier-Oblique 10 10 SUF
+408 366 M
+(// erreur de vitesse \316\265 = Vc \342\\210\\222 v \(m/s\)) s
+/F-gs-font 10 10 SF
+18 355 M (839:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 355 M
+(  logFile.println\(derniereCommande, 1\);                      ) s
+/Courier-Oblique 10 10 SUF
+414 355 M
+(// commande envoy\303\251e au moteur \(PWM, newline\)) s
+/F-gs-font 10 10 SF
+18 344 M (840:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+18 333 M (841:) s
+48 333 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 333 M
+(// Flush group\303\251 : \303\251crire physiquement sur la SD tous les LOG_FLUSH_EVERY_N_LINES cycles) s
+/F-gs-font 10 10 SF
+18 322 M (842:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 322 M
+(  ) s
+/Courier-Oblique 10 10 SUF
+60 322 M
+(// \(flush \303\240 chaque ligne serait trop lent et userait la carte SD inutilement\)) s
+/F-gs-font 10 10 SF
+18 311 M (843:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 311 M
+(  ) s
+/Courier-Bold 10 10 SUF
+60 311 M
+(if) s
+/F-gs-font 10 10 SF
+72 311 M
+( \(++logLinesSinceFlush >= LOG_FLUSH_EVERY_N_LINES\) {) s
+18 300 M (844:) s
+48 300 M
+(    logFile.flush\(\);           ) s
+/Courier-Oblique 10 10 SUF
+234 300 M
+(// forcer l'\303\251criture du buffer SD sur la carte) s
+/F-gs-font 10 10 SF
+18 289 M (845:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 289 M
+(    logLinesSinceFlush = 0;    ) s
+/Courier-Oblique 10 10 SUF
+234 289 M
+(// remettre le compteur \303\240 z\303\251ro) s
+/F-gs-font 10 10 SF
+18 278 M (846:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+48 278 M
+(  }) s
+18 267 M (847:) s
+48 267 M
+(}) s
+_R
+S
+%%Trailer
+%%Pages: 20
+%%DocumentNeededResources: font Times-Roman Courier-Oblique Courier-Bold 
+%%+ font Courier Times-Bold 
+%%EOF
