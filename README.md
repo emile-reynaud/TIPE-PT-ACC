@@ -138,13 +138,13 @@ L'incertitude est donc moins grande et surtout elle est constante.
 ## <a name="prot-exp">Protocole expérimental</a>
 
 - Démarrage : 0-3s
-  Kick-start moteur pour franchir la zone morte et les frottements
+  - Kick-start moteur pour franchir la zone morte et les frottements
 - Mode vitesse : 3-12s
-  Aucun obstacle
+  - Aucun obstacle
 - Mode distance : 12-27s
-  12-15s : obstacle 0,6 m → 0,15 m
-  15-21s : obstacle maintenu à 0,15 m
-  21-27s : obstacle 0,15 m → 1,20 m
+  - 12-15s : obstacle 0,6 m → 0,15 m
+  - 15-21s : obstacle maintenu à 0,15 m
+  - 21-27s : obstacle 0,15 m → 1,20 m
 - Mode vitesse : 27-35s
 
 ## <a name="results">Résultats</a>
