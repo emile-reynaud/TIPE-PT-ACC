@@ -50,23 +50,58 @@ La maquette est composée d'une voiture RC modifiée et équipée de :
 
 ![Courbes expérimentales P](/Pratique/acc_code/courbe_P.png "Courbes expérimentales P")
 
+#### Analyse
+
 |  Positif  |  Limites  |
-| :-------: | :-------: |
-| Kick-start efficace | Erreur statique -0,23 m$\cdot$s<sup>-1</sup> (33%) structurelle sans intégrale |
-| :-------: | :-------: |
-| Commande stable à 170-180 PWM en régime sans obstacle | Commande saccadée en mode distance(bruit amplifié par Kp) |
-| :-------: | :-------: |
+| Kick-start efficace | Erreur statique -0,23 m⋅s<sup>-1</sup> (33%) structurelle sans intégrale |
+| Commande stable à 170-180 PWM en régime sans obstacle | Commande saccadée en mode distance (bruit amplifié par Kp) |
 |           | t<sub>r<sub>5%</sub></sub> = N/A, la vitesse ne converge jamais vers V<sub>c</sub> |
 
+#### Bilan
+
+L'erreur statique de 33 % est irréductible sans terme intégral. Sert de référence comparative.
 
 ### Correcteur PI
 
 ![Courbes expérimentales PI](/Pratique/acc_code/courbe_PI.png "Courbes expérimentales PI")
 
+#### Analyse
+
+|  Positif  |  Limites  |
+| Erreur statique $rarr; 0 : Ki compense l'erreur | t<sub>r<sub>5%</sub></sub> = 7,5 s, le plus lent des correcteurs |
+| Aucun dépassement, système très amorti | Kp = 15 volontairement faible, peu réactif au perturbations soudaines |
+| Transition entre les modes propres, pas de saut | Réinitialisation de l'intégrale au kick, convergence repart à zéro après démarrage |
+
+#### Bilan
+
+Le PI atteint la précision au prix de la rapidité. t<sub>r<sub>5%</sub></sub> = 7,5 s est rédhibitoire en conditions réelles. À 0,70 m⋅s<sup>-1</sup>, la voiture parcourt 5 mètres avant d'être à vitesse.
+
 ### Correcteur PD
 
 ![Courbes expérimentales PD](/Pratique/acc_code/courbe_PD.png "Courbes expérimentales PD")
 
+#### Analyse
+
+|  Positif  |  Limites  |
+| t<sub>r<sub>5%</sub></sub> = 1,5 s, le plus rapide | Erreur statique −0,13 m⋅s<sup>-1</sup> (19 %), irréductible sans terme intégral |
+|           | Dépassement 14 % > norme standard 5 % — non conforme |
+
+#### Bilan
+
+Le PD est rapide mais imprécis. Dépassement 14 % dépasse la norme de 5 %. Sans intégrale, l'erreur statique de 19 % persiste indéfiniment. Bon transitoire, mauvais état final.
+
 ### Correcteur PID
 
 ![Courbes expérimentales PID](/Pratique/acc_code/courbe_PID.png "Courbes expérimentales PID")
+
+#### Analyse
+
+|  Positif  |  Limites  |
+| Erreur statique < 1 % (−0,01 m⋅s<sup>-1</sup>) | Réglage plus complexe : 3 paramètres interdépendants (Kp, Ki, Kd) |
+| Dépassement 4,8 % < 5 % | Anti-windup nécessaire : intégrale gelée pendant le freinage en mode distance |
+| t<sub>r<sub>5%</sub></sub> = 4 s, bon compromis rapidité / stabilité | Terme D sensible au bruit Hall |
+| Mode distance ACC propre |  |
+
+#### Bilan
+
+Seul le PID satisfait simultanément les 3 critères : erreur < 1 %, dépassement 4,8 % ≤ 5 %, t<sub>r<sub>5%</sub></sub> = 4 s. L'architecture FF + PID constitue la solution optimale.
