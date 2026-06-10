@@ -13,7 +13,7 @@
 2. [Architecture du correcteur](#arch-corr)
    - [Description de feedforward](#desc-ff)
    - [Identification du moteur](#id-mot)
-3.[Mesure de vitesses](#mes-vit)
+3. [Mesure de vitesses](#mes-vit)
 4. [Protocole expérimental](#prot-exp)
 5. [Résultats](#results)
    - [Correcteur P](#P-results)
