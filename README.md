@@ -262,6 +262,6 @@ Seul le PID satisfait simultanément les 3 critères : erreur < 1 %, dépassemen
 
 #### Annexes
 
-Pour voir le code, allez voir ce [fichier](/Pratique/acc_code/AAC_TIPE_v19/AAC_TIPE_v19.py).
+Pour voir le code, allez voir ce [fichier](/Pratique/acc_code/AAC_TIPE_v19/AAC_TIPE_v19.ino).
 
 Pour une présentation un peu plus détaillée et mise en forme, allez voir la [présentation](/TIPE_AAC_v5.pdf).
