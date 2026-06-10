@@ -238,7 +238,7 @@ Seul le PID satisfait simultanément les 3 critères : erreur < 1 %, dépassemen
 
 #### Limites
 
-- 3 aimants : Δv_freq=1,74 m⋅s<sup>-1</sup> (249% à 0,70 m⋅s<sup>-1</sup>)
+- 3 aimants : oscillations persistantes
 - K varie avec batterie → re-identification nécessaire
 - HC-SR04 : fausses détections en extérieur
 - Zone morte 76/255 → oscillations irréductibles
