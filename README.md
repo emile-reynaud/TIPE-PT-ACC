@@ -13,13 +13,15 @@
 2. [Architecture du correcteur](#arch-corr)
    - [Description de feedforward](#desc-ff)
    - [Identification du moteur](#id-mot)
-4. [Résultats](#results)
+3.[Mesure de vitesses](#mes-vit)
+4. [Protocole expérimental](#prot-exp)
+5. [Résultats](#results)
    - [Correcteur P](#P-results)
    - [Correcteur PI](#PI-results)
    - [Correcteur PD](#PD-results)
    - [Correcteur PID](#PID-results)
-5. [Conclusion](#concl)
-6. [Annexes et bibliographies](#annex)
+6. [Conclusion](#concl)
+7. [Annexes et bibliographies](#annex)
 
 ---
 
@@ -35,7 +37,7 @@ Comment un régulateur de vitesse adaptatif fonctionne-t-il, et comment sa boucl
 
 ### <a name="anc-th">Ancrage au thème *Cycles et boucles*</a>
 
-Ce TIPE se concentre sur la boucle de rétroaction, ou boucle de correction, du système. Le cycle de correction est éffectué toutes les 50 ms.
+Ce TIPE se concentre sur la **boucle** de rétroaction, ou **boucle** de correction, du système. Le **cycle** de correction est éffectué toutes les 50 ms.
 
 ## <a name="model">Maquette</a>
 
@@ -109,7 +111,41 @@ $K = \frac{v_{\infty}}{U_{0}} \text{ et } v(\tau) = 0,632 \times v_{\infty}$
 - $\tau$ = 250 ms
 - Seuil = 0,30 (= 76/255)
 
-$\text{Donc } U_{FF} = (\frac{0,7}{1,4} + 0,3) \times 255 = 204 \text{ PWM}$
+$\text{Donc } U_{FF} = (\frac{V_{c}}{K} + \{ Seuil }) = (\frac{0,7}{1,4} + 0,3) \times 255 = 204 \text{ PWM}$
+
+Au final, la commande aura donc cette forme : 
+
+$u(t) = U_{FF} + Kp \cdot \varepsilon + Ki \cdot \int \varepsilon \cdot dt + Kd \cdot \frac{d\varepsilon}{dt}$
+
+## <a name="mes-vit">Mesure de vitesses</a>
+
+La méthode de mesure de vitesse utilisée dans le programme est la **méthode période**. La méthode la plus commune est la méthode fréquencemétrique.
+
+### Méthode fréquencemétrique
+
+Le principe est de prendre un intervalle de temps et de compter le nombre de passage d'un objet, d'aimants dans mon cas, devant un capteur.
+Je n'ai que 3 aimants donc les incertitudes dépendent de la vitesse et sont donc très grandes à basse vitesse notamment.
+
+![Courbes incertitudes méthode fréquencemétrique](/Pratique/acc_code/incertitudes_vitesses_freq.png "Courbes incertitudes méthode fréquencemétrique")
+
+### Méthode période
+
+C'est l'inverse de la méthode fréquencemétrique. On mesure le temps entre le passage de deux aimants.
+L'incertitude est donc moins grande et surtout elle est constante.
+
+![Courbes incertitudes méthode période](/Pratique/acc_code/incertitudes_vitesse_periode.png "Courbes incertitudes méthode période")
+
+## <a name="prot-exp">Protocole expérimental</a>
+
+- Démarrage : 0-3s
+  Kick-start moteur pour franchir la zone morte et les frottements
+- Mode vitesse : 3-12s
+  Aucun obstacle
+- Mode distance : 12-27s
+  12-15s : obstacle 0,6 m → 0,15 m
+  15-21s : obstacle maintenu à 0,15 m
+  21-27s : obstacle 0,15 m → 1,20 m
+- Mode vitesse : 27-35s
 
 ## <a name="results">Résultats</a>
 
