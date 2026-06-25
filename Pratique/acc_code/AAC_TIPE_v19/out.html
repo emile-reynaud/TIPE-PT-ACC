@@ -1,0 +1,868 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<meta charset="UTF-8">
+<html>
+<head>
+<title>/home/emilereynaud/Documents/dev/school/TIPE-PT-ACC/Pratique/acc_code/AAC_TIPE_v19/AAC_TIPE_v19.ino</title>
+<style>
+.highlight .hll { background-color: #ffffcc }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .ch { color: #408080; font-style: italic } /* Comment.Hashbang */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .cpf { color: #408080; font-style: italic } /* Comment.PreprocFile */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #888888 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0044DD } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mb { color: #666666 } /* Literal.Number.Bin */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sa { color: #BA2121 } /* Literal.String.Affix */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .dl { color: #BA2121 } /* Literal.String.Delimiter */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .fm { color: #0000FF } /* Name.Function.Magic */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .vm { color: #19177C } /* Name.Variable.Magic */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+.highlight * { font-family: monospace; }
+.highlight { font-size: 90%; }
+.highlight { line-height: normal; }
+.highlight .err { border: none !important }
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span></span><span class="lineno">  1 </span><span class="cm">/*</span>
+<span class="lineno">  2 </span><span class="cm"> * RÉGULATEUR DE VITESSE ADAPTATIF ET SA BOUCLE DE RÉTROACTION PID</span>
+<span class="lineno">  3 </span><span class="cm"> * TIPE Par Emile Reynaud</span>
+<span class="lineno">  4 </span><span class="cm"> */</span>
+<span class="lineno">  5 </span>
+<span class="lineno">  6 </span><span class="c1">// Définition de 4 constantes numériques au lieu d&#39;avoir des str</span>
+<span class="lineno">  7 </span><span class="cp">#define CORR_P 1 </span><span class="c1">// correcteur proportionnel seul</span>
+<span class="lineno">  8 </span><span class="cp">#define CORR_PI 2 </span><span class="c1">// correcteur proportionnel + intégral</span>
+<span class="lineno">  9 </span><span class="cp">#define CORR_PD 3 </span><span class="c1">// correcteur proportionnel + dérivé</span>
+<span class="lineno"> 10 </span><span class="cp">#define CORR_PID 4 </span><span class="c1">// correcteur proportionnel + intégral + dérivé</span>
+<span class="lineno"> 11 </span>
+<span class="lineno"> 12 </span><span class="c1">// Choix du correcteur en décommentant une seule ligne</span>
+<span class="lineno"> 13 </span><span class="c1">// #define CORRECTEUR CORR_P</span>
+<span class="lineno"> 14 </span><span class="c1">// #define CORRECTEUR CORR_PI</span>
+<span class="lineno"> 15 </span><span class="c1">// #define CORRECTEUR CORR_PD</span>
+<span class="lineno"> 16 </span><span class="cp">#define CORRECTEUR CORR_PID</span>
+<span class="lineno"> 17 </span>
+<span class="lineno"> 18 </span><span class="c1">// Définition des bonnes constantes en fonction du correcteur</span>
+<span class="lineno"> 19 </span><span class="cp">#if CORRECTEUR == CORR_P           </span>
+<span class="lineno"> 20 </span>  <span class="cp">#define Kp_VAL 60.0f           </span>
+<span class="lineno"> 21 </span>  <span class="cp">#define Ki_VAL 0.0f           </span>
+<span class="lineno"> 22 </span>  <span class="cp">#define Kd_VAL 0.0f           </span>
+<span class="lineno"> 23 </span>  <span class="cp">#define USE_I 0 </span><span class="c1">// activation ou non de l&#39;intégrale</span>
+<span class="lineno"> 24 </span>  <span class="cp">#define USE_D 0 </span><span class="c1">// idem pour la dérivée</span>
+<span class="lineno"> 25 </span>  <span class="cp">#define MODE_STR &quot;P&quot; </span><span class="c1">// label pour logs</span>
+<span class="lineno"> 26 </span>  <span class="cp">#define KICK_PWM_VAL 209 </span><span class="c1">// PWM du kick</span>
+<span class="lineno"> 27 </span>  <span class="cp">#define KICK_DUREE_MS_VAL 250 </span><span class="c1">// durée du kick</span>
+<span class="lineno"> 28 </span>
+<span class="lineno"> 29 </span><span class="cp">#elif CORRECTEUR == CORR_PI        </span>
+<span class="lineno"> 30 </span>  <span class="cp">#define Kp_VAL 15.0f           </span>
+<span class="lineno"> 31 </span>  <span class="cp">#define Ki_VAL 60.0f           </span>
+<span class="lineno"> 32 </span>  <span class="cp">#define Kd_VAL 0.0f           </span>
+<span class="lineno"> 33 </span>  <span class="cp">#define USE_I 1               </span>
+<span class="lineno"> 34 </span>  <span class="cp">#define USE_D 0               </span>
+<span class="lineno"> 35 </span>  <span class="cp">#define MODE_STR &quot;PI&quot;            </span>
+<span class="lineno"> 36 </span>  <span class="cp">#define KICK_PWM_VAL 209   </span>
+<span class="lineno"> 37 </span>  <span class="cp">#define KICK_DUREE_MS_VAL 250   </span>
+<span class="lineno"> 38 </span>
+<span class="lineno"> 39 </span><span class="cp">#elif CORRECTEUR == CORR_PD        </span>
+<span class="lineno"> 40 </span>  <span class="cp">#define Kp_VAL 350.0f           </span>
+<span class="lineno"> 41 </span>  <span class="cp">#define Ki_VAL 0.0f           </span>
+<span class="lineno"> 42 </span>  <span class="cp">#define Kd_VAL 10.0f           </span>
+<span class="lineno"> 43 </span>  <span class="cp">#define USE_I 0               </span>
+<span class="lineno"> 44 </span>  <span class="cp">#define USE_D 1               </span>
+<span class="lineno"> 45 </span>  <span class="cp">#define MODE_STR &quot;PD&quot;            </span>
+<span class="lineno"> 46 </span>  <span class="cp">#define KICK_PWM_VAL 255   </span>
+<span class="lineno"> 47 </span>  <span class="cp">#define KICK_DUREE_MS_VAL 800   </span>
+<span class="lineno"> 48 </span>
+<span class="lineno"> 49 </span><span class="cp">#elif CORRECTEUR == CORR_PID       </span>
+<span class="lineno"> 50 </span>  <span class="cp">#define Kp_VAL 80.0f           </span>
+<span class="lineno"> 51 </span>  <span class="cp">#define Ki_VAL 40.0f           </span>
+<span class="lineno"> 52 </span>  <span class="cp">#define Kd_VAL 8.0f           </span>
+<span class="lineno"> 53 </span>  <span class="cp">#define USE_I 1               </span>
+<span class="lineno"> 54 </span>  <span class="cp">#define USE_D 1               </span>
+<span class="lineno"> 55 </span>  <span class="cp">#define MODE_STR &quot;PID&quot;           </span>
+<span class="lineno"> 56 </span>  <span class="cp">#define KICK_PWM_VAL 153   </span>
+<span class="lineno"> 57 </span>  <span class="cp">#define KICK_DUREE_MS_VAL 1000  </span>
+<span class="lineno"> 58 </span>
+<span class="lineno"> 59 </span><span class="cp">#else</span>
+<span class="lineno"> 60 </span>  <span class="c1">// Si pas de correcteur valide, renvoie une erreur</span>
+<span class="lineno"> 61 </span>  <span class="cp">#error &quot;Correcteur non défini — décommenter une ligne CORRECTEUR ci-dessus&quot;</span>
+<span class="lineno"> 62 </span><span class="cp">#endif</span>
+<span class="lineno"> 63 </span>
+<span class="lineno"> 64 </span><span class="c1">// Identification moteur</span>
+<span class="lineno"> 65 </span><span class="kr">const</span> <span class="kr">float</span> <span class="n">K_MOTEUR</span> <span class="o">=</span> <span class="mf">1.40f</span><span class="p">;</span> <span class="c1">// gain statique du moteur</span>
+<span class="lineno"> 66 </span><span class="kr">const</span> <span class="kr">float</span> <span class="n">SEUIL_DEMARRAGE</span> <span class="o">=</span> <span class="mf">0.30f</span><span class="p">;</span> <span class="c1">// commande minimale normalisée pour démarrer </span>
+<span class="lineno"> 67 </span>
+<span class="lineno"> 68 </span><span class="c1">// Déclaration de la variable du feedforward</span>
+<span class="lineno"> 69 </span><span class="c1">// Calcul de cette dernière dans setup()</span>
+<span class="lineno"> 70 </span><span class="kr">float</span> <span class="n">FEEDFORWARD_PWM</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span>
+<span class="lineno"> 71 </span>
+<span class="lineno"> 72 </span><span class="c1">// Gain de freinage pour le mode distance</span>
+<span class="lineno"> 73 </span><span class="kr">const</span> <span class="kr">float</span> <span class="n">KP_BRAKE_PWM</span> <span class="o">=</span> <span class="mf">600.0f</span><span class="p">;</span> <span class="c1">// en PWM/m</span>
+<span class="lineno"> 74 </span>
+<span class="lineno"> 75 </span><span class="c1">// Pins Arduino</span>
+<span class="lineno"> 76 </span><span class="cp">#define TRIG_PIN 7 </span><span class="c1">// pin TRIG du capteur à ultrason</span>
+<span class="lineno"> 77 </span><span class="cp">#define ECHO_PIN 6 </span><span class="c1">// pin ECHO du capteur à ultrason</span>
+<span class="lineno"> 78 </span><span class="cp">#define HALL_PIN 2 </span><span class="c1">// pin SIG du capteur à effet Hall</span>
+<span class="lineno"> 79 </span><span class="cp">#define ENB_PIN 9 </span><span class="c1">// pin ENB du pont en H</span>
+<span class="lineno"> 80 </span><span class="cp">#define IN3_PIN A0 </span><span class="c1">// pin IN3 du pont en H</span>
+<span class="lineno"> 81 </span><span class="cp">#define IN4_PIN 5 </span><span class="c1">// pin IN4 du pont en H</span>
+<span class="lineno"> 82 </span><span class="cp">#define SD_CS_PIN 4 </span><span class="c1">// pin SD_CS de la carte microSD</span>
+<span class="lineno"> 83 </span><span class="cp">#define BUTTON_PIN 8 </span><span class="c1">// bouton démarrage programme</span>
+<span class="lineno"> 84 </span>
+<span class="lineno"> 85 </span><span class="c1">// Roue</span>
+<span class="lineno"> 86 </span><span class="kr">const</span> <span class="kr">int</span> <span class="n">DIAMETRE_MM</span> <span class="o">=</span> <span class="mi">83</span><span class="p">;</span> <span class="c1">// diamètre de la roue (mm)</span>
+<span class="lineno"> 87 </span><span class="kr">const</span> <span class="kr">float</span> <span class="n">PERIMETRE_M</span> <span class="o">=</span> <span class="mf">3.14159f</span> <span class="o">*</span> <span class="p">(</span><span class="kr">float</span><span class="p">)</span><span class="n">DIAMETRE_MM</span> <span class="o">/</span> <span class="mf">1000.0f</span><span class="p">;</span> <span class="c1">// Périmètre de la roue (m)</span>
+<span class="lineno"> 88 </span><span class="kr">const</span> <span class="kr">uint8_t</span> <span class="n">NB_AIMANTS</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span> <span class="c1">// nombre d&#39;aimants</span>
+<span class="lineno"> 89 </span>
+<span class="lineno"> 90 </span><span class="c1">// Constantes de consigne</span>
+<span class="lineno"> 91 </span><span class="kr">const</span> <span class="kr">float</span> <span class="n">DIST_CONSIGNE_M</span> <span class="o">=</span> <span class="mf">0.30f</span><span class="p">;</span> <span class="c1">// distance de consigne (m)</span>
+<span class="lineno"> 92 </span><span class="kr">const</span> <span class="kr">float</span> <span class="n">VITESSE_CIBLE_MS</span> <span class="o">=</span> <span class="mf">0.70f</span><span class="p">;</span> <span class="c1">// vitesse de consigne (m/s)</span>
+<span class="lineno"> 93 </span>
+<span class="lineno"> 94 </span><span class="c1">// Constantes de sécurité</span>
+<span class="lineno"> 95 </span><span class="kr">const</span> <span class="kr">float</span> <span class="n">DIST_URGENCE_M</span> <span class="o">=</span> <span class="mf">0.06f</span><span class="p">;</span> <span class="c1">// distance freinage d&#39;urgence</span>
+<span class="lineno"> 96 </span><span class="kr">const</span> <span class="kr">float</span> <span class="n">DIST_MAX_OBSTACLE_M</span> <span class="o">=</span> <span class="mf">1.20f</span><span class="p">;</span> <span class="c1">// distance max à laquelle un objet est détecté</span>
+<span class="lineno"> 97 </span>
+<span class="lineno"> 98 </span><span class="c1">// Limite de l&#39;intégrale</span>
+<span class="lineno"> 99 </span><span class="kr">const</span> <span class="kr">float</span> <span class="n">INTEGRALE_MAX</span> <span class="o">=</span> <span class="mf">100.0f</span><span class="p">;</span> <span class="c1">// valeur maximale de l&#39;intégral (en PWM)</span>
+<span class="lineno">100 </span>
+<span class="lineno">101 </span><span class="c1">// Constantes temporelles</span>
+<span class="lineno">102 </span><span class="kr">const</span> <span class="kr">uint16_t</span> <span class="n">CONTROL_PERIOD_MS</span> <span class="o">=</span> <span class="mi">50</span><span class="p">;</span> <span class="c1">// période de la boucle de contrôle</span>
+<span class="lineno">103 </span><span class="kr">const</span> <span class="kr">uint16_t</span> <span class="n">LOG_PERIOD_MS</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span> <span class="c1">// période d&#39;écriture sur la carte SD</span>
+<span class="lineno">104 </span><span class="kr">const</span> <span class="kr">uint16_t</span> <span class="n">DEBOUNCE_MS</span> <span class="o">=</span> <span class="mi">30</span><span class="p">;</span> <span class="c1">// durée de l&#39;anti-rebond du bouton</span>
+<span class="lineno">105 </span><span class="kr">const</span> <span class="kr">uint32_t</span> <span class="n">ECHO_TIMEOUT_US</span> <span class="o">=</span> <span class="mi">12000UL</span><span class="p">;</span> <span class="c1">// timeout capteur à ultrason</span>
+<span class="lineno">106 </span><span class="kr">const</span> <span class="kr">uint32_t</span> <span class="n">HALL_TIMEOUT_US</span> <span class="o">=</span> <span class="mi">400000UL</span><span class="p">;</span> <span class="c1">// timeout capteur à effet Hall</span>
+<span class="lineno">107 </span>
+<span class="lineno">108 </span><span class="c1">// Constantes pour le kick start</span>
+<span class="lineno">109 </span><span class="kr">const</span> <span class="kr">uint8_t</span>  <span class="n">KICK_PWM_C</span> <span class="o">=</span> <span class="n">KICK_PWM_VAL</span><span class="p">;</span> <span class="c1">// puissance du kick </span>
+<span class="lineno">110 </span><span class="kr">const</span> <span class="kr">uint16_t</span> <span class="n">KICK_DUREE_MS_C</span> <span class="o">=</span> <span class="n">KICK_DUREE_MS_VAL</span><span class="p">;</span> <span class="c1">// durée du kick (ms)</span>
+<span class="lineno">111 </span><span class="kr">const</span> <span class="kr">float</span> <span class="n">VITESSE_QUASI_NULLE_MS</span> <span class="o">=</span> <span class="mf">0.05f</span><span class="p">;</span> <span class="c1">// en dessous de cette vitesse, on considère la roue arrêtée</span>
+<span class="lineno">112 </span><span class="kr">const</span> <span class="kr">float</span> <span class="n">COMMANDE_MIN_DEMARRAGE</span> <span class="o">=</span> <span class="mf">3.0f</span><span class="p">;</span> <span class="c1">// commande minimale pour déclencher un kick (PWM)</span>
+<span class="lineno">113 </span>
+<span class="lineno">114 </span><span class="c1">// Zone morte</span>
+<span class="lineno">115 </span><span class="kr">const</span> <span class="kr">float</span> <span class="n">PWM_ZONE_MORTE</span> <span class="o">=</span> <span class="mf">76.0f</span><span class="p">;</span>
+<span class="lineno">116 </span>
+<span class="lineno">117 </span><span class="c1">// Rampe de commande (lissage asymétrique)</span>
+<span class="lineno">118 </span><span class="kr">const</span> <span class="kr">float</span> <span class="n">RAMPE_MONTEE_PAR_S</span> <span class="o">=</span> <span class="mf">350.0f</span><span class="p">;</span> <span class="c1">// PWM/s accélération</span>
+<span class="lineno">119 </span><span class="kr">const</span> <span class="kr">float</span> <span class="n">RAMPE_DESCENTE_PAR_S</span> <span class="o">=</span> <span class="mf">700.0f</span><span class="p">;</span> <span class="c1">// PWM/s décélération</span>
+<span class="lineno">120 </span>
+<span class="lineno">121 </span><span class="c1">// Bibliothèques</span>
+<span class="lineno">122 </span><span class="cp">#include</span> <span class="cpf">&lt;SPI.h&gt; // protocole SPI nécessaire pour la carte SD</span><span class="cp"></span>
+<span class="lineno">123 </span><span class="cp">#include</span> <span class="cpf">&lt;SD.h&gt; // permet de lire/écrire sur la carte SD</span><span class="cp"></span>
+<span class="lineno">124 </span>
+<span class="lineno">125 </span><span class="c1">// Variables volatiles (pour éviter que le programme les mettent en cache car elle sont constamment modifiées)</span>
+<span class="lineno">126 </span><span class="kr">volatile</span> <span class="kr">uint32_t</span> <span class="n">hallPulseCount</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// nombre d&#39;impulsions Hall reçues</span>
+<span class="lineno">127 </span><span class="kr">volatile</span> <span class="kr">uint32_t</span> <span class="n">hallLastPulseTime_us</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// timestamp (microseconde) de la dernière impulsion Hall</span>
+<span class="lineno">128 </span><span class="kr">volatile</span> <span class="kr">uint32_t</span> <span class="n">hallPeriode_us</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// durée (microseconde) entre les deux dernières impulsions</span>
+<span class="lineno">129 </span><span class="kr">volatile</span> <span class="kr">bool</span> <span class="n">hallNouvelleImpulsion</span> <span class="o">=</span> <span class="kr">false</span><span class="p">;</span> <span class="c1">// nouvelle impulsion ou non</span>
+<span class="lineno">130 </span>
+<span class="lineno">131 </span><span class="c1">// Variables de mesures</span>
+<span class="lineno">132 </span><span class="kr">uint32_t</span> <span class="n">lastHallCount</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// valeur de hallPulseCount au dernier cycle (méthode fréquencemétrique)</span>
+<span class="lineno">133 </span><span class="kr">float</span> <span class="n">vitesse_ms</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span> <span class="c1">// vitesse mesurée par méthode fréquencemétrique (m/s)</span>
+<span class="lineno">134 </span><span class="kr">float</span> <span class="n">vitesse_periode_ms</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span> <span class="c1">// vitesse mesurée par méthode période (m/s)</span>
+<span class="lineno">135 </span>
+<span class="lineno">136 </span><span class="c1">// Variables correcteur</span>
+<span class="lineno">137 </span><span class="kr">float</span> <span class="n">integrale</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span> <span class="c1">// accumulateur de l&#39;intégrale (terme I du PI et PID)</span>
+<span class="lineno">138 </span>
+<span class="lineno">139 </span><span class="c1">// Dérivée calculée sur la mesure de vitesse</span>
+<span class="lineno">140 </span><span class="kr">float</span> <span class="n">vitessePeriodePrecedente</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span> <span class="c1">// vitesse_periode_ms du cycle précédent</span>
+<span class="lineno">141 </span><span class="kr">bool</span> <span class="n">deriveeInitialisee</span> <span class="o">=</span> <span class="kr">false</span><span class="p">;</span> <span class="c1">// faux au démarrage, le premier cycle n&#39;a pas de &quot;précédent&quot;</span>
+<span class="lineno">142 </span>
+<span class="lineno">143 </span><span class="c1">// Variables temporelles</span>
+<span class="lineno">144 </span><span class="kr">uint32_t</span> <span class="n">lastControlTime</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// timestamp du dernier contrôle (ms)</span>
+<span class="lineno">145 </span><span class="kr">uint32_t</span> <span class="n">lastLogTime</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// timestamp du dernier log SD (ms)</span>
+<span class="lineno">146 </span><span class="kr">float</span> <span class="n">derniereCommande</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span> <span class="c1">// PWM envoyée au moteur au dernier cycle</span>
+<span class="lineno">147 </span>
+<span class="lineno">148 </span><span class="c1">// Variables kick start</span>
+<span class="lineno">149 </span><span class="kr">bool</span> <span class="n">kickActif</span> <span class="o">=</span> <span class="kr">false</span><span class="p">;</span> <span class="c1">// kick actif ou non</span>
+<span class="lineno">150 </span><span class="kr">uint32_t</span> <span class="n">kickDebutMs</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// timestamp (ms) du début du kick en cours</span>
+<span class="lineno">151 </span><span class="kr">float</span> <span class="n">commandeLisseePWM</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span> <span class="c1">// commande lissée par la rampe</span>
+<span class="lineno">152 </span>
+<span class="lineno">153 </span><span class="c1">// Variables carte SD</span>
+<span class="lineno">154 </span><span class="nf">File</span> <span class="n">logFile</span><span class="p">;</span> <span class="c1">// objet fichier ouvert sur la carte SD</span>
+<span class="lineno">155 </span><span class="kr">bool</span> <span class="n">sdOk</span> <span class="o">=</span> <span class="kr">false</span><span class="p">;</span> <span class="c1">// carte SD initialisée et fichier ouvert ou non</span>
+<span class="lineno">156 </span><span class="kr">char</span> <span class="n">logFilename</span><span class="p">[</span><span class="mi">13</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span> <span class="c1">// nom du fichier CSV</span>
+<span class="lineno">157 </span><span class="kr">uint16_t</span> <span class="n">logLinesSinceFlush</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// compteur de lignes depuis le dernier flush() forcé</span>
+<span class="lineno">158 </span><span class="kr">const</span> <span class="kr">uint8_t</span> <span class="n">LOG_FLUSH_EVERY_N_LINES</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span> <span class="c1">// on force un flush tous les 10 lignes pour ne pas perdre trop de données en cas de coupure</span>
+<span class="lineno">159 </span>
+<span class="lineno">160 </span><span class="c1">// Variables bouton</span>
+<span class="lineno">161 </span><span class="kr">bool</span> <span class="n">programmeActif</span> <span class="o">=</span> <span class="kr">false</span><span class="p">;</span> <span class="c1">// régulateur actif ou non</span>
+<span class="lineno">162 </span><span class="kr">const</span> <span class="kr">uint8_t</span> <span class="n">BUTTON_ACTIVE_LEVEL</span> <span class="o">=</span> <span class="kr">LOW</span><span class="p">;</span> <span class="c1">// état du pin quand le bouton est préssé</span>
+<span class="lineno">163 </span><span class="kr">int</span> <span class="n">buttonLastRawState</span> <span class="o">=</span> <span class="kr">HIGH</span><span class="p">;</span> <span class="c1">// état lu au cycle précédent</span>
+<span class="lineno">164 </span><span class="kr">int</span> <span class="n">buttonStableState</span> <span class="o">=</span> <span class="kr">HIGH</span><span class="p">;</span> <span class="c1">// état stable après anti-rebond</span>
+<span class="lineno">165 </span><span class="kr">uint32_t</span> <span class="n">lastButtonChangeTime</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// timestamp (ms) du dernier changement d&#39;état brut</span>
+<span class="lineno">166 </span>
+<span class="lineno">167 </span><span class="c1">// Déclarations anticipées des fonctions</span>
+<span class="lineno">168 </span><span class="kr">void</span>  <span class="nf">appliquerCommande</span><span class="p">(</span><span class="kr">float</span> <span class="n">cmd</span><span class="p">);</span>
+<span class="lineno">169 </span><span class="kr">void</span>  <span class="nf">ecrireLog</span><span class="p">(</span><span class="kr">float</span> <span class="n">t_s</span><span class="p">,</span> <span class="kr">float</span> <span class="n">dist_m</span><span class="p">,</span> <span class="kr">float</span> <span class="n">erreur_m</span><span class="p">,</span> <span class="kr">uint8_t</span> <span class="n">modeActuel</span><span class="p">);</span>
+<span class="lineno">170 </span><span class="kr">void</span>  <span class="nf">initSD</span><span class="p">();</span>
+<span class="lineno">171 </span><span class="kr">void</span>  <span class="nf">fermerLogSD</span><span class="p">();</span>
+<span class="lineno">172 </span><span class="kr">float</span> <span class="nf">calculerCommandeMoteur</span><span class="p">(</span><span class="kr">float</span> <span class="n">cmdCorrecteur</span><span class="p">,</span> <span class="kr">float</span> <span class="n">dt_s</span><span class="p">,</span> <span class="kr">bool</span> <span class="n">urgence</span><span class="p">,</span> <span class="kr">bool</span> <span class="n">interdireKick</span><span class="p">,</span> <span class="kr">uint32_t</span> <span class="n">now</span><span class="p">);</span>
+<span class="lineno">173 </span><span class="kr">float</span> <span class="nf">calculerCorrecteur</span><span class="p">(</span><span class="kr">float</span> <span class="n">erreur</span><span class="p">,</span> <span class="kr">float</span> <span class="n">dt_s</span><span class="p">,</span> <span class="kr">bool</span> <span class="n">reinitDerivee</span><span class="p">);</span>
+<span class="lineno">174 </span>
+<span class="lineno">175 </span>
+<span class="lineno">176 </span><span class="c1">// Appelée à chaque passage d&#39;aimant devant le capteur à effet Hall</span>
+<span class="lineno">177 </span><span class="kr">void</span> <span class="nf">hallISR</span><span class="p">()</span> <span class="p">{</span>
+<span class="lineno">178 </span>  <span class="kr">uint32_t</span> <span class="n">t_us</span> <span class="o">=</span> <span class="nf">micros</span><span class="p">();</span> <span class="c1">// timestamp en microseconde au passage de l&#39;aimant</span>
+<span class="lineno">179 </span>
+<span class="lineno">180 </span>  <span class="c1">// Anti-rebond</span>
+<span class="lineno">181 </span>  <span class="k">if</span> <span class="p">(</span><span class="n">hallLastPulseTime_us</span> <span class="o">!=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">t_us</span> <span class="o">-</span> <span class="n">hallLastPulseTime_us</span> <span class="o">&lt;</span> <span class="mi">20000UL</span><span class="p">))</span> <span class="k">return</span><span class="p">;</span>
+<span class="lineno">182 </span>
+<span class="lineno">183 </span>  <span class="n">hallPulseCount</span><span class="o">++</span><span class="p">;</span> <span class="c1">// incrémenter le compteur total d&#39;impulsions (méthode fréquencemétrique)</span>
+<span class="lineno">184 </span>
+<span class="lineno">185 </span>  <span class="k">if</span> <span class="p">(</span><span class="n">hallLastPulseTime_us</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// si pas la toute première impulsion</span>
+<span class="lineno">186 </span>    <span class="n">hallPeriode_us</span> <span class="o">=</span> <span class="n">t_us</span> <span class="o">-</span> <span class="n">hallLastPulseTime_us</span><span class="p">;</span> <span class="c1">// durée entre les deux derniers aimants</span>
+<span class="lineno">187 </span>    <span class="n">hallNouvelleImpulsion</span> <span class="o">=</span> <span class="kr">true</span><span class="p">;</span> <span class="c1">// signalement nouvelle mesure dispo</span>
+<span class="lineno">188 </span>  <span class="p">}</span>
+<span class="lineno">189 </span>
+<span class="lineno">190 </span>  <span class="n">hallLastPulseTime_us</span> <span class="o">=</span> <span class="n">t_us</span><span class="p">;</span> <span class="c1">// mémoriser l&#39;heure de cette impulsion pour le prochain calcul de période</span>
+<span class="lineno">191 </span><span class="p">}</span>
+<span class="lineno">192 </span>
+<span class="lineno">193 </span>
+<span class="lineno">194 </span><span class="c1">// logique du bouton</span>
+<span class="lineno">195 </span><span class="kr">void</span> <span class="nf">gererBoutonStartStop</span><span class="p">(</span><span class="kr">uint32_t</span> <span class="n">now</span><span class="p">)</span> <span class="p">{</span>
+<span class="lineno">196 </span>  <span class="kr">int</span> <span class="n">rawState</span> <span class="o">=</span> <span class="nf">digitalRead</span><span class="p">(</span><span class="n">BUTTON_PIN</span><span class="p">);</span> <span class="c1">// lire l&#39;état du bouton (HIGH ou LOW)</span>
+<span class="lineno">197 </span>
+<span class="lineno">198 </span>  <span class="k">if</span> <span class="p">(</span><span class="n">rawState</span> <span class="o">!=</span> <span class="n">buttonLastRawState</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// état différent d&#39;avant ?</span>
+<span class="lineno">199 </span>    <span class="n">buttonLastRawState</span>   <span class="o">=</span> <span class="n">rawState</span><span class="p">;</span> <span class="c1">// mémoriser le nouvel état </span>
+<span class="lineno">200 </span>    <span class="n">lastButtonChangeTime</span> <span class="o">=</span> <span class="n">now</span><span class="p">;</span> <span class="c1">// démarrer le chrono de l&#39;anti-rebond</span>
+<span class="lineno">201 </span>  <span class="p">}</span>
+<span class="lineno">202 </span>
+<span class="lineno">203 </span>  <span class="c1">// si l&#39;état reste le même pendant 30 ms, on valide l&#39;état</span>
+<span class="lineno">204 </span>  <span class="k">if</span> <span class="p">((</span><span class="n">now</span> <span class="o">-</span> <span class="n">lastButtonChangeTime</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">DEBOUNCE_MS</span> <span class="o">&amp;&amp;</span> <span class="n">rawState</span> <span class="o">!=</span> <span class="n">buttonStableState</span><span class="p">)</span> <span class="p">{</span>
+<span class="lineno">205 </span>    <span class="n">buttonStableState</span> <span class="o">=</span> <span class="n">rawState</span><span class="p">;</span> <span class="c1">// valider le nouvel état stable</span>
+<span class="lineno">206 </span>
+<span class="lineno">207 </span>    <span class="k">if</span> <span class="p">(</span><span class="n">buttonStableState</span> <span class="o">==</span> <span class="n">BUTTON_ACTIVE_LEVEL</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// bouton pressé ?</span>
+<span class="lineno">208 </span>      <span class="n">programmeActif</span> <span class="o">=</span> <span class="o">!</span><span class="n">programmeActif</span><span class="p">;</span> <span class="c1">// changer l&#39;état du programme</span>
+<span class="lineno">209 </span>
+<span class="lineno">210 </span>      <span class="k">if</span> <span class="p">(</span><span class="n">programmeActif</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// on vient de démarrer ?</span>
+<span class="lineno">211 </span>        <span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot;Bouton : START&quot;</span><span class="p">));</span>
+<span class="lineno">212 </span>        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">sdOk</span><span class="p">)</span> <span class="n">initSD</span><span class="p">();</span> <span class="c1">// ouvrir un nouveau fichier CSV si la SD n&#39;est pas encore prête</span>
+<span class="lineno">213 </span>        <span class="n">lastControlTime</span> <span class="o">=</span> <span class="n">now</span><span class="p">;</span> <span class="c1">// réinitialiser le timer de contrôle pour éviter un grand dt au premier cycle</span>
+<span class="lineno">214 </span>        <span class="n">lastLogTime</span>     <span class="o">=</span> <span class="n">now</span><span class="p">;</span> <span class="c1">// réinitialiser le timer de log</span>
+<span class="lineno">215 </span>      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span> <span class="c1">// on vient de s&#39;arrêter ?</span>
+<span class="lineno">216 </span>        <span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot;Bouton : STOP&quot;</span><span class="p">));</span>
+<span class="lineno">217 </span>        <span class="n">arreterProgramme</span><span class="p">();</span> <span class="c1">// appelle arreterProgramme()</span>
+<span class="lineno">218 </span>      <span class="p">}</span>
+<span class="lineno">219 </span>    <span class="p">}</span>
+<span class="lineno">220 </span>  <span class="p">}</span>
+<span class="lineno">221 </span><span class="p">}</span>
+<span class="lineno">222 </span>
+<span class="lineno">223 </span>
+<span class="lineno">224 </span><span class="c1">// remet toutes les variables d&#39;état à zéro et ferme le fichier</span>
+<span class="lineno">225 </span><span class="kr">void</span> <span class="nf">arreterProgramme</span><span class="p">()</span> <span class="p">{</span>
+<span class="lineno">226 </span>  <span class="n">appliquerCommande</span><span class="p">(</span><span class="mf">0.0f</span><span class="p">);</span> <span class="c1">// arrête le moteur</span>
+<span class="lineno">227 </span>  <span class="n">derniereCommande</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span> <span class="c1">// effacer la dernière commande mémorisée</span>
+<span class="lineno">228 </span>  <span class="n">integrale</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span> <span class="c1">// remettre l&#39;intégrale à zéro</span>
+<span class="lineno">229 </span>  <span class="n">vitessePeriodePrecedente</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span> <span class="c1">// effacer la vitesse précédente (pour D)</span>
+<span class="lineno">230 </span>  <span class="n">deriveeInitialisee</span> <span class="o">=</span> <span class="kr">false</span><span class="p">;</span> <span class="c1">// indiquer que D doit être réinitialisé au prochain démarrage</span>
+<span class="lineno">231 </span>  <span class="n">kickActif</span> <span class="o">=</span> <span class="kr">false</span><span class="p">;</span> <span class="c1">// annuler le kick si il y en a un en cours</span>
+<span class="lineno">232 </span>  <span class="n">kickDebutMs</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// effacer le timestamp du kick</span>
+<span class="lineno">233 </span>  <span class="n">commandeLisseePWM</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span> <span class="c1">// remettre la rampe à zéro</span>
+<span class="lineno">234 </span>  <span class="n">fermerLogSD</span><span class="p">();</span> <span class="c1">// fermeture du fichier</span>
+<span class="lineno">235 </span>
+<span class="lineno">236 </span>  <span class="nf">noInterrupts</span><span class="p">();</span> <span class="c1">// désactiver les interruptions pour lire les variables volatiles sans conflit</span>
+<span class="lineno">237 </span>  <span class="n">lastHallCount</span> <span class="o">=</span> <span class="n">hallPulseCount</span><span class="p">;</span> <span class="c1">// remettre le compteur fréquencemétrique à niveau</span>
+<span class="lineno">238 </span>  <span class="n">hallLastPulseTime_us</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// effacer le timestamp Hall (forcer vitesse nulle pour après)</span>
+<span class="lineno">239 </span>  <span class="n">hallPeriode_us</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="c1">// effacer la période Hall</span>
+<span class="lineno">240 </span>  <span class="n">hallNouvelleImpulsion</span> <span class="o">=</span> <span class="kr">false</span><span class="p">;</span> <span class="c1">// effacer le drapeau de nouvelle impulsion</span>
+<span class="lineno">241 </span>  <span class="nf">interrupts</span><span class="p">();</span> <span class="c1">// réactiver les interruptions</span>
+<span class="lineno">242 </span>
+<span class="lineno">243 </span>  <span class="n">vitesse_periode_ms</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span> <span class="c1">// remettre la vitesse zéro</span>
+<span class="lineno">244 </span><span class="p">}</span>
+<span class="lineno">245 </span>
+<span class="lineno">246 </span>
+<span class="lineno">247 </span><span class="c1">// mesure la distance jusqu&#39;à l&#39;obstacle devant la voiture</span>
+<span class="lineno">248 </span><span class="kr">float</span> <span class="nf">lireDistance</span><span class="p">()</span> <span class="p">{</span>
+<span class="lineno">249 </span>  <span class="nf">digitalWrite</span><span class="p">(</span><span class="n">TRIG_PIN</span><span class="p">,</span> <span class="kr">LOW</span><span class="p">);</span> <span class="c1">// s&#39;assurer que TRIG est bas avant de démarrer</span>
+<span class="lineno">250 </span>  <span class="nf">delayMicroseconds</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span> <span class="c1">// attendre 2 µs pour stabiliser le signal</span>
+<span class="lineno">251 </span>  <span class="nf">digitalWrite</span><span class="p">(</span><span class="n">TRIG_PIN</span><span class="p">,</span> <span class="kr">HIGH</span><span class="p">);</span> <span class="c1">// envoyer l&#39;impulsion ultrason de début</span>
+<span class="lineno">252 </span>  <span class="nf">delayMicroseconds</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span> <span class="c1">// maintenir l&#39;impulsion 10 µs (durée minimale pour le HC-SR04)</span>
+<span class="lineno">253 </span>  <span class="nf">digitalWrite</span><span class="p">(</span><span class="n">TRIG_PIN</span><span class="p">,</span> <span class="kr">LOW</span><span class="p">);</span> <span class="c1">// arrêter l&#39;impulsion</span>
+<span class="lineno">254 </span>
+<span class="lineno">255 </span>  <span class="c1">// Mesurer la durée de l&#39;écho, si timeout -&gt; +2 m</span>
+<span class="lineno">256 </span>  <span class="kr">long</span> <span class="n">duree_us</span> <span class="o">=</span> <span class="nf">pulseIn</span><span class="p">(</span><span class="n">ECHO_PIN</span><span class="p">,</span> <span class="kr">HIGH</span><span class="p">,</span> <span class="n">ECHO_TIMEOUT_US</span><span class="p">);</span>
+<span class="lineno">257 </span>
+<span class="lineno">258 </span>  <span class="k">if</span> <span class="p">(</span><span class="n">duree_us</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="k">return</span> <span class="o">-</span><span class="mf">1.0f</span><span class="p">;</span> <span class="c1">// si durée nulle : pas d&#39;écho reçu (timeout ou obstacle hors portée)</span>
+<span class="lineno">259 </span>
+<span class="lineno">260 </span>  <span class="c1">// vitesse du son = 343 m/s = 0.000343 m/µs -&gt; 0.0001715 m/µs (divisé par 2 car aller-retour)</span>
+<span class="lineno">261 </span>  <span class="kr">float</span> <span class="n">d</span> <span class="o">=</span> <span class="p">(</span><span class="kr">float</span><span class="p">)</span><span class="n">duree_us</span> <span class="o">*</span> <span class="mf">0.0001715f</span><span class="p">;</span>
+<span class="lineno">262 </span>
+<span class="lineno">263 </span>  <span class="k">if</span> <span class="p">(</span><span class="n">d</span> <span class="o">&lt;</span> <span class="mf">0.02f</span> <span class="o">||</span> <span class="n">d</span> <span class="o">&gt;</span> <span class="mf">4.0f</span><span class="p">)</span> <span class="k">return</span> <span class="o">-</span><span class="mf">1.0f</span><span class="p">;</span> <span class="c1">// valeur hors plage : rejetée</span>
+<span class="lineno">264 </span>
+<span class="lineno">265 </span>  <span class="k">return</span> <span class="n">d</span><span class="p">;</span> <span class="c1">// renvoie la distance en mètres</span>
+<span class="lineno">266 </span><span class="p">}</span>
+<span class="lineno">267 </span>
+<span class="lineno">268 </span>
+<span class="lineno">269 </span><span class="cm">/* méthode fréquencemétrique de mesure de vitesse</span>
+<span class="lineno">270 </span><span class="cm">   compte les impulsions Hall sur 50 ms</span>
+<span class="lineno">271 </span><span class="cm">   peu précis à basse vitesse, très précis à haute vitesse </span>
+<span class="lineno">272 </span><span class="cm">   utilisé uniquement pour le log ici */</span>
+<span class="lineno">273 </span><span class="kr">float</span> <span class="nf">calculerVitesse</span><span class="p">(</span><span class="kr">uint32_t</span> <span class="n">dt_ms</span><span class="p">)</span> <span class="p">{</span>
+<span class="lineno">274 </span>  <span class="nf">noInterrupts</span><span class="p">();</span> <span class="c1">// bloquer les interruptions pour lire hallPulseCount (volatile) sans conflit</span>
+<span class="lineno">275 </span>  <span class="kr">uint32_t</span> <span class="n">cnt</span> <span class="o">=</span> <span class="n">hallPulseCount</span><span class="p">;</span> <span class="c1">// récupérer le nombre d&#39;impulsions totales</span>
+<span class="lineno">276 </span>  <span class="nf">interrupts</span><span class="p">();</span> <span class="c1">// rétablir les interruptions</span>
+<span class="lineno">277 </span>
+<span class="lineno">278 </span>  <span class="kr">uint32_t</span> <span class="n">delta</span> <span class="o">=</span> <span class="n">cnt</span> <span class="o">-</span> <span class="n">lastHallCount</span><span class="p">;</span> <span class="c1">// nombre d&#39;impulsions depuis le dernier appel</span>
+<span class="lineno">279 </span>  <span class="n">lastHallCount</span>  <span class="o">=</span> <span class="n">cnt</span><span class="p">;</span> <span class="c1">// mémoriser la valeur actuelle pour le prochain cycle</span>
+<span class="lineno">280 </span>
+<span class="lineno">281 </span>  <span class="k">if</span> <span class="p">(</span><span class="n">dt_ms</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="k">return</span> <span class="mf">0.0f</span><span class="p">;</span> <span class="c1">// protection contre division par zéro</span>
+<span class="lineno">282 </span>
+<span class="lineno">283 </span>  <span class="c1">// v = (nombre_de_tours * périmètre) / durée</span>
+<span class="lineno">284 </span>  <span class="c1">// nombre_de_tours = delta / NB_AIMANTS  (3 aimants = 3 impulsions par tour)</span>
+<span class="lineno">285 </span>  <span class="k">return</span> <span class="p">(((</span><span class="kr">float</span><span class="p">)</span><span class="n">delta</span> <span class="o">/</span> <span class="p">(</span><span class="kr">float</span><span class="p">)</span><span class="n">NB_AIMANTS</span><span class="p">)</span> <span class="o">*</span> <span class="n">PERIMETRE_M</span><span class="p">)</span> <span class="o">/</span> <span class="p">((</span><span class="kr">float</span><span class="p">)</span><span class="n">dt_ms</span> <span class="o">/</span> <span class="mf">1000.0f</span><span class="p">);</span>
+<span class="lineno">286 </span><span class="p">}</span>
+<span class="lineno">287 </span>
+<span class="lineno">288 </span>
+<span class="lineno">289 </span><span class="cm">/* méthode période de mesure de vitesse</span>
+<span class="lineno">290 </span><span class="cm">   mesure la durée entre deux fronts montants</span>
+<span class="lineno">291 </span><span class="cm">   plus précis à basse vitesse</span>
+<span class="lineno">292 </span><span class="cm">   incertitude constante</span>
+<span class="lineno">293 </span><span class="cm">   filtre exponentiel asymétrique pour lisser sans retarder */</span>
+<span class="lineno">294 </span><span class="kr">float</span> <span class="nf">calculerVitessePeriode</span><span class="p">()</span> <span class="p">{</span>
+<span class="lineno">295 </span>  <span class="c1">// pas = périmètre / nb_aimants</span>
+<span class="lineno">296 </span>  <span class="kr">static</span> <span class="kr">const</span> <span class="kr">float</span> <span class="n">PAS_M</span> <span class="o">=</span> <span class="n">PERIMETRE_M</span> <span class="o">/</span> <span class="p">(</span><span class="kr">float</span><span class="p">)</span><span class="n">NB_AIMANTS</span><span class="p">;</span>
+<span class="lineno">297 </span>
+<span class="lineno">298 </span>  <span class="c1">// Variation maximale physiquement possible en un cycle de 50 ms.</span>
+<span class="lineno">299 </span>  <span class="c1">// Au-delà, c&#39;est un parasite (rebond mécanique) -&gt; on rejette.</span>
+<span class="lineno">300 </span>  <span class="kr">static</span> <span class="kr">const</span> <span class="kr">float</span> <span class="n">DELTA_V_MAX</span> <span class="o">=</span> <span class="mf">0.8f</span><span class="p">;</span> <span class="c1">// m/s par cycle de 50 ms</span>
+<span class="lineno">301 </span>
+<span class="lineno">302 </span>  <span class="nf">noInterrupts</span><span class="p">();</span>
+<span class="lineno">303 </span>  <span class="kr">uint32_t</span> <span class="n">derniereImp_us</span> <span class="o">=</span> <span class="n">hallLastPulseTime_us</span><span class="p">;</span> <span class="c1">// lire le timestamp de la dernière impulsion</span>
+<span class="lineno">304 </span>  <span class="nf">interrupts</span><span class="p">();</span>
+<span class="lineno">305 </span>
+<span class="lineno">306 </span>  <span class="k">if</span> <span class="p">(</span><span class="n">derniereImp_us</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="k">return</span> <span class="mf">0.0f</span><span class="p">;</span> <span class="c1">// pas encore d&#39;impulsion reçue depuis le démarrage</span>
+<span class="lineno">307 </span>
+<span class="lineno">308 </span>  <span class="c1">// Si aucune impulsion depuis plus de 400 ms -&gt; roue à l&#39;arrêt</span>
+<span class="lineno">309 </span>  <span class="k">if</span> <span class="p">((</span><span class="nf">micros</span><span class="p">()</span> <span class="o">-</span> <span class="n">derniereImp_us</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">HALL_TIMEOUT_US</span><span class="p">)</span> <span class="p">{</span>
+<span class="lineno">310 </span>    <span class="nf">noInterrupts</span><span class="p">();</span> <span class="n">hallNouvelleImpulsion</span> <span class="o">=</span> <span class="kr">false</span><span class="p">;</span> <span class="nf">interrupts</span><span class="p">();</span> <span class="c1">// effacer le drapeau</span>
+<span class="lineno">311 </span>    <span class="n">vitesse_periode_ms</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span> <span class="c1">// forcer la vitesse à zéro</span>
+<span class="lineno">312 </span>    <span class="k">return</span> <span class="mf">0.0f</span><span class="p">;</span>
+<span class="lineno">313 </span>  <span class="p">}</span>
+<span class="lineno">314 </span>
+<span class="lineno">315 </span>  <span class="nf">noInterrupts</span><span class="p">();</span>
+<span class="lineno">316 </span>  <span class="kr">uint32_t</span> <span class="n">periode_us</span> <span class="o">=</span> <span class="n">hallPeriode_us</span><span class="p">;</span> <span class="c1">// copier la période mesurée par l&#39;ISR</span>
+<span class="lineno">317 </span>  <span class="n">hallNouvelleImpulsion</span> <span class="o">=</span> <span class="kr">false</span><span class="p">;</span> <span class="c1">// effacer le drapeau de nouvelle mesure</span>
+<span class="lineno">318 </span>  <span class="nf">interrupts</span><span class="p">();</span>
+<span class="lineno">319 </span>
+<span class="lineno">320 </span>  <span class="k">if</span> <span class="p">(</span><span class="n">periode_us</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="k">return</span> <span class="n">vitesse_periode_ms</span><span class="p">;</span> <span class="c1">// pas de nouvelle période -&gt; garder l&#39;ancienne valeur</span>
+<span class="lineno">321 </span>
+<span class="lineno">322 </span>  <span class="c1">// v = distance / temps = PAS_M / (periode_us / 1 000 000)</span>
+<span class="lineno">323 </span>  <span class="kr">float</span> <span class="n">v_brute</span> <span class="o">=</span> <span class="n">PAS_M</span> <span class="o">/</span> <span class="p">((</span><span class="kr">float</span><span class="p">)</span><span class="n">periode_us</span> <span class="o">/</span> <span class="mf">1000000.0f</span><span class="p">);</span>
+<span class="lineno">324 </span>
+<span class="lineno">325 </span>  <span class="c1">// Rejet des parasites : si le saut de vitesse est physiquement impossible -&gt; ignorer</span>
+<span class="lineno">326 </span>  <span class="k">if</span> <span class="p">(</span><span class="n">vitesse_periode_ms</span> <span class="o">&gt;</span> <span class="mf">0.0f</span>
+<span class="lineno">327 </span>      <span class="o">&amp;&amp;</span> <span class="n">fabsf</span><span class="p">(</span><span class="n">v_brute</span> <span class="o">-</span> <span class="n">vitesse_periode_ms</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">DELTA_V_MAX</span><span class="p">)</span> <span class="p">{</span>
+<span class="lineno">328 </span>    <span class="k">return</span> <span class="n">vitesse_periode_ms</span><span class="p">;</span> <span class="c1">// mesure rejetée, on conserve la valeur précédente</span>
+<span class="lineno">329 </span>  <span class="p">}</span>
+<span class="lineno">330 </span>
+<span class="lineno">331 </span>  <span class="c1">// Filtre exponentiel asymétrique :</span>
+<span class="lineno">332 </span>  <span class="c1">//   montée -&gt; alpha = 0.25 (filtre fort : atténue les fausses vitesses élevées)</span>
+<span class="lineno">333 </span>  <span class="c1">//   descente -&gt; alpha = 0.85 (filtre faible : suit vite la décélération réelle)</span>
+<span class="lineno">334 </span>  <span class="c1">// v_filtré = alpha * v_brute / (1-alpha) * v_filtré_précédent</span>
+<span class="lineno">335 </span>  <span class="kr">float</span> <span class="n">alpha</span> <span class="o">=</span> <span class="p">(</span><span class="n">v_brute</span> <span class="o">&gt;=</span> <span class="n">vitesse_periode_ms</span><span class="p">)</span> <span class="o">?</span> <span class="mf">0.25f</span> <span class="o">:</span> <span class="mf">0.85f</span><span class="p">;</span>
+<span class="lineno">336 </span>
+<span class="lineno">337 </span>  <span class="k">if</span> <span class="p">(</span><span class="n">vitesse_periode_ms</span> <span class="o">==</span> <span class="mf">0.0f</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// premier calcul : initialiser directement sans filtrage</span>
+<span class="lineno">338 </span>    <span class="n">vitesse_periode_ms</span> <span class="o">=</span> <span class="n">v_brute</span><span class="p">;</span>
+<span class="lineno">339 </span>  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+<span class="lineno">340 </span>    <span class="n">vitesse_periode_ms</span> <span class="o">=</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">v_brute</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.0f</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">*</span> <span class="n">vitesse_periode_ms</span><span class="p">;</span> <span class="c1">// filtre </span>
+<span class="lineno">341 </span>  <span class="p">}</span>
+<span class="lineno">342 </span>
+<span class="lineno">343 </span>  <span class="k">return</span> <span class="n">vitesse_periode_ms</span><span class="p">;</span>  <span class="c1">// retourner la vitesse filtrée en m/s</span>
+<span class="lineno">344 </span><span class="p">}</span>
+<span class="lineno">345 </span>
+<span class="lineno">346 </span>
+<span class="lineno">347 </span><span class="c1">// envoi PWM au moteur</span>
+<span class="lineno">348 </span><span class="kr">void</span> <span class="nf">appliquerCommande</span><span class="p">(</span><span class="kr">float</span> <span class="n">cmd</span><span class="p">)</span> <span class="p">{</span>
+<span class="lineno">349 </span>  <span class="c1">// Zone morte : entre 0 et 76 PWM le moteur ne produit aucun couple.</span>
+<span class="lineno">350 </span>  <span class="c1">// On force à 0 pour éviter que l&#39;intégrale accumule une erreur fictive.</span>
+<span class="lineno">351 </span>  <span class="k">if</span> <span class="p">(</span><span class="n">cmd</span> <span class="o">&gt;</span> <span class="mf">0.0f</span> <span class="o">&amp;&amp;</span> <span class="n">cmd</span> <span class="o">&lt;</span> <span class="n">PWM_ZONE_MORTE</span><span class="p">)</span> <span class="n">cmd</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span>
+<span class="lineno">352 </span>
+<span class="lineno">353 </span>  <span class="kr">int</span> <span class="n">pwm</span> <span class="o">=</span> <span class="p">(</span><span class="kr">int</span><span class="p">)</span><span class="nf">constrain</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="o">-</span><span class="mf">255.0f</span><span class="p">,</span> <span class="mf">255.0f</span><span class="p">);</span> <span class="c1">// limiter entre -255 et +255 et convertir en entier</span>
+<span class="lineno">354 </span>
+<span class="lineno">355 </span>  <span class="k">if</span> <span class="p">(</span><span class="n">pwm</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// commande positive -&gt; sens avant</span>
+<span class="lineno">356 </span>    <span class="nf">digitalWrite</span><span class="p">(</span><span class="n">IN3_PIN</span><span class="p">,</span> <span class="kr">HIGH</span><span class="p">);</span> <span class="c1">// IN3 = HIGH : sélectionne le sens avant</span>
+<span class="lineno">357 </span>    <span class="nf">digitalWrite</span><span class="p">(</span><span class="n">IN4_PIN</span><span class="p">,</span> <span class="kr">LOW</span><span class="p">);</span> <span class="c1">// IN4 = LOW  : complément de IN3</span>
+<span class="lineno">358 </span>    <span class="nf">analogWrite</span><span class="p">(</span><span class="n">ENB_PIN</span><span class="p">,</span> <span class="p">(</span><span class="kr">uint8_t</span><span class="p">)</span><span class="n">pwm</span><span class="p">);</span> <span class="c1">// ENB : fixer la puissance par PWM (0…255)</span>
+<span class="lineno">359 </span>  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span> <span class="c1">// commande négative -&gt; freinage actif / sens arrière</span>
+<span class="lineno">360 </span>    <span class="nf">digitalWrite</span><span class="p">(</span><span class="n">IN3_PIN</span><span class="p">,</span> <span class="kr">LOW</span><span class="p">);</span> <span class="c1">// IN3 = LOW  : sens inverse</span>
+<span class="lineno">361 </span>    <span class="nf">digitalWrite</span><span class="p">(</span><span class="n">IN4_PIN</span><span class="p">,</span> <span class="kr">HIGH</span><span class="p">);</span> <span class="c1">// IN4 = HIGH : complément de IN3</span>
+<span class="lineno">362 </span>    <span class="nf">analogWrite</span><span class="p">(</span><span class="n">ENB_PIN</span><span class="p">,</span> <span class="p">(</span><span class="kr">uint8_t</span><span class="p">)(</span><span class="o">-</span><span class="n">pwm</span><span class="p">));</span> <span class="c1">// valeur absolue pour PWM (toujours positif 0…255)</span>
+<span class="lineno">363 </span>  <span class="p">}</span>
+<span class="lineno">364 </span><span class="p">}</span>
+<span class="lineno">365 </span>
+<span class="lineno">366 </span>
+<span class="lineno">367 </span><span class="c1">// calcule la commande à partir de l&#39;erreur en la faisant apsser dans le correcteur</span>
+<span class="lineno">368 </span><span class="kr">float</span> <span class="nf">calculerCorrecteur</span><span class="p">(</span><span class="kr">float</span> <span class="n">erreur</span><span class="p">,</span> <span class="kr">float</span> <span class="n">dt_s</span><span class="p">,</span> <span class="kr">bool</span> <span class="n">reinitDerivee</span><span class="p">)</span> <span class="p">{</span>
+<span class="lineno">369 </span>
+<span class="lineno">370 </span>  <span class="c1">// terme P</span>
+<span class="lineno">371 </span>  <span class="kr">float</span> <span class="n">u_P</span> <span class="o">=</span> <span class="n">Kp_VAL</span> <span class="o">*</span> <span class="n">erreur</span><span class="p">;</span> <span class="c1">// proportionnel : réponse immédiate proportionnelle à l&#39;écart courant</span>
+<span class="lineno">372 </span>
+<span class="lineno">373 </span>  <span class="c1">// terme I</span>
+<span class="lineno">374 </span>  <span class="kr">float</span> <span class="n">u_I</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span> <span class="c1">// initialiser à 0 ; sera calculé seulement si USE_I = 1</span>
+<span class="lineno">375 </span><span class="cp">#if USE_I </span><span class="c1">// bloc compilé seulement si le correcteur a une intégrale (PI ou PID)</span>
+<span class="lineno">376 </span>  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">kickActif</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// NE PAS intégrer pendant le kick (anti-windup kick)</span>
+<span class="lineno">377 </span>    <span class="n">integrale</span> <span class="o">+=</span> <span class="n">erreur</span> <span class="o">*</span> <span class="n">dt_s</span><span class="p">;</span> <span class="c1">// intégrale discrète : I += eps × delta_t (approximation rectangulaire)</span>
+<span class="lineno">378 </span>    <span class="n">integrale</span> <span class="o">=</span> <span class="nf">constrain</span><span class="p">(</span><span class="n">integrale</span><span class="p">,</span> <span class="c1">// saturation anti-windup : limiter l&#39;intégrale à + ou - INTEGRALE_MAX</span>
+<span class="lineno">379 </span>                          <span class="o">-</span><span class="n">INTEGRALE_MAX</span><span class="p">,</span>
+<span class="lineno">380 </span>                          <span class="n">INTEGRALE_MAX</span><span class="p">);</span>
+<span class="lineno">381 </span>  <span class="p">}</span>
+<span class="lineno">382 </span>  <span class="n">u_I</span> <span class="o">=</span> <span class="n">Ki_VAL</span> <span class="o">*</span> <span class="n">integrale</span><span class="p">;</span> <span class="c1">// terme intégral en PWM = Ki * intégrale(eps*dt)</span>
+<span class="lineno">383 </span><span class="cp">#endif</span>
+<span class="lineno">384 </span>
+<span class="lineno">385 </span>  <span class="c1">// terme D (sur le mesure pas sur l&#39;erreur)</span>
+<span class="lineno">386 </span>  <span class="kr">float</span> <span class="n">u_D</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span> <span class="c1">// initialiser à 0 ; sera calculé seulement si USE_D = 1</span>
+<span class="lineno">387 </span><span class="cp">#if USE_D </span><span class="c1">// bloc compilé seulement si le correcteur a une dérivée (PD ou PID)</span>
+<span class="lineno">388 </span>  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">reinitDerivee</span> <span class="o">&amp;&amp;</span> <span class="n">deriveeInitialisee</span> <span class="o">&amp;&amp;</span> <span class="n">dt_s</span> <span class="o">&gt;</span> <span class="mf">0.0f</span><span class="p">)</span> <span class="p">{</span>
+<span class="lineno">389 </span>    <span class="c1">// dv/dt ~= (v_actuel − v_précédent) / delta_t   (dérivée numérique 1er ordre)</span>
+<span class="lineno">390 </span>    <span class="kr">float</span> <span class="n">dv_dt</span> <span class="o">=</span> <span class="p">(</span><span class="n">vitesse_periode_ms</span> <span class="o">-</span> <span class="n">vitessePeriodePrecedente</span><span class="p">)</span> <span class="o">/</span> <span class="n">dt_s</span><span class="p">;</span>
+<span class="lineno">391 </span>    <span class="c1">// u_D = −Kd * dv/dt car d(erreur)/dt = −dv/dt (Vc constant en régime)</span>
+<span class="lineno">392 </span>    <span class="n">u_D</span> <span class="o">=</span> <span class="o">-</span><span class="n">Kd_VAL</span> <span class="o">*</span> <span class="n">dv_dt</span><span class="p">;</span>
+<span class="lineno">393 </span>  <span class="p">}</span>
+<span class="lineno">394 </span>  <span class="c1">// reinitDerivee = vrai lors d&#39;une transition de mode -&gt; on saute ce cycle</span>
+<span class="lineno">395 </span>  <span class="c1">// deriveeInitialisee = faux au démarrage ou après un kick -&gt; pas de &quot;précédent&quot; disponible</span>
+<span class="lineno">396 </span><span class="cp">#endif</span>
+<span class="lineno">397 </span>
+<span class="lineno">398 </span>  <span class="n">vitessePeriodePrecedente</span> <span class="o">=</span> <span class="n">vitesse_periode_ms</span><span class="p">;</span> <span class="c1">// mémoriser la vitesse pour le prochain calcul D</span>
+<span class="lineno">399 </span>  <span class="n">deriveeInitialisee</span> <span class="o">=</span> <span class="kr">true</span><span class="p">;</span> <span class="c1">// indiquer que le &quot;précédent&quot; est maintenant valide</span>
+<span class="lineno">400 </span>
+<span class="lineno">401 </span>  <span class="k">return</span> <span class="n">u_P</span> <span class="o">+</span> <span class="n">u_I</span> <span class="o">+</span> <span class="n">u_D</span><span class="p">;</span> <span class="c1">// retourner la somme des trois termes PID (en PWM)</span>
+<span class="lineno">402 </span><span class="p">}</span>
+<span class="lineno">403 </span>
+<span class="lineno">404 </span>
+<span class="lineno">405 </span><span class="cm">/* calcule la commande du moteur à partir de la commande du correcteur</span>
+<span class="lineno">406 </span><span class="cm">   et applique la logique du kick-start et la rampe asymétrique */</span>
+<span class="lineno">407 </span><span class="kr">float</span> <span class="nf">calculerCommandeMoteur</span><span class="p">(</span><span class="kr">float</span> <span class="n">cmdCorrecteur</span><span class="p">,</span> <span class="kr">float</span> <span class="n">dt_s</span><span class="p">,</span> <span class="kr">bool</span> <span class="n">urgence</span><span class="p">,</span> <span class="kr">bool</span> <span class="n">interdireKick</span><span class="p">,</span> <span class="kr">uint32_t</span> <span class="n">now</span><span class="p">)</span> <span class="p">{</span>
+<span class="lineno">408 </span>
+<span class="lineno">409 </span>  <span class="kr">static</span> <span class="kr">uint32_t</span> <span class="n">kickFinMs</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// timestamp de la fin du dernier kick</span>
+<span class="lineno">410 </span>  <span class="kr">const</span>  <span class="kr">uint16_t</span> <span class="n">KICK_GRACE</span> <span class="o">=</span> <span class="mi">300</span><span class="p">;</span> <span class="c1">// délai de grâce après un kick : 300 ms sans nouveau kick</span>
+<span class="lineno">411 </span>
+<span class="lineno">412 </span>  <span class="c1">// mode urgence, bypass tout</span>
+<span class="lineno">413 </span>  <span class="k">if</span> <span class="p">(</span><span class="n">urgence</span><span class="p">)</span> <span class="p">{</span>
+<span class="lineno">414 </span>    <span class="n">kickActif</span> <span class="o">=</span> <span class="kr">false</span><span class="p">;</span> <span class="c1">// couper tout kick en cours</span>
+<span class="lineno">415 </span>    <span class="n">commandeLisseePWM</span> <span class="o">=</span> <span class="n">cmdCorrecteur</span><span class="p">;</span> <span class="c1">// mettre la rampe à jour</span>
+<span class="lineno">416 </span>    <span class="k">return</span> <span class="n">cmdCorrecteur</span><span class="p">;</span> <span class="c1">// retourner la commande d&#39;urgence sans rampe ni kick</span>
+<span class="lineno">417 </span>  <span class="p">}</span>
+<span class="lineno">418 </span>
+<span class="lineno">419 </span>  <span class="k">if</span> <span class="p">(</span><span class="n">interdireKick</span><span class="p">)</span> <span class="n">kickActif</span> <span class="o">=</span> <span class="kr">false</span><span class="p">;</span> <span class="c1">// si obstacle proche -&gt; couper le kick immédiatement</span>
+<span class="lineno">420 </span>
+<span class="lineno">421 </span>  <span class="c1">// Kick en cours : continuer tant que conditions satisfaîtes</span>
+<span class="lineno">422 </span>  <span class="k">if</span> <span class="p">(</span><span class="n">kickActif</span><span class="p">)</span> <span class="p">{</span>
+<span class="lineno">423 </span>    <span class="k">if</span> <span class="p">((</span><span class="n">now</span> <span class="o">-</span> <span class="n">kickDebutMs</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">KICK_DUREE_MS_C</span> <span class="c1">// kick encore dans sa durée maximale ?</span>
+<span class="lineno">424 </span>        <span class="o">&amp;&amp;</span> <span class="n">vitesse_periode_ms</span> <span class="o">&lt;</span> <span class="n">VITESSE_QUASI_NULLE_MS</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// ET roue encore quasi arrêtée ?</span>
+<span class="lineno">425 </span>      <span class="n">commandeLisseePWM</span> <span class="o">=</span> <span class="n">KICK_PWM_C</span><span class="p">;</span> <span class="c1">// maintenir la rampe au niveau du kick</span>
+<span class="lineno">426 </span>      <span class="k">return</span> <span class="p">(</span><span class="kr">float</span><span class="p">)</span><span class="n">KICK_PWM_C</span><span class="p">;</span> <span class="c1">// envoyer la commande kick directement (sans rampe)</span>
+<span class="lineno">427 </span>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span> <span class="c1">// fin du kick (durée écoulée OU voiture a démarré)</span>
+<span class="lineno">428 </span>      <span class="n">kickActif</span> <span class="o">=</span> <span class="kr">false</span><span class="p">;</span> <span class="c1">// désactiver le drapeau kick</span>
+<span class="lineno">429 </span>      <span class="n">kickFinMs</span> <span class="o">=</span> <span class="n">now</span><span class="p">;</span> <span class="c1">// mémoriser l&#39;heure de fin pour le délai de grâce</span>
+<span class="lineno">430 </span>      <span class="n">deriveeInitialisee</span> <span class="o">=</span> <span class="kr">false</span><span class="p">;</span> <span class="c1">// réinitialiser D : évite le pic delta_v au premier cycle post-kick</span>
+<span class="lineno">431 </span>      <span class="n">integrale</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span> <span class="c1">// réinitialiser I : évite le windup accumulé pendant le kick</span>
+<span class="lineno">432 </span>      <span class="n">commandeLisseePWM</span> <span class="o">=</span> <span class="n">FEEDFORWARD_PWM</span><span class="p">;</span> <span class="c1">// repartir la rampe depuis le feedforward (transition douce)</span>
+<span class="lineno">433 </span>    <span class="p">}</span>
+<span class="lineno">434 </span>  <span class="p">}</span>
+<span class="lineno">435 </span>
+<span class="lineno">436 </span>  <span class="c1">// déclenchement d&#39;un nouveau kick</span>
+<span class="lineno">437 </span>  <span class="kr">bool</span> <span class="n">graceActive</span> <span class="o">=</span> <span class="p">(</span><span class="n">now</span> <span class="o">-</span> <span class="n">kickFinMs</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">KICK_GRACE</span><span class="p">;</span> <span class="c1">// vrai si on est dans les 300 ms post-kick</span>
+<span class="lineno">438 </span>  <span class="kr">bool</span> <span class="n">roueArretee</span> <span class="o">=</span> <span class="p">(</span><span class="n">vitesse_periode_ms</span> <span class="o">&lt;</span> <span class="n">VITESSE_QUASI_NULLE_MS</span><span class="p">)</span> <span class="c1">// mesure période &lt; 0.05 m/s</span>
+<span class="lineno">439 </span>                  <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">vitesse_ms</span>         <span class="o">&lt;</span> <span class="n">VITESSE_QUASI_NULLE_MS</span><span class="p">);</span> <span class="c1">// ET mesure fréq &lt; 0.05 m/s</span>
+<span class="lineno">440 </span>
+<span class="lineno">441 </span>  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">interdireKick</span> <span class="c1">// kick non interdit (pas d&#39;obstacle proche) ?</span>
+<span class="lineno">442 </span>      <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">graceActive</span> <span class="c1">// délai de grâce écoulé (évite les kicks en rafale) ?</span>
+<span class="lineno">443 </span>      <span class="o">&amp;&amp;</span> <span class="n">cmdCorrecteur</span> <span class="o">&gt;</span> <span class="n">COMMANDE_MIN_DEMARRAGE</span> <span class="c1">// le correcteur demande bien d&#39;avancer ?</span>
+<span class="lineno">444 </span>      <span class="o">&amp;&amp;</span> <span class="n">roueArretee</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// les deux mesures confirment que la roue est arrêtée ?</span>
+<span class="lineno">445 </span>    <span class="n">integrale</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span> <span class="c1">// reset I au lancement kick (anti-windup)</span>
+<span class="lineno">446 </span>    <span class="n">deriveeInitialisee</span> <span class="o">=</span> <span class="kr">false</span><span class="p">;</span> <span class="c1">// reset D (v=0 -&gt; pas de &quot;précédent&quot; fiable)</span>
+<span class="lineno">447 </span>    <span class="n">kickActif</span> <span class="o">=</span> <span class="kr">true</span><span class="p">;</span> <span class="c1">// activer le kick</span>
+<span class="lineno">448 </span>    <span class="n">kickDebutMs</span> <span class="o">=</span> <span class="n">now</span><span class="p">;</span> <span class="c1">// mémoriser l&#39;heure de début</span>
+<span class="lineno">449 </span>    <span class="n">commandeLisseePWM</span> <span class="o">=</span> <span class="n">KICK_PWM_C</span><span class="p">;</span> <span class="c1">// initialiser la rampe au niveau kick</span>
+<span class="lineno">450 </span>    <span class="k">return</span> <span class="p">(</span><span class="kr">float</span><span class="p">)</span><span class="n">KICK_PWM_C</span><span class="p">;</span> <span class="c1">// retourner la commande kick immédiatement</span>
+<span class="lineno">451 </span>  <span class="p">}</span>
+<span class="lineno">452 </span>
+<span class="lineno">453 </span>  <span class="c1">// rampe asymétrique</span>
+<span class="lineno">454 </span>  <span class="kr">float</span> <span class="n">cible</span> <span class="o">=</span> <span class="nf">constrain</span><span class="p">(</span><span class="n">cmdCorrecteur</span><span class="p">,</span> <span class="mf">0.0f</span><span class="p">,</span> <span class="mf">255.0f</span><span class="p">);</span> <span class="c1">// limiter la cible à [0, 255] PWM</span>
+<span class="lineno">455 </span>
+<span class="lineno">456 </span>  <span class="c1">// calcul du déplacement maximal autorisé ce cycle selon la direction</span>
+<span class="lineno">457 </span>  <span class="kr">float</span> <span class="n">dMax</span> <span class="o">=</span> <span class="p">(</span><span class="n">cible</span> <span class="o">&lt;</span> <span class="n">commandeLisseePWM</span><span class="p">)</span> <span class="c1">// si on descend (frein ou décélération)</span>
+<span class="lineno">458 </span>               <span class="o">?</span> <span class="n">RAMPE_DESCENTE_PAR_S</span> <span class="o">*</span> <span class="n">dt_s</span> <span class="c1">// descente rapide : 700 PWM/s * delta_t</span>
+<span class="lineno">459 </span>               <span class="o">:</span> <span class="n">RAMPE_MONTEE_PAR_S</span> <span class="o">*</span> <span class="n">dt_s</span><span class="p">;</span> <span class="c1">// montée lente : 350 PWM/s * delta_t</span>
+<span class="lineno">460 </span>
+<span class="lineno">461 </span>  <span class="kr">float</span> <span class="n">delta</span> <span class="o">=</span> <span class="nf">constrain</span><span class="p">(</span><span class="n">cible</span> <span class="o">-</span> <span class="n">commandeLisseePWM</span><span class="p">,</span> <span class="o">-</span><span class="n">dMax</span><span class="p">,</span> <span class="n">dMax</span><span class="p">);</span> <span class="c1">// delta limité à + ou - dMax</span>
+<span class="lineno">462 </span>  <span class="n">commandeLisseePWM</span> <span class="o">+=</span> <span class="n">delta</span><span class="p">;</span> <span class="c1">// avancer la rampe d&#39;un pas vers la cible</span>
+<span class="lineno">463 </span>
+<span class="lineno">464 </span>  <span class="k">return</span> <span class="nf">constrain</span><span class="p">(</span><span class="n">commandeLisseePWM</span><span class="p">,</span> <span class="mf">0.0f</span><span class="p">,</span> <span class="mf">255.0f</span><span class="p">);</span> <span class="c1">// retourner la commande lissée, bornée [0,255]</span>
+<span class="lineno">465 </span><span class="p">}</span>
+<span class="lineno">466 </span>
+<span class="lineno">467 </span>
+<span class="lineno">468 </span><span class="c1">// initialisation</span>
+<span class="lineno">469 </span><span class="kr">void</span> <span class="nb">setup</span><span class="p">()</span> <span class="p">{</span>
+<span class="lineno">470 </span>  <span class="nf">Serial</span><span class="p">.</span><span class="nf">begin</span><span class="p">(</span><span class="mi">115200</span><span class="p">);</span> <span class="c1">// démarrer le port série à 115 200 baud pour les messages de debug</span>
+<span class="lineno">471 </span>
+<span class="lineno">472 </span>  <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot;=== AAC TIPE v19 — correcteur : &quot;</span><span class="p">));</span> <span class="c1">// afficher la version et le correcteur actif</span>
+<span class="lineno">473 </span>  <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">MODE_STR</span><span class="p">);</span> <span class="c1">// afficher &quot;P&quot;, &quot;PI&quot;, &quot;PD&quot; ou &quot;PID&quot; selon la sélection</span>
+<span class="lineno">474 </span>  <span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot; ===&quot;</span><span class="p">));</span>
+<span class="lineno">475 </span>
+<span class="lineno">476 </span>  <span class="c1">// capteur ultrason HC-SR04</span>
+<span class="lineno">477 </span>  <span class="nf">pinMode</span><span class="p">(</span><span class="n">TRIG_PIN</span><span class="p">,</span> <span class="kr">OUTPUT</span><span class="p">);</span> <span class="c1">// TRIG est une sortie : on génère l&#39;impulsion</span>
+<span class="lineno">478 </span>  <span class="nf">pinMode</span><span class="p">(</span><span class="n">ECHO_PIN</span><span class="p">,</span> <span class="kr">INPUT</span><span class="p">);</span> <span class="c1">// ECHO est une entrée : on mesure le retour</span>
+<span class="lineno">479 </span>  <span class="nf">digitalWrite</span><span class="p">(</span><span class="n">TRIG_PIN</span><span class="p">,</span> <span class="kr">LOW</span><span class="p">);</span> <span class="c1">// s&#39;assurer que TRIG est bas au démarrage</span>
+<span class="lineno">480 </span>
+<span class="lineno">481 </span>  <span class="c1">// capteur à effet Hall</span>
+<span class="lineno">482 </span>  <span class="nf">pinMode</span><span class="p">(</span><span class="n">HALL_PIN</span><span class="p">,</span> <span class="kr">INPUT_PULLUP</span><span class="p">);</span> <span class="c1">// activer la résistance de pull-up interne (signal actif LOW)</span>
+<span class="lineno">483 </span>  <span class="c1">// Attacher l&#39;ISR hallISR() à l&#39;interruption INT0 (broche 2) sur front descendant (FALLING)</span>
+<span class="lineno">484 </span>  <span class="nf">attachInterrupt</span><span class="p">(</span><span class="n">digitalPinToInterrupt</span><span class="p">(</span><span class="n">HALL_PIN</span><span class="p">),</span> <span class="n">hallISR</span><span class="p">,</span> <span class="n">FALLING</span><span class="p">);</span>
+<span class="lineno">485 </span>
+<span class="lineno">486 </span>  <span class="c1">// bouton start/stop</span>
+<span class="lineno">487 </span>  <span class="nf">pinMode</span><span class="p">(</span><span class="n">BUTTON_PIN</span><span class="p">,</span> <span class="kr">INPUT_PULLUP</span><span class="p">);</span> <span class="c1">// pull-up interne : bouton appuyé = LOW</span>
+<span class="lineno">488 </span>  <span class="n">buttonLastRawState</span> <span class="o">=</span> <span class="nf">digitalRead</span><span class="p">(</span><span class="n">BUTTON_PIN</span><span class="p">);</span> <span class="c1">// lire l&#39;état initial pour éviter un faux démarrage</span>
+<span class="lineno">489 </span>  <span class="n">buttonStableState</span> <span class="o">=</span> <span class="n">buttonLastRawState</span><span class="p">;</span> <span class="c1">// initialiser l&#39;état stable = état initial</span>
+<span class="lineno">490 </span>
+<span class="lineno">491 </span>  <span class="c1">// pont en H L298N</span>
+<span class="lineno">492 </span>  <span class="nf">pinMode</span><span class="p">(</span><span class="n">ENB_PIN</span><span class="p">,</span> <span class="kr">OUTPUT</span><span class="p">);</span> <span class="c1">// Enable B : sortie PWM pour la vitesse</span>
+<span class="lineno">493 </span>  <span class="nf">pinMode</span><span class="p">(</span><span class="n">IN3_PIN</span><span class="p">,</span> <span class="kr">OUTPUT</span><span class="p">);</span> <span class="c1">// IN3 : sortie numérique pour le sens</span>
+<span class="lineno">494 </span>  <span class="nf">pinMode</span><span class="p">(</span><span class="n">IN4_PIN</span><span class="p">,</span> <span class="kr">OUTPUT</span><span class="p">);</span> <span class="c1">// IN4 : sortie numérique pour le sens (complément de IN3)</span>
+<span class="lineno">495 </span>  <span class="nf">analogWrite</span><span class="p">(</span><span class="n">ENB_PIN</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span> <span class="c1">// démarrer avec PWM = 0 -&gt; moteur arrêté</span>
+<span class="lineno">496 </span>  <span class="nf">digitalWrite</span><span class="p">(</span><span class="n">IN3_PIN</span><span class="p">,</span> <span class="kr">LOW</span><span class="p">);</span> <span class="c1">// IN3 bas</span>
+<span class="lineno">497 </span>  <span class="nf">digitalWrite</span><span class="p">(</span><span class="n">IN4_PIN</span><span class="p">,</span> <span class="kr">LOW</span><span class="p">);</span> <span class="c1">// IN4 bas -&gt; pas de courant dans le moteur</span>
+<span class="lineno">498 </span>
+<span class="lineno">499 </span>  <span class="c1">// carte SD via SPI</span>
+<span class="lineno">500 </span>  <span class="nf">pinMode</span><span class="p">(</span><span class="n">SD_CS_PIN</span><span class="p">,</span> <span class="kr">OUTPUT</span><span class="p">);</span> <span class="c1">// CS de la SD en sortie</span>
+<span class="lineno">501 </span>  <span class="nf">digitalWrite</span><span class="p">(</span><span class="n">SD_CS_PIN</span><span class="p">,</span> <span class="kr">HIGH</span><span class="p">);</span> <span class="c1">// SD désélectionnée au démarrage</span>
+<span class="lineno">502 </span>  <span class="nf">pinMode</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="kr">OUTPUT</span><span class="p">);</span> <span class="c1">// pin SPI maître nécessaire même si non utilisé comme CS</span>
+<span class="lineno">503 </span>  <span class="nf">digitalWrite</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="kr">HIGH</span><span class="p">);</span> <span class="c1">// mettre HIGH pour ne pas interférer avec le bus SPI</span>
+<span class="lineno">504 </span>
+<span class="lineno">505 </span>  <span class="c1">// calcul du feedforward</span>
+<span class="lineno">506 </span>  <span class="c1">// Formule : U_FF = (Vc / K_moteur + seuil_démarrage) * 255</span>
+<span class="lineno">507 </span>  <span class="c1">// Cette valeur est la commande qui maintient exactement Vc en régime permanent</span>
+<span class="lineno">508 </span>  <span class="c1">// si le modèle moteur (K, seuil) est correct.</span>
+<span class="lineno">509 </span>  <span class="c1">// On la sature à 250 pour garder 5 PWM de marge pour le terme P.</span>
+<span class="lineno">510 </span>  <span class="n">FEEDFORWARD_PWM</span> <span class="o">=</span> <span class="nf">constrain</span><span class="p">(</span>
+<span class="lineno">511 </span>    <span class="p">(</span><span class="n">VITESSE_CIBLE_MS</span> <span class="o">/</span> <span class="n">K_MOTEUR</span> <span class="o">+</span> <span class="n">SEUIL_DEMARRAGE</span><span class="p">)</span> <span class="o">*</span> <span class="mf">255.0f</span><span class="p">,</span> <span class="c1">// calcul brut</span>
+<span class="lineno">512 </span>    <span class="mf">0.0f</span><span class="p">,</span> <span class="mf">250.0f</span><span class="p">);</span> <span class="c1">// saturation à 250 PWM maxi</span>
+<span class="lineno">513 </span>
+<span class="lineno">514 </span>  <span class="c1">// Afficher un résumé des paramètres sur le port série pour vérification avant démarrage</span>
+<span class="lineno">515 </span>  <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot;Vc = &quot;</span><span class="p">));</span> <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">VITESSE_CIBLE_MS</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span> <span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot; m/s&quot;</span><span class="p">));</span>
+<span class="lineno">516 </span>  <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot;U_FF = &quot;</span><span class="p">));</span> <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">FEEDFORWARD_PWM</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot; PWM&quot;</span><span class="p">));</span>
+<span class="lineno">517 </span>  <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot;Kp_BRAKE = &quot;</span><span class="p">));</span> <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">KP_BRAKE_PWM</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot; PWM/m&quot;</span><span class="p">));</span>
+<span class="lineno">518 </span>  <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot;Kp=&quot;</span><span class="p">));</span> <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">Kp_VAL</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+<span class="lineno">519 </span>  <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot; Ki=&quot;</span><span class="p">));</span> <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">Ki_VAL</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+<span class="lineno">520 </span>  <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot; Kd=&quot;</span><span class="p">));</span> <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">Kd_VAL</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+<span class="lineno">521 </span>  <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot;  KICK=&quot;</span><span class="p">));</span> <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">KICK_PWM_C</span><span class="p">);</span>
+<span class="lineno">522 </span>  <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot; PWM / &quot;</span><span class="p">));</span> <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">KICK_DUREE_MS_C</span><span class="p">);</span>
+<span class="lineno">523 </span>  <span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot; ms&quot;</span><span class="p">));</span>
+<span class="lineno">524 </span>
+<span class="lineno">525 </span>  <span class="n">initSD</span><span class="p">();</span> <span class="c1">// tenter d&#39;ouvrir un nouveau fichier CSV sur la carte SD</span>
+<span class="lineno">526 </span>  <span class="n">lastControlTime</span> <span class="o">=</span> <span class="nf">millis</span><span class="p">();</span> <span class="c1">// initialiser le timer de contrôle à l&#39;instant présent</span>
+<span class="lineno">527 </span>  <span class="n">lastLogTime</span> <span class="o">=</span> <span class="nf">millis</span><span class="p">();</span> <span class="c1">// initialiser le timer de log à l&#39;instant présent</span>
+<span class="lineno">528 </span><span class="p">}</span>
+<span class="lineno">529 </span>
+<span class="lineno">530 </span><span class="cm">/* boucle principale</span>
+<span class="lineno">531 </span><span class="cm">   log : toutes les 100 ms</span>
+<span class="lineno">532 </span><span class="cm">   correcteur : toutes les 50 ms */</span>
+<span class="lineno">533 </span><span class="kr">void</span> <span class="nb">loop</span><span class="p">()</span> <span class="p">{</span>
+<span class="lineno">534 </span>  <span class="kr">uint32_t</span> <span class="n">now</span> <span class="o">=</span> <span class="nf">millis</span><span class="p">();</span> <span class="c1">// lire l&#39;horloge système en millisecondes (débordement tous les 49 jours)</span>
+<span class="lineno">535 </span>
+<span class="lineno">536 </span>  <span class="n">gererBoutonStartStop</span><span class="p">(</span><span class="n">now</span><span class="p">);</span> <span class="c1">// vérifier l&#39;état du bouton et décider start/stop</span>
+<span class="lineno">537 </span>
+<span class="lineno">538 </span>  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">programmeActif</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// si le programme est à l&#39;arrêt :</span>
+<span class="lineno">539 </span>    <span class="n">appliquerCommande</span><span class="p">(</span><span class="mf">0.0f</span><span class="p">);</span> <span class="c1">// forcer le moteur à 0 en permanence (sécurité)</span>
+<span class="lineno">540 </span>    <span class="n">lastControlTime</span> <span class="o">=</span> <span class="n">now</span><span class="p">;</span> <span class="c1">// maintenir le timer à jour pour éviter un grand dt au démarrage</span>
+<span class="lineno">541 </span>    <span class="n">lastLogTime</span> <span class="o">=</span> <span class="n">now</span><span class="p">;</span> <span class="c1">// idem pour le timer de log</span>
+<span class="lineno">542 </span>    <span class="k">return</span><span class="p">;</span> <span class="c1">// sortir immédiatement de loop() sans rien calculer</span>
+<span class="lineno">543 </span>  <span class="p">}</span>
+<span class="lineno">544 </span>
+<span class="lineno">545 </span>  <span class="c1">// bloc de contrôle (toutes les 50 ms)</span>
+<span class="lineno">546 </span>  <span class="k">if</span> <span class="p">(</span><span class="n">now</span> <span class="o">-</span> <span class="n">lastControlTime</span> <span class="o">&gt;=</span> <span class="n">CONTROL_PERIOD_MS</span><span class="p">)</span> <span class="p">{</span>
+<span class="lineno">547 </span>    <span class="kr">uint32_t</span> <span class="n">dt_ms</span> <span class="o">=</span> <span class="n">now</span> <span class="o">-</span> <span class="n">lastControlTime</span><span class="p">;</span> <span class="c1">// temps réel écoulé depuis le dernier cycle (peut différer de 50 ms)</span>
+<span class="lineno">548 </span>    <span class="n">lastControlTime</span> <span class="o">=</span> <span class="n">now</span><span class="p">;</span> <span class="c1">// mettre à jour le timestamp de référence</span>
+<span class="lineno">549 </span>    <span class="kr">float</span> <span class="n">dt_s</span> <span class="o">=</span> <span class="p">(</span><span class="kr">float</span><span class="p">)</span><span class="n">dt_ms</span> <span class="o">/</span> <span class="mf">1000.0f</span><span class="p">;</span> <span class="c1">// convertir en secondes pour les calculs PID</span>
+<span class="lineno">550 </span>
+<span class="lineno">551 </span>    <span class="c1">// étape 1 : mesures</span>
+<span class="lineno">552 </span>    <span class="n">vitesse_ms</span> <span class="o">=</span> <span class="n">calculerVitesse</span><span class="p">(</span><span class="n">dt_ms</span><span class="p">);</span> <span class="c1">// vitesse fréquencemétrique (pour log seulement)</span>
+<span class="lineno">553 </span>    <span class="n">vitesse_periode_ms</span> <span class="o">=</span> <span class="n">calculerVitessePeriode</span><span class="p">();</span> <span class="c1">// vitesse période filtrée (utilisée par le PID)</span>
+<span class="lineno">554 </span>    <span class="kr">float</span> <span class="n">dist_m</span> <span class="o">=</span> <span class="n">lireDistance</span><span class="p">();</span> <span class="c1">// distance ultrason en mètres (-1 si invalide)</span>
+<span class="lineno">555 </span>
+<span class="lineno">556 </span>    <span class="c1">// étape 2 : mémoire d&#39;obstacle</span>
+<span class="lineno">557 </span>    <span class="c1">// Le HC-SR04 renvoie parfois -1 (timeout) même avec un obstacle présent.</span>
+<span class="lineno">558 </span>    <span class="c1">// Sans mémoire, un seul -1 ferait basculer en mode vitesse pour 50 ms,</span>
+<span class="lineno">559 </span>    <span class="c1">// remettant l&#39;intégrale à 0, puis retour en mode distance -&gt; instabilité.</span>
+<span class="lineno">560 </span>    <span class="c1">// Solution : si une mesure invalide arrive dans les 300 ms suivant une</span>
+<span class="lineno">561 </span>    <span class="c1">// mesure valide, on réutilise la dernière valeur valide.</span>
+<span class="lineno">562 </span>    <span class="kr">static</span> <span class="kr">float</span> <span class="n">derniereDist_m</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0f</span><span class="p">;</span> <span class="c1">// dernière distance valide mémorisée</span>
+<span class="lineno">563 </span>    <span class="kr">static</span> <span class="kr">uint32_t</span> <span class="n">dernierDistTime_ms</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// timestamp de la dernière mesure valide</span>
+<span class="lineno">564 </span>    <span class="kr">const</span> <span class="kr">uint16_t</span> <span class="n">OBSTACLE_MEMORY_MS</span> <span class="o">=</span> <span class="mi">300</span><span class="p">;</span> <span class="c1">// durée de validité de la mémoire d&#39;obstacle</span>
+<span class="lineno">565 </span>
+<span class="lineno">566 </span>    <span class="k">if</span> <span class="p">(</span><span class="n">dist_m</span> <span class="o">&gt;=</span> <span class="mf">0.0f</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// si la mesure est valide</span>
+<span class="lineno">567 </span>      <span class="n">derniereDist_m</span> <span class="o">=</span> <span class="n">dist_m</span><span class="p">;</span> <span class="c1">// mettre à jour la mémoire</span>
+<span class="lineno">568 </span>      <span class="n">dernierDistTime_ms</span> <span class="o">=</span> <span class="n">now</span><span class="p">;</span> <span class="c1">// mémoriser l&#39;heure</span>
+<span class="lineno">569 </span>    <span class="p">}</span>
+<span class="lineno">570 </span>
+<span class="lineno">571 </span>    <span class="kr">float</span> <span class="n">dist_eff</span> <span class="o">=</span> <span class="n">dist_m</span><span class="p">;</span> <span class="c1">// commencer avec la mesure brute</span>
+<span class="lineno">572 </span>    <span class="k">if</span> <span class="p">(</span><span class="n">dist_m</span> <span class="o">&lt;</span> <span class="mf">0.0f</span> <span class="c1">// mesure invalide ?</span>
+<span class="lineno">573 </span>        <span class="o">&amp;&amp;</span> <span class="n">derniereDist_m</span> <span class="o">&gt;=</span> <span class="mf">0.0f</span> <span class="c1">// on avait une valeur mémorisée ?</span>
+<span class="lineno">574 </span>        <span class="o">&amp;&amp;</span> <span class="n">derniereDist_m</span> <span class="o">&lt;</span> <span class="n">DIST_MAX_OBSTACLE_M</span> <span class="c1">// cette valeur signalait un obstacle ?</span>
+<span class="lineno">575 </span>        <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">now</span> <span class="o">-</span> <span class="n">dernierDistTime_ms</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">OBSTACLE_MEMORY_MS</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// la mémoire n&#39;a pas expiré ?</span>
+<span class="lineno">576 </span>      <span class="n">dist_eff</span> <span class="o">=</span> <span class="n">derniereDist_m</span><span class="p">;</span> <span class="c1">// utiliser la valeur mémorisée à la place de -1</span>
+<span class="lineno">577 </span>    <span class="p">}</span>
+<span class="lineno">578 </span>
+<span class="lineno">579 </span>    <span class="c1">// étape 3 : détermination du mode</span>
+<span class="lineno">580 </span>    <span class="c1">// 3 modes exclusifs, par ordre de priorité décroissante :</span>
+<span class="lineno">581 </span>    <span class="c1">// mode 1 — urgence : obstacle très proche -&gt; freinage maximal immédiat</span>
+<span class="lineno">582 </span>    <span class="c1">// mode 2 — vitesse : pas d&#39;obstacle -&gt; maintenir Vc</span>
+<span class="lineno">583 </span>    <span class="c1">// mode 3 — distance : obstacle en zone ACC -&gt; maintenir vitesse + freiner si trop proche</span>
+<span class="lineno">584 </span>    <span class="kr">uint8_t</span> <span class="n">modeActuel</span><span class="p">;</span>
+<span class="lineno">585 </span>
+<span class="lineno">586 </span>    <span class="k">if</span> <span class="p">(</span><span class="n">dist_eff</span> <span class="o">&gt;</span> <span class="mf">0.0f</span> <span class="o">&amp;&amp;</span> <span class="n">dist_eff</span> <span class="o">&lt;</span> <span class="n">DIST_URGENCE_M</span> <span class="o">+</span> <span class="mf">0.5f</span> <span class="o">*</span> <span class="n">vitesse_periode_ms</span><span class="p">)</span> <span class="p">{</span>
+<span class="lineno">587 </span>      <span class="c1">// urgence : obstacle détecté ET sa distance est inférieure à 6 cm + marge cinétique</span>
+<span class="lineno">588 </span>      <span class="c1">// la marge 0.5*v permet d&#39;anticiper l&#39;urgence si la voiture roule vite</span>
+<span class="lineno">589 </span>      <span class="n">modeActuel</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="lineno">590 </span>    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">dist_eff</span> <span class="o">&lt;</span> <span class="mf">0.0f</span> <span class="o">||</span> <span class="n">dist_eff</span> <span class="o">&gt;=</span> <span class="n">DIST_MAX_OBSTACLE_M</span><span class="p">)</span> <span class="p">{</span>
+<span class="lineno">591 </span>      <span class="c1">// vitesse : pas d&#39;obstacle détecté (dist=-1) OU obstacle trop loin (&gt;1.20 m)</span>
+<span class="lineno">592 </span>      <span class="n">modeActuel</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+<span class="lineno">593 </span>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+<span class="lineno">594 </span>      <span class="c1">// distance : obstacle présent dans la zone [0.06 m, 1.20 m] -&gt; ACC actif</span>
+<span class="lineno">595 </span>      <span class="n">modeActuel</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+<span class="lineno">596 </span>    <span class="p">}</span>
+<span class="lineno">597 </span>
+<span class="lineno">598 </span>    <span class="c1">// étape 4 : interdire kick si obstacle proche</span>
+<span class="lineno">599 </span>    <span class="kr">bool</span> <span class="n">interdireKick</span> <span class="o">=</span> <span class="p">(</span><span class="n">modeActuel</span> <span class="o">==</span> <span class="mi">3</span><span class="p">)</span> <span class="c1">// en mode distance : toujours interdit</span>
+<span class="lineno">600 </span>                      <span class="o">||</span> <span class="p">(</span><span class="n">dist_eff</span> <span class="o">&gt;</span> <span class="mf">0.0f</span> <span class="o">&amp;&amp;</span> <span class="n">dist_eff</span> <span class="o">&lt;</span> <span class="n">DIST_CONSIGNE_M</span><span class="p">);</span> <span class="c1">// obstacle dans la zone de sécurité</span>
+<span class="lineno">601 </span>
+<span class="lineno">602 </span>    <span class="c1">// étape 5 : transition entre les modes</span>
+<span class="lineno">603 </span>    <span class="kr">static</span> <span class="kr">uint8_t</span> <span class="n">ancienMode</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// mode du cycle précédent (persistant entre les appels)</span>
+<span class="lineno">604 </span>    <span class="kr">bool</span> <span class="n">reinitDerivee</span> <span class="o">=</span> <span class="kr">false</span><span class="p">;</span> <span class="c1">// drapeau : réinitialiser le terme D ce cycle ?</span>
+<span class="lineno">605 </span>
+<span class="lineno">606 </span>    <span class="k">if</span> <span class="p">(</span><span class="n">modeActuel</span> <span class="o">!=</span> <span class="n">ancienMode</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// si le mode vient de changer</span>
+<span class="lineno">607 </span>      <span class="n">reinitDerivee</span> <span class="o">=</span> <span class="kr">true</span><span class="p">;</span> <span class="c1">// toujours réinitialiser la dérivée lors d&#39;une transition</span>
+<span class="lineno">608 </span>                            <span class="c1">// (évite un saut sur le terme D à cause du changement d&#39;erreur)</span>
+<span class="lineno">609 </span>
+<span class="lineno">610 </span>      <span class="c1">// réinitialiser l&#39;intégrale SEULEMENT en cas de transition depuis/vers l&#39;urgence.</span>
+<span class="lineno">611 </span>      <span class="c1">// garder l&#39;intégrale évite le saut de commande</span>
+<span class="lineno">612 </span>      <span class="k">if</span> <span class="p">(</span><span class="n">modeActuel</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">||</span> <span class="n">ancienMode</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+<span class="lineno">613 </span>        <span class="n">integrale</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span> <span class="c1">// reset I lors d&#39;une transition urgence depuis/vers autre mode</span>
+<span class="lineno">614 </span>      <span class="p">}</span>
+<span class="lineno">615 </span>    <span class="p">}</span>
+<span class="lineno">616 </span>    <span class="n">ancienMode</span> <span class="o">=</span> <span class="n">modeActuel</span><span class="p">;</span> <span class="c1">// mémoriser le mode pour la comparaison du prochain cycle</span>
+<span class="lineno">617 </span>
+<span class="lineno">618 </span>    <span class="c1">// étape 6 : calcul de la commande</span>
+<span class="lineno">619 </span>    <span class="kr">float</span> <span class="n">erreur</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span> <span class="c1">// erreur de vitesse eps = Vc − v_mesurée (initialisée à 0)</span>
+<span class="lineno">620 </span>    <span class="kr">float</span> <span class="n">commande</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span> <span class="c1">// commande PWM à envoyer (initialisée à 0)</span>
+<span class="lineno">621 </span>
+<span class="lineno">622 </span>    <span class="k">if</span> <span class="p">(</span><span class="n">modeActuel</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+<span class="lineno">623 </span>      <span class="c1">// mode 1 : urgence</span>
+<span class="lineno">624 </span>      <span class="n">integrale</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span> <span class="c1">// vider l&#39;intégrale -&gt; pas d&#39;effet résiduel sur le freinage</span>
+<span class="lineno">625 </span>      <span class="n">deriveeInitialisee</span> <span class="o">=</span> <span class="kr">false</span><span class="p">;</span> <span class="c1">// invalider le terme D (v peut chuter brutalement)</span>
+<span class="lineno">626 </span>      <span class="n">erreur</span> <span class="o">=</span> <span class="n">VITESSE_CIBLE_MS</span> <span class="o">-</span> <span class="n">vitesse_periode_ms</span><span class="p">;</span> <span class="c1">// calculer l&#39;erreur pour le log uniquement</span>
+<span class="lineno">627 </span>      <span class="n">commande</span> <span class="o">=</span> <span class="o">-</span><span class="mf">255.0f</span><span class="p">;</span> <span class="c1">// freinage maximal : -255 PWM -&gt; L298N en sens inverse</span>
+<span class="lineno">628 </span>
+<span class="lineno">629 </span>    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">modeActuel</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+<span class="lineno">630 </span>      <span class="c1">// mode 2 : vitesse (régulation de croisière)</span>
+<span class="lineno">631 </span>      <span class="c1">// erreur de vitesse : positive si on est trop lent, négative si trop rapide</span>
+<span class="lineno">632 </span>      <span class="n">erreur</span> <span class="o">=</span> <span class="n">VITESSE_CIBLE_MS</span> <span class="o">-</span> <span class="n">vitesse_periode_ms</span><span class="p">;</span>
+<span class="lineno">633 </span>      <span class="c1">// calculer la correction PID</span>
+<span class="lineno">634 </span>      <span class="kr">float</span> <span class="n">corr</span> <span class="o">=</span> <span class="n">calculerCorrecteur</span><span class="p">(</span><span class="n">erreur</span><span class="p">,</span> <span class="n">dt_s</span><span class="p">,</span> <span class="n">reinitDerivee</span><span class="p">);</span>
+<span class="lineno">635 </span>      <span class="c1">// commande = feedforward + correction PID</span>
+<span class="lineno">636 </span>      <span class="n">commande</span> <span class="o">=</span> <span class="n">FEEDFORWARD_PWM</span> <span class="o">+</span> <span class="n">corr</span><span class="p">;</span>
+<span class="lineno">637 </span>
+<span class="lineno">638 </span>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+<span class="lineno">639 </span>      <span class="c1">// mode 3 : distance</span>
+<span class="lineno">640 </span>      <span class="n">erreur</span> <span class="o">=</span> <span class="n">VITESSE_CIBLE_MS</span> <span class="o">-</span> <span class="n">vitesse_periode_ms</span><span class="p">;</span> <span class="c1">// même erreur de vitesse que mode 2</span>
+<span class="lineno">641 </span>      <span class="kr">float</span> <span class="n">corr</span> <span class="o">=</span> <span class="n">calculerCorrecteur</span><span class="p">(</span><span class="n">erreur</span><span class="p">,</span> <span class="n">dt_s</span><span class="p">,</span> <span class="n">reinitDerivee</span><span class="p">);</span> <span class="c1">// même PID que mode 2</span>
+<span class="lineno">642 </span>      <span class="kr">float</span> <span class="n">cmd_vitesse</span> <span class="o">=</span> <span class="n">FEEDFORWARD_PWM</span> <span class="o">+</span> <span class="n">corr</span><span class="p">;</span> <span class="c1">// commande qu&#39;on aurait en mode vitesse</span>
+<span class="lineno">643 </span>
+<span class="lineno">644 </span>      <span class="c1">// terme de freinage : proportionnel à l&#39;excès de proximité par rapport à Dc</span>
+<span class="lineno">645 </span>      <span class="kr">float</span> <span class="n">freinage</span> <span class="o">=</span> <span class="n">KP_BRAKE_PWM</span> <span class="o">*</span> <span class="nf">max</span><span class="p">(</span><span class="mf">0.0f</span><span class="p">,</span> <span class="n">DIST_CONSIGNE_M</span> <span class="o">-</span> <span class="n">dist_eff</span><span class="p">);</span>
+<span class="lineno">646 </span>
+<span class="lineno">647 </span>      <span class="n">commande</span> <span class="o">=</span> <span class="nf">max</span><span class="p">(</span><span class="mf">0.0f</span><span class="p">,</span> <span class="n">cmd_vitesse</span> <span class="o">-</span> <span class="n">freinage</span><span class="p">);</span> <span class="c1">// soustraire le freinage, jamais négatif ici</span>
+<span class="lineno">648 </span>
+<span class="lineno">649 </span>      <span class="c1">// anti-windup freinage</span>
+<span class="lineno">650 </span><span class="cp">#if USE_I </span><span class="c1">// ce bloc n&#39;est compilé que pour les correcteurs avec intégrale (PI et PID)</span>
+<span class="lineno">651 </span>      <span class="k">if</span> <span class="p">(</span><span class="n">freinage</span> <span class="o">&gt;</span> <span class="mf">0.0f</span><span class="p">)</span> <span class="p">{</span>
+<span class="lineno">652 </span>        <span class="n">integrale</span> <span class="o">-=</span> <span class="n">erreur</span> <span class="o">*</span> <span class="n">dt_s</span><span class="p">;</span> <span class="c1">// soustraire ce qu&#39;on vient d&#39;ajouter dans calculerCorrecteur()</span>
+<span class="lineno">653 </span>        <span class="n">integrale</span> <span class="o">=</span> <span class="nf">constrain</span><span class="p">(</span><span class="n">integrale</span><span class="p">,</span> <span class="o">-</span><span class="n">INTEGRALE_MAX</span><span class="p">,</span> <span class="n">INTEGRALE_MAX</span><span class="p">);</span> <span class="c1">// re-saturer par sécurité</span>
+<span class="lineno">654 </span>      <span class="p">}</span>
+<span class="lineno">655 </span><span class="cp">#endif</span>
+<span class="lineno">656 </span>    <span class="p">}</span>
+<span class="lineno">657 </span>
+<span class="lineno">658 </span>    <span class="c1">// étape 7 : rampe + kick + zone morte</span>
+<span class="lineno">659 </span>    <span class="kr">bool</span> <span class="n">urgence</span> <span class="o">=</span> <span class="p">(</span><span class="n">modeActuel</span> <span class="o">==</span> <span class="mi">1</span><span class="p">);</span> <span class="c1">// drapeau urgence pour calculerCommandeMoteur()</span>
+<span class="lineno">660 </span>
+<span class="lineno">661 </span>    <span class="c1">// appliquer le kick-start et la rampe asymétrique sur la commande calculée</span>
+<span class="lineno">662 </span>    <span class="n">commande</span> <span class="o">=</span> <span class="n">calculerCommandeMoteur</span><span class="p">(</span><span class="n">commande</span><span class="p">,</span> <span class="n">dt_s</span><span class="p">,</span> <span class="n">urgence</span><span class="p">,</span> <span class="n">interdireKick</span><span class="p">,</span> <span class="n">now</span><span class="p">);</span>
+<span class="lineno">663 </span>
+<span class="lineno">664 </span>    <span class="c1">// saturation finale à [-255, +255]</span>
+<span class="lineno">665 </span>    <span class="n">commande</span> <span class="o">=</span> <span class="nf">constrain</span><span class="p">(</span><span class="n">commande</span><span class="p">,</span> <span class="o">-</span><span class="mf">255.0f</span><span class="p">,</span> <span class="mf">255.0f</span><span class="p">);</span>
+<span class="lineno">666 </span>
+<span class="lineno">667 </span>    <span class="c1">// anti-windup zone morte</span>
+<span class="lineno">668 </span>    <span class="k">if</span> <span class="p">(</span><span class="n">commande</span> <span class="o">&gt;</span> <span class="mf">0.0f</span> <span class="o">&amp;&amp;</span> <span class="n">commande</span> <span class="o">&lt;</span> <span class="n">PWM_ZONE_MORTE</span><span class="p">)</span> <span class="p">{</span>
+<span class="lineno">669 </span>      <span class="n">integrale</span> <span class="o">-=</span> <span class="n">erreur</span> <span class="o">*</span> <span class="n">dt_s</span><span class="p">;</span> <span class="c1">// annuler l&#39;intégrale accumulée inutilement</span>
+<span class="lineno">670 </span>      <span class="n">integrale</span> <span class="o">=</span> <span class="nf">constrain</span><span class="p">(</span><span class="n">integrale</span><span class="p">,</span> <span class="o">-</span><span class="n">INTEGRALE_MAX</span><span class="p">,</span> <span class="n">INTEGRALE_MAX</span><span class="p">);</span> <span class="c1">// re-saturer</span>
+<span class="lineno">671 </span>    <span class="p">}</span>
+<span class="lineno">672 </span>
+<span class="lineno">673 </span>    <span class="n">derniereCommande</span> <span class="o">=</span> <span class="n">commande</span><span class="p">;</span> <span class="c1">// mémoriser pour le log</span>
+<span class="lineno">674 </span>    <span class="n">appliquerCommande</span><span class="p">(</span><span class="n">commande</span><span class="p">);</span> <span class="c1">// envoyer au pont en H -&gt; moteur</span>
+<span class="lineno">675 </span>
+<span class="lineno">676 </span>    <span class="c1">// étape 8 : log csv</span>
+<span class="lineno">677 </span>    <span class="k">if</span> <span class="p">(</span><span class="n">now</span> <span class="o">-</span> <span class="n">lastLogTime</span> <span class="o">&gt;=</span> <span class="n">LOG_PERIOD_MS</span><span class="p">)</span> <span class="p">{</span>
+<span class="lineno">678 </span>      <span class="n">lastLogTime</span> <span class="o">=</span> <span class="n">now</span><span class="p">;</span> <span class="c1">// mettre à jour le timer de log</span>
+<span class="lineno">679 </span>
+<span class="lineno">680 </span>      <span class="c1">// en mode vitesse, log dist = -1 (pas d&#39;obstacle, distance non pertinente)</span>
+<span class="lineno">681 </span>      <span class="kr">float</span> <span class="n">dist_log</span> <span class="o">=</span> <span class="p">(</span><span class="n">modeActuel</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span> <span class="o">?</span> <span class="o">-</span><span class="mf">1.0f</span> <span class="o">:</span> <span class="n">dist_eff</span><span class="p">;</span>
+<span class="lineno">682 </span>
+<span class="lineno">683 </span>      <span class="c1">// écrire une ligne CSV sur la carte SD</span>
+<span class="lineno">684 </span>      <span class="n">ecrireLog</span><span class="p">((</span><span class="kr">float</span><span class="p">)</span><span class="n">now</span> <span class="o">/</span> <span class="mf">1000.0f</span><span class="p">,</span> <span class="n">dist_log</span><span class="p">,</span> <span class="n">erreur</span><span class="p">,</span> <span class="n">modeActuel</span><span class="p">);</span>
+<span class="lineno">685 </span>    <span class="p">}</span>
+<span class="lineno">686 </span>
+<span class="lineno">687 </span>    <span class="c1">// étape 9 : debug console</span>
+<span class="lineno">688 </span>    <span class="c1">// afficher l&#39;état du système sur le moniteur série à chaque cycle de contrôle (50 ms)</span>
+<span class="lineno">689 </span>    <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot;[&quot;</span><span class="p">));</span> <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">MODE_STR</span><span class="p">);</span> <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot;] &quot;</span><span class="p">));</span> <span class="c1">// [P], [PI], [PD] ou [PID]</span>
+<span class="lineno">690 </span>
+<span class="lineno">691 </span>    <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot;mode=&quot;</span><span class="p">));</span>
+<span class="lineno">692 </span>    <span class="k">if</span> <span class="p">(</span><span class="n">modeActuel</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot;URGENCE &quot;</span><span class="p">));</span> <span class="c1">// mode urgence : freinage</span>
+<span class="lineno">693 </span>    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">modeActuel</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span> <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot;VITESSE &quot;</span><span class="p">));</span> <span class="c1">// mode vitesse : croisière</span>
+<span class="lineno">694 </span>    <span class="k">else</span> <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot;DIST    &quot;</span><span class="p">));</span> <span class="c1">// mode distance : ACC actif</span>
+<span class="lineno">695 </span>
+<span class="lineno">696 </span>    <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot;| v=&quot;</span><span class="p">));</span> <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">vitesse_periode_ms</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span> <span class="c1">// vitesse mesurée (méthode période)</span>
+<span class="lineno">697 </span>    <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot; | d=&quot;</span><span class="p">));</span> <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">dist_m</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span> <span class="c1">// distance brute du capteur ultrason</span>
+<span class="lineno">698 </span>    <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot; | e=&quot;</span><span class="p">));</span> <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">erreur</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span> <span class="c1">// erreur de vitesse eps = Vc − v</span>
+<span class="lineno">699 </span>    <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot; | cmd=&quot;</span><span class="p">));</span> <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">commande</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="c1">// commande envoyée au moteur (PWM)</span>
+<span class="lineno">700 </span>
+<span class="lineno">701 </span>    <span class="k">if</span> <span class="p">(</span><span class="n">modeActuel</span> <span class="o">==</span> <span class="mi">3</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// en mode distance : afficher aussi la valeur du freinage</span>
+<span class="lineno">702 </span>      <span class="kr">float</span> <span class="n">fr</span> <span class="o">=</span> <span class="n">KP_BRAKE_PWM</span> <span class="o">*</span> <span class="nf">max</span><span class="p">(</span><span class="mf">0.0f</span><span class="p">,</span> <span class="n">DIST_CONSIGNE_M</span> <span class="o">-</span> <span class="n">dist_eff</span><span class="p">);</span> <span class="c1">// recalculer le freinage pour l&#39;affichage</span>
+<span class="lineno">703 </span>      <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot; | brk=&quot;</span><span class="p">));</span> <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">fr</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="c1">// valeur du freinage en PWM</span>
+<span class="lineno">704 </span>    <span class="p">}</span>
+<span class="lineno">705 </span>
+<span class="lineno">706 </span>    <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot; | kick=&quot;</span><span class="p">));</span> <span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">kickActif</span> <span class="o">?</span> <span class="n">F</span><span class="p">(</span><span class="s">&quot;OUI&quot;</span><span class="p">)</span> <span class="o">:</span> <span class="n">F</span><span class="p">(</span><span class="s">&quot;non&quot;</span><span class="p">));</span> <span class="c1">// état du kick</span>
+<span class="lineno">707 </span>  <span class="p">}</span>
+<span class="lineno">708 </span><span class="p">}</span>
+<span class="lineno">709 </span>
+<span class="lineno">710 </span>
+<span class="lineno">711 </span><span class="c1">// initialisation carte SD</span>
+<span class="lineno">712 </span><span class="kr">void</span> <span class="nf">initSD</span><span class="p">()</span> <span class="p">{</span>
+<span class="lineno">713 </span>  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nf">SD</span><span class="p">.</span><span class="nf">begin</span><span class="p">(</span><span class="n">SD_CS_PIN</span><span class="p">))</span> <span class="p">{</span> <span class="c1">// tenter d&#39;initialiser la SD sur la broche CS définie</span>
+<span class="lineno">714 </span>    <span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot;SD : échec init&quot;</span><span class="p">));</span> <span class="c1">// afficher l&#39;erreur sur le port série</span>
+<span class="lineno">715 </span>    <span class="n">sdOk</span> <span class="o">=</span> <span class="kr">false</span><span class="p">;</span> <span class="c1">// marquer la SD comme non disponible</span>
+<span class="lineno">716 </span>    <span class="k">return</span><span class="p">;</span> <span class="c1">// abandonner l&#39;initialisation</span>
+<span class="lineno">717 </span>  <span class="p">}</span>
+<span class="lineno">718 </span>
+<span class="lineno">719 </span>  <span class="kr">char</span> <span class="n">fn</span><span class="p">[</span><span class="mi">13</span><span class="p">];</span> <span class="kr">uint8_t</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// nom de fichier et numéro incrémental</span>
+<span class="lineno">720 </span>  <span class="k">do</span> <span class="p">{</span>
+<span class="lineno">721 </span>    <span class="n">snprintf</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="kr">sizeof</span><span class="p">(</span><span class="n">fn</span><span class="p">),</span> <span class="s">&quot;%s%03d.CSV&quot;</span><span class="p">,</span> <span class="n">MODE_STR</span><span class="p">,</span> <span class="n">n</span><span class="o">++</span><span class="p">);</span>  <span class="c1">// générer &quot;PID000.CSV&quot;, &quot;PID001.CSV&quot;, etc.</span>
+<span class="lineno">722 </span>  <span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="nf">SD</span><span class="p">.</span><span class="nf">exists</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">255</span><span class="p">);</span> <span class="c1">// incrémenter jusqu&#39;à trouver un nom non utilisé</span>
+<span class="lineno">723 </span>
+<span class="lineno">724 </span>  <span class="n">logFile</span> <span class="o">=</span> <span class="nf">SD</span><span class="p">.</span><span class="nf">open</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">FILE_WRITE</span><span class="p">);</span> <span class="c1">// ouvrir le fichier en écriture (crée le fichier si inexistant)</span>
+<span class="lineno">725 </span>  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">logFile</span><span class="p">)</span> <span class="p">{</span>  <span class="c1">// si l&#39;ouverture a échoué</span>
+<span class="lineno">726 </span>    <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot;SD : impossible d&#39;ouvrir &quot;</span><span class="p">));</span> <span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">fn</span><span class="p">);</span> <span class="c1">// afficher l&#39;erreur</span>
+<span class="lineno">727 </span>    <span class="n">sdOk</span> <span class="o">=</span> <span class="kr">false</span><span class="p">;</span> <span class="c1">// marquer la SD comme non disponible</span>
+<span class="lineno">728 </span>    <span class="k">return</span><span class="p">;</span>
+<span class="lineno">729 </span>  <span class="p">}</span>
+<span class="lineno">730 </span>
+<span class="lineno">731 </span>  <span class="c1">// Écrire le commentaire d&#39;en-tête avec les paramètres de l&#39;essai (ligne commençant par #)</span>
+<span class="lineno">732 </span>  <span class="n">logFile</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot;#correcteur=&quot;</span><span class="p">));</span> <span class="n">logFile</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">MODE_STR</span><span class="p">);</span> <span class="c1">// nom du correcteur</span>
+<span class="lineno">733 </span>  <span class="n">logFile</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot;,Kp=&quot;</span><span class="p">));</span> <span class="n">logFile</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">Kp_VAL</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="c1">// gain proportionnel</span>
+<span class="lineno">734 </span>  <span class="n">logFile</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot;,Ki=&quot;</span><span class="p">));</span> <span class="n">logFile</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">Ki_VAL</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="c1">// gain intégral</span>
+<span class="lineno">735 </span>  <span class="n">logFile</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot;,Kd=&quot;</span><span class="p">));</span> <span class="n">logFile</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">Kd_VAL</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="c1">// gain dérivé</span>
+<span class="lineno">736 </span>  <span class="n">logFile</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot;,FF=&quot;</span><span class="p">));</span> <span class="n">logFile</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">FEEDFORWARD_PWM</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="c1">// feedforward calculé</span>
+<span class="lineno">737 </span>  <span class="n">logFile</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot;,Vc=&quot;</span><span class="p">));</span> <span class="n">logFile</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">VITESSE_CIBLE_MS</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span> <span class="c1">// vitesse cible</span>
+<span class="lineno">738 </span>
+<span class="lineno">739 </span>  <span class="c1">// Écrire la ligne d&#39;en-tête CSV avec le nom des colonnes</span>
+<span class="lineno">740 </span>  <span class="n">logFile</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot;t_s,mode,vitesse_freq_ms,vitesse_periode_ms,consigne_vitesse_ms,distance_m,consigne_dist_m,erreur_m,commande_pwm&quot;</span><span class="p">));</span>
+<span class="lineno">741 </span>
+<span class="lineno">742 </span>  <span class="n">logFile</span><span class="p">.</span><span class="nf">flush</span><span class="p">();</span> <span class="c1">// forcer l&#39;écriture sur la carte SD (évite la perte des en-têtes en cas de coupure)</span>
+<span class="lineno">743 </span>
+<span class="lineno">744 </span>  <span class="n">strncpy</span><span class="p">(</span><span class="n">logFilename</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="kr">sizeof</span><span class="p">(</span><span class="n">logFilename</span><span class="p">));</span> <span class="c1">// copier le nom du fichier dans logFilename</span>
+<span class="lineno">745 </span>  <span class="n">logFilename</span><span class="p">[</span><span class="kr">sizeof</span><span class="p">(</span><span class="n">logFilename</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span> <span class="c1">// s&#39;assurer que la chaîne est bien terminée par &#39;\0&#39;</span>
+<span class="lineno">746 </span>  <span class="n">logLinesSinceFlush</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// remettre le compteur de lignes depuis le dernier flush à zéro</span>
+<span class="lineno">747 </span>  <span class="n">sdOk</span> <span class="o">=</span> <span class="kr">true</span><span class="p">;</span> <span class="c1">// marquer la SD comme opérationnelle</span>
+<span class="lineno">748 </span>
+<span class="lineno">749 </span>  <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot;SD : &quot;</span><span class="p">));</span> <span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">fn</span><span class="p">);</span> <span class="c1">// confirmer l&#39;ouverture sur la console</span>
+<span class="lineno">750 </span><span class="p">}</span>
+<span class="lineno">751 </span>
+<span class="lineno">752 </span>
+<span class="lineno">753 </span><span class="c1">// fermeture propre du fichier</span>
+<span class="lineno">754 </span><span class="kr">void</span> <span class="nf">fermerLogSD</span><span class="p">()</span> <span class="p">{</span>
+<span class="lineno">755 </span>  <span class="k">if</span> <span class="p">(</span><span class="n">sdOk</span> <span class="o">&amp;&amp;</span> <span class="n">logFile</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// si la SD est disponible et le fichier ouvert</span>
+<span class="lineno">756 </span>    <span class="n">logFile</span><span class="p">.</span><span class="nf">flush</span><span class="p">();</span> <span class="c1">// écrire toutes les données en mémoire tampon sur la carte</span>
+<span class="lineno">757 </span>    <span class="n">logFile</span><span class="p">.</span><span class="nf">close</span><span class="p">();</span> <span class="c1">// fermer proprement le fichier (finalise l&#39;en-tête FAT)</span>
+<span class="lineno">758 </span>  <span class="p">}</span>
+<span class="lineno">759 </span>  <span class="n">sdOk</span> <span class="o">=</span> <span class="kr">false</span><span class="p">;</span> <span class="c1">// marquer la SD comme indisponible jusqu&#39;à la prochaine initSD()</span>
+<span class="lineno">760 </span><span class="p">}</span>
+<span class="lineno">761 </span>
+<span class="lineno">762 </span>
+<span class="lineno">763 </span><span class="c1">// écris une ligne sur le fichier sur la carte SD</span>
+<span class="lineno">764 </span><span class="kr">void</span> <span class="nf">ecrireLog</span><span class="p">(</span><span class="kr">float</span> <span class="n">t_s</span><span class="p">,</span> <span class="kr">float</span> <span class="n">dist_m</span><span class="p">,</span> <span class="kr">float</span> <span class="n">erreur_m</span><span class="p">,</span> <span class="kr">uint8_t</span> <span class="n">mode</span><span class="p">)</span> <span class="p">{</span>
+<span class="lineno">765 </span>  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">sdOk</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span> <span class="c1">// ne rien faire si la SD n&#39;est pas disponible</span>
+<span class="lineno">766 </span>
+<span class="lineno">767 </span>  <span class="n">logFile</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">t_s</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span> <span class="n">logFile</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="sc">&#39;,&#39;</span><span class="p">);</span> <span class="c1">// temps en secondes (3 décimales)</span>
+<span class="lineno">768 </span>  <span class="n">logFile</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">mode</span><span class="p">);</span> <span class="n">logFile</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="sc">&#39;,&#39;</span><span class="p">);</span> <span class="c1">// mode : 1=urgence, 2=vitesse, 3=distance</span>
+<span class="lineno">769 </span>  <span class="n">logFile</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">vitesse_ms</span><span class="p">,</span> <span class="mi">4</span><span class="p">);</span> <span class="n">logFile</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="sc">&#39;,&#39;</span><span class="p">);</span> <span class="c1">// vitesse fréquencemétrique (m/s)</span>
+<span class="lineno">770 </span>  <span class="n">logFile</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">vitesse_periode_ms</span><span class="p">,</span><span class="mi">4</span><span class="p">);</span> <span class="n">logFile</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="sc">&#39;,&#39;</span><span class="p">);</span> <span class="c1">// vitesse période filtrée (m/s) — utilisée par PID</span>
+<span class="lineno">771 </span>  <span class="n">logFile</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">VITESSE_CIBLE_MS</span><span class="p">,</span> <span class="mi">4</span><span class="p">);</span> <span class="n">logFile</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="sc">&#39;,&#39;</span><span class="p">);</span> <span class="c1">// consigne de vitesse (m/s) — constante</span>
+<span class="lineno">772 </span>  <span class="n">logFile</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">dist_m</span><span class="p">,</span> <span class="mi">4</span><span class="p">);</span> <span class="n">logFile</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="sc">&#39;,&#39;</span><span class="p">);</span> <span class="c1">// distance obstacle (-1 si mode vitesse)</span>
+<span class="lineno">773 </span>  <span class="n">logFile</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">DIST_CONSIGNE_M</span><span class="p">,</span> <span class="mi">4</span><span class="p">);</span> <span class="n">logFile</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="sc">&#39;,&#39;</span><span class="p">);</span> <span class="c1">// consigne de distance (m) — constante</span>
+<span class="lineno">774 </span>  <span class="n">logFile</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">erreur_m</span><span class="p">,</span> <span class="mi">4</span><span class="p">);</span> <span class="n">logFile</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="sc">&#39;,&#39;</span><span class="p">);</span> <span class="c1">// erreur de vitesse ε = Vc − v (m/s)</span>
+<span class="lineno">775 </span>  <span class="n">logFile</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">derniereCommande</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="c1">// commande envoyée au moteur (PWM, newline)</span>
+<span class="lineno">776 </span>
+<span class="lineno">777 </span>  <span class="c1">// flush groupé : écrire physiquement sur la SD tous les LOG_FLUSH_EVERY_N_LINES cycles</span>
+<span class="lineno">778 </span>  <span class="c1">// (flush à chaque ligne serait trop lent et userait la carte SD inutilement)</span>
+<span class="lineno">779 </span>  <span class="k">if</span> <span class="p">(</span><span class="o">++</span><span class="n">logLinesSinceFlush</span> <span class="o">&gt;=</span> <span class="n">LOG_FLUSH_EVERY_N_LINES</span><span class="p">)</span> <span class="p">{</span>
+<span class="lineno">780 </span>    <span class="n">logFile</span><span class="p">.</span><span class="nf">flush</span><span class="p">();</span> <span class="c1">// forcer l&#39;écriture du buffer SD sur la carte</span>
+<span class="lineno">781 </span>    <span class="n">logLinesSinceFlush</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// remettre le compteur à zéro</span>
+<span class="lineno">782 </span>  <span class="p">}</span>
+<span class="lineno">783 </span><span class="p">}</span>
+</pre></div>
+
+</body>
+</html>
